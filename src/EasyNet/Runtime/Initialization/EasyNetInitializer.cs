@@ -2,6 +2,7 @@
 using System.Reflection;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
+using EasyNet.Ioc;
 using Microsoft.Extensions.Options;
 
 namespace EasyNet.Runtime.Initialization

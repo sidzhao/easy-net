@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+using EasyNet.Application.Dto;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Entities;
 using EasyNet.Domain.Repositories;
-using EasyNet.Dto;
+using EasyNet.Ioc;
 
 namespace EasyNet.Application.Services
 {
@@ -42,11 +43,6 @@ namespace EasyNet.Application.Services
         {
         }
 
-        /// <summary>
-        /// Archive
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task ArchiveAsync(TPrimaryKey id)
         {
             var entity = await Repository.GetAsync(id);
@@ -65,11 +61,6 @@ namespace EasyNet.Application.Services
             throw new EasyNetException($"The {entity.GetType().AssemblyQualifiedName} is not inherit from {typeof(IPassivable)}.");
         }
 
-        /// <summary>
-        /// Activate
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task ActivateAsync(TPrimaryKey id)
         {
             var entity = await Repository.GetAsync(id);

@@ -1,5 +1,6 @@
 ﻿
 using EasyNet.DependencyInjection;
+using EasyNet.Ioc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyNet.EntityFrameworkCore.Domain.Uow

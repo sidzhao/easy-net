@@ -2,6 +2,7 @@
 using EasyNet.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
+using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
 using Microsoft.AspNetCore.Http;

@@ -1,9 +1,13 @@
 ﻿using EasyNet.DependencyInjection;
 using EasyNet.Domain.Entities;
 using EasyNet.Domain.Repositories;
+using EasyNet.Ioc;
 
 namespace EasyNet.Application.Services
 {
+    /// <summary>
+    /// This class can be used as a base class for application services.
+    /// </summary>
     public abstract class EasyNetAppService : EasyNetServiceBase, IEasyNetAppService
     {
         protected EasyNetAppService(IIocResolver iocResolver) : base(iocResolver)

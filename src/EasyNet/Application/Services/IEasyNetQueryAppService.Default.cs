@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EasyNet.DependencyInjection;
+using EasyNet.Application.Dto;
 using EasyNet.Domain.Entities;
 using EasyNet.Domain.Repositories;
-using EasyNet.Dto;
+using EasyNet.Ioc;
 
 namespace EasyNet.Application.Services
 {
@@ -17,9 +17,6 @@ namespace EasyNet.Application.Services
         }
     }
 
-    /// <summary>
-    /// Derive your application services from this class.
-    /// </summary>
 
     public abstract class EasyNetQueryAppService<TEntity, TEntityDto, TPrimaryKey, TGetAllInput> : EasyNetAppService, IEasyNetQueryAppService<TEntityDto, TPrimaryKey, TGetAllInput>
         where TEntity : class, IEntity<TPrimaryKey>
@@ -32,11 +29,6 @@ namespace EasyNet.Application.Services
 
         protected IRepository<TEntity, TPrimaryKey> Repository { get; }
 
-        /// <summary>
-        /// Get
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<TEntityDto> GetAsync(TPrimaryKey id)
         {
             var entity = await Repository.GetAsync(id);
@@ -44,11 +36,6 @@ namespace EasyNet.Application.Services
             return MapToEntityDto(entity);
         }
 
-        /// <summary>
-        /// Get all
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         public async Task<List<TEntityDto>> GetAllAsync(TGetAllInput input)
         {
             var entities = await Repository.GetAllListAsync();
@@ -56,11 +43,6 @@ namespace EasyNet.Application.Services
             return entities.Select(MapToEntityDto).ToList();
         }
 
-        /// <summary>
-        /// Map to entity dto
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         protected virtual TEntityDto MapToEntityDto(TEntity entity)
         {
             return ObjectMapper.Map<TEntityDto>(entity);

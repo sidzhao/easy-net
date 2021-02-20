@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using EasyNet.Dto;
+using EasyNet.Application.Dto;
 
 namespace EasyNet.Application.Services
 {
@@ -12,8 +12,17 @@ namespace EasyNet.Application.Services
     public interface IEasyNetQueryAppService<TEntityDto, in TPrimaryKey, in TGetAllInput> : IEasyNetAppService
         where TEntityDto : IEntityDto<TPrimaryKey>
     {
+        /// <summary>
+        /// Get a object by id.
+        /// </summary>
+        /// <param name="id">The primary key of the object.</param>
         Task<TEntityDto> GetAsync(TPrimaryKey id);
 
+        /// <summary>
+        /// Gets all objects by condition.
+        /// </summary>
+        /// <param name="input">The filter condition values.</param>
+        /// <returns></returns>
         Task<List<TEntityDto>> GetAllAsync(TGetAllInput input);
     }
 }

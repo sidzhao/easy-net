@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.Dto;
+using EasyNet.Application.Dto;
 
 namespace EasyNet.Application.Services
 {
@@ -22,10 +22,22 @@ namespace EasyNet.Application.Services
         where TEntityDto : IEntityDto<TPrimaryKey>
         where TUpdateInput : IEntityDto<TPrimaryKey>
     {
+        /// <summary>
+        /// Create a object.
+        /// </summary>
+        /// <param name="input">The input values for creating a object.</param>
         Task<TEntityDto> CreateAsync(TCreateInput input);
 
+        /// <summary>
+        /// Update a object.
+        /// </summary>
+        /// <param name="input">The input values for updating a object.</param>
         Task<TEntityDto> UpdateAsync(TUpdateInput input);
 
+        /// <summary>
+        /// Delete a object by id.
+        /// </summary>
+        /// <param name="id">The primary key of the object.</param>
         Task DeleteAsync(TPrimaryKey id);
     }
 }

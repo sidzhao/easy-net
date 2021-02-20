@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EasyNet.Dto
+﻿namespace EasyNet.Application.Dto
 {
     public interface IEntityDto : IEntityDto<int>
     {

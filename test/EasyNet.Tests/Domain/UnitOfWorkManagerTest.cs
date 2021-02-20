@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
+using EasyNet.Ioc;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

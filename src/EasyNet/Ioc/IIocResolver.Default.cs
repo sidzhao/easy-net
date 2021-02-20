@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EasyNet.DependencyInjection
+namespace EasyNet.Ioc
 {
     public class AspNetCoreIocResolver : IIocResolver
     {

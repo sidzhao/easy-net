@@ -1,5 +1,6 @@
 ﻿using System.Transactions;
 using EasyNet.DependencyInjection;
+using EasyNet.Ioc;
 using Microsoft.Extensions.Options;
 
 namespace EasyNet.Domain.Uow

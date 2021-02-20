@@ -2,6 +2,7 @@
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
 using EasyNet.Extensions;
+using EasyNet.Ioc;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.Options;
 using Moq;

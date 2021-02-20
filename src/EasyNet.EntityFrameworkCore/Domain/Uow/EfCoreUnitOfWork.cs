@@ -2,6 +2,7 @@
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
 using EasyNet.Extensions;
+using EasyNet.Ioc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;

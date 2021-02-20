@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EasyNet.DependencyInjection;
 using EasyNet.EventBus;
 using EasyNet.Extensions;
+using EasyNet.Ioc;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.Options;
 

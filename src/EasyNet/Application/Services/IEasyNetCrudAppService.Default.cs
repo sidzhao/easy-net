@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.DependencyInjection;
+using EasyNet.Application.Dto;
 using EasyNet.Domain.Entities;
 using EasyNet.Domain.Repositories;
-using EasyNet.Dto;
+using EasyNet.Ioc;
 
 namespace EasyNet.Application.Services
 {
@@ -42,11 +42,6 @@ namespace EasyNet.Application.Services
         {
         }
 
-        /// <summary>
-        /// Create
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         public virtual async Task<TEntityDto> CreateAsync(TCreateInput input)
         {
             var entity = MapCreateInputToEntity(input);
@@ -56,23 +51,12 @@ namespace EasyNet.Application.Services
             return MapToEntityDto(entity);
         }
 
-        /// <summary>
-        /// Map create input to entity
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         protected virtual TEntity MapCreateInputToEntity(TCreateInput input)
         {
             var entity = ObjectMapper.Map<TEntity>(input);
 
             return entity;
         }
-
-        /// <summary>
-        /// Update
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         public virtual async Task<TEntityDto> UpdateAsync(TUpdateInput input)
         {
             var entity = await Repository.GetAsync(input.Id);
@@ -83,22 +67,11 @@ namespace EasyNet.Application.Services
 
             return MapToEntityDto(entity);
         }
-
-        /// <summary>
-        /// Map update input to entity
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="entity"></param>
         protected virtual void MapUpdateInputToEntity(TUpdateInput input, TEntity entity)
         {
             ObjectMapper.Map(input, entity);
         }
 
-        /// <summary>
-        /// Delete
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public virtual Task DeleteAsync(TPrimaryKey id)
         {
             return Repository.DeleteAsync(id);

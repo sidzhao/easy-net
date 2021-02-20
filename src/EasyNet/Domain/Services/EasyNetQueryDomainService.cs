@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Entities;
 using EasyNet.Domain.Repositories;
+using EasyNet.Ioc;
 
 namespace EasyNet.Domain.Services
 {
