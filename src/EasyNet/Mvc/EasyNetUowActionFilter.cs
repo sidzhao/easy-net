@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using EasyNet.Domain.Uow;
+using EasyNet.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 
