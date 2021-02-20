@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0-dev.1</Version>
+    <Authors>Sid Zhao</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>aspnetcore</PackageTags>
+    <UserSecretsId>aeee6ca9-7b4f-46a0-ab15-563583cf842d</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.16" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.1.11" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <Reference Include="System.Transactions" />
+    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.16" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.1.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <DefineConstants>$(DefineConstants);Net50</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+    <DefineConstants>$(DefineConstants);Net31</DefineConstants>
+  </PropertyGroup>
+  
+</Project>
