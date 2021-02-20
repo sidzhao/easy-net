@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Identity.EntityFram
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Identity.EntityFrameworkCore.UI", "src\EasyNet.Identity.EntityFrameworkCore.UI\EasyNet.Identity.EntityFrameworkCore.UI.csproj", "{71E7DCCC-E89C-4E62-B690-C59F971D859B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.EventBus.Cap", "src\EasyNet.EventBus.Cap\EasyNet.EventBus.Cap.csproj", "{E3298365-7B5C-441E-BF7A-60846327CDFD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.EventBus.Cap.MySql", "src\EasyNet.EventBus.Cap.MySql\EasyNet.EventBus.Cap.MySql.csproj", "{7D9D8CBF-F3B1-492F-8EC0-39EBCD9BBC74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,14 @@ Global
 		{71E7DCCC-E89C-4E62-B690-C59F971D859B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71E7DCCC-E89C-4E62-B690-C59F971D859B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71E7DCCC-E89C-4E62-B690-C59F971D859B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3298365-7B5C-441E-BF7A-60846327CDFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3298365-7B5C-441E-BF7A-60846327CDFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3298365-7B5C-441E-BF7A-60846327CDFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3298365-7B5C-441E-BF7A-60846327CDFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D9D8CBF-F3B1-492F-8EC0-39EBCD9BBC74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D9D8CBF-F3B1-492F-8EC0-39EBCD9BBC74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D9D8CBF-F3B1-492F-8EC0-39EBCD9BBC74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D9D8CBF-F3B1-492F-8EC0-39EBCD9BBC74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +86,8 @@ Global
 		{EE7C42A1-4E46-48F1-95A3-FC7110A10FD8} = {CE627866-6F21-4C0D-97DF-F84BF6444192}
 		{D2E9C128-267F-492D-B993-83E556762305} = {C5C9A9DD-A479-43DC-AC88-2888FED9C85E}
 		{71E7DCCC-E89C-4E62-B690-C59F971D859B} = {CE627866-6F21-4C0D-97DF-F84BF6444192}
+		{E3298365-7B5C-441E-BF7A-60846327CDFD} = {CE627866-6F21-4C0D-97DF-F84BF6444192}
+		{7D9D8CBF-F3B1-492F-8EC0-39EBCD9BBC74} = {CE627866-6F21-4C0D-97DF-F84BF6444192}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40A59E7E-4882-4AB1-9962-76AC5A32F4B8}
