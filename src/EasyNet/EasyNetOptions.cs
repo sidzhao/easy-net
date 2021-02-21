@@ -1,5 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
+using IServiceCollection = Microsoft.Extensions.DependencyInjection.IServiceCollection;
 
 namespace EasyNet
 {
@@ -8,6 +11,17 @@ namespace EasyNet
     /// </summary>
     public class EasyNetOptions
     {
+        public EasyNetOptions()
+        {
+            RegisterServicesActions = new List<Action<IServiceCollection>>();
+        }
+
+        /// <summary>
+        /// All related assemblies using EasyNet.
+        /// The system looks for the classes that need to be used in these assemblies.
+        /// </summary>
+        public Assembly[] Assemblies { get; set; }
+
         /// <summary>
         /// Used to control whether to automatically start a new unit of work before <see cref="IAsyncActionFilter.OnActionExecutionAsync" />.
         /// Default is false.
@@ -26,9 +40,13 @@ namespace EasyNet
         /// </summary>
         public bool SuppressAutoSetIsActive { get; set; }
 
-        /// <summary>
-        /// 使用EasyNet的所有相关程序集
-        /// </summary>
-        public Assembly[] Assemblies { get; set; }
+        internal IList<Action<IServiceCollection>> RegisterServicesActions { get; }
+
+        public void AddRegisterServicesAction(Action<IServiceCollection> action)
+        {
+            Check.NotNull(action, nameof(action));
+
+            RegisterServicesActions.Add(action);
+        }
     }
 }

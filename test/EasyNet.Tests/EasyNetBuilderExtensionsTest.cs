@@ -4,6 +4,7 @@ using System.Transactions;
 using EasyNet.CommonTests;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
+using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;

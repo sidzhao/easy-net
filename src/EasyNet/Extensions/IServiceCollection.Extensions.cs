@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace EasyNet.DependencyInjection
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extension methods for setting up EasyNet services in an <see cref="IServiceCollection" />.
@@ -21,8 +22,8 @@ namespace EasyNet.DependencyInjection
         /// Adds EasyNet services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder AddEasyNet(this IServiceCollection services)
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddEasyNet(this IServiceCollection services)
         {
             Check.NotNull(services, nameof(services));
 
@@ -34,8 +35,8 @@ namespace EasyNet.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="setupAction">An <see cref="Action{EasyNetOptions}"/> to configure the provided <see cref="EasyNetOptions"/>.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder AddEasyNet(this IServiceCollection services, Action<EasyNetOptions> setupAction)
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddEasyNet(this IServiceCollection services, Action<EasyNetOptions> setupAction)
         {
             Check.NotNull(services, nameof(services));
 
@@ -52,15 +53,14 @@ namespace EasyNet.DependencyInjection
                 .AddTransient<IEasyNetInitializer, EasyNetInitializer>()
                 .AddScoped<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>()
                 .AddScoped<IUnitOfWorkManager, UnitOfWorkManager>()
-                .AddTransient<IUnitOfWork, NullUnitOfWork>()
-                .AddScoped<IActiveDbTransactionProvider, NullDbTransactionProvider>()
-                .AddSingleton<IPrincipalAccessor, DefaultPrincipalAccessor>()
-                .AddScoped<IEasyNetSession, ClaimsEasyNetSession>()
+                .AddTransient<IEasyNetExceptionHandler, EasyNetExceptionHandler>();
+
+            // Mvc
+            services
                 .AddTransient<EasyNetUowActionFilter>()
                 .AddTransient<EasyNetResultFilter>()
                 .AddTransient<EasyNetExceptionFilter>()
                 .AddTransient<EasyNetPageFilter>()
-                .AddTransient<IEasyNetExceptionHandler, EasyNetExceptionHandler>()
                 .Configure<MvcOptions>(mvcOptions =>
                 {
                     mvcOptions.Filters.AddService<EasyNetUowActionFilter>();
@@ -68,6 +68,29 @@ namespace EasyNet.DependencyInjection
                     mvcOptions.Filters.AddService<EasyNetExceptionFilter>();
                     mvcOptions.Filters.AddService<EasyNetPageFilter>();
                 });
+
+            // Session
+            services
+                .AddSingleton<IPrincipalAccessor, DefaultPrincipalAccessor>()
+                .AddScoped<IEasyNetSession, ClaimsEasyNetSession>();
+
+            // Options and extension service
+            if (setupAction != null)
+            {
+                var options = new EasyNetOptions();
+                setupAction(options);
+                foreach (var serviceAction in options.RegisterServicesActions)
+                {
+                    serviceAction(services);
+                }
+                services.Configure(setupAction);
+            }
+            
+            // Unit of work
+            services.TryAddTransient<IUnitOfWork, NullUnitOfWork>();
+
+            // Data
+            services.TryAddScoped<IActiveDbTransactionProvider, NullDbTransactionProvider>();
 
             return new EasyNetBuilder(services);
         }

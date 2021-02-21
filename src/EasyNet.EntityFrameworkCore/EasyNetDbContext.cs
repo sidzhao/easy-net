@@ -21,11 +21,11 @@ namespace EasyNet.EntityFrameworkCore
 {
     public class EasyNetDbContext : DbContext
     {
-        protected virtual bool IsSoftDeleteFilterEnabled => CurrentUnitOfWorkProvider?.Current?.IsFilterEnabled(EasyNetDataFilters.SoftDelete) == true;
+        protected virtual bool IsSoftDeleteFilterEnabled => CurrentUnitOfWorkProvider.Current?.IsFilterEnabled(EasyNetDataFilters.SoftDelete) == true;
 
-        protected virtual bool IsMayHaveTenantFilterEnabled => CurrentUnitOfWorkProvider?.Current?.IsFilterEnabled(EasyNetDataFilters.MayHaveTenant) == true;
+        protected virtual bool IsMayHaveTenantFilterEnabled => CurrentUnitOfWorkProvider.Current?.IsFilterEnabled(EasyNetDataFilters.MayHaveTenant) == true;
 
-        protected virtual bool IsMustHaveTenantFilterEnabled => CurrentUnitOfWorkProvider?.Current?.IsFilterEnabled(EasyNetDataFilters.MustHaveTenant) == true;
+        protected virtual bool IsMustHaveTenantFilterEnabled => CurrentUnitOfWorkProvider.Current?.IsFilterEnabled(EasyNetDataFilters.MustHaveTenant) == true;
 
         private static readonly MethodInfo ConfigureGlobalFiltersMethodInfo = typeof(EasyNetDbContext).GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -38,8 +38,11 @@ namespace EasyNet.EntityFrameworkCore
             IOptions<EasyNetOptions> easyNetOptions
             ) : base(options)
         {
+            Check.NotNull(currentUnitOfWorkProvider, nameof(currentUnitOfWorkProvider));
+            Check.NotNull(session, nameof(session));
+
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
-            EasyNetSession = session ?? NullEasyNetSession.Instance;
+            EasyNetSession = session;
             _easyNetOptions = easyNetOptions.Value;
         }
 

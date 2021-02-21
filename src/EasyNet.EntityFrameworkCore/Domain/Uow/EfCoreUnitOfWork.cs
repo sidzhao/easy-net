@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
 using EasyNet.Extensions;
 using EasyNet.Ioc;

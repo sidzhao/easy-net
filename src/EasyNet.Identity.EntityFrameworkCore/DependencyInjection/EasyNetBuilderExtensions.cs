@@ -17,8 +17,8 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
     /// </summary>
     public static class EasyNetBuilderExtensions
     {
-        public static IEasyNetBuilder AddIdentityCore<TUser, TDbContext>(
-            this IEasyNetBuilder builder,
+        public static EasyNetBuilder AddIdentityCore<TUser, TDbContext>(
+            this EasyNetBuilder builder,
             Action<IdentityOptions> identitySetupAction = null,
             Action<AuthenticationOptions> authenticationSetupAction = null,
             Action<IdentityCookiesBuilder> identityCookiesSetupAction = null)
@@ -28,8 +28,8 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
             return builder.AddIdentityCore<TUser, TDbContext, int>(identitySetupAction, authenticationSetupAction, identityCookiesSetupAction);
         }
 
-        public static IEasyNetBuilder AddIdentityCore<TUser, TDbContext, TPrimaryKey>(
-            this IEasyNetBuilder builder,
+        public static EasyNetBuilder AddIdentityCore<TUser, TDbContext, TPrimaryKey>(
+            this EasyNetBuilder builder,
             Action<IdentityOptions> identitySetupAction = null,
             Action<AuthenticationOptions> authenticationSetupAction = null,
             Action<IdentityCookiesBuilder> identityCookiesSetupAction = null)
@@ -40,8 +40,8 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
             return builder.AddIdentityCore<TUser, EasyNetRole<TPrimaryKey>, TDbContext, TPrimaryKey>(identitySetupAction, authenticationSetupAction, identityCookiesSetupAction);
         }
 
-        public static IEasyNetBuilder AddIdentityCore<TUser, TRole, TDbContext, TPrimaryKey>(
-            this IEasyNetBuilder builder,
+        public static EasyNetBuilder AddIdentityCore<TUser, TRole, TDbContext, TPrimaryKey>(
+            this EasyNetBuilder builder,
             Action<IdentityOptions> identitySetupAction = null,
             Action<AuthenticationOptions> authenticationSetupAction = null,
             Action<IdentityCookiesBuilder> identityCookiesSetupAction = null)
@@ -56,8 +56,8 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
                 identityCookiesSetupAction);
         }
 
-        public static IEasyNetBuilder AddIdentityCore<TUser, TRole, TDbContext, TPrimaryKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(
-            this IEasyNetBuilder builder,
+        public static EasyNetBuilder AddIdentityCore<TUser, TRole, TDbContext, TPrimaryKey, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim>(
+            this EasyNetBuilder builder,
             Action<IdentityOptions> identitySetupAction = null,
             Action<AuthenticationOptions> authenticationSetupAction = null,
             Action<IdentityCookiesBuilder> identityCookiesSetupAction = null)
@@ -108,7 +108,7 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
         /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
         /// <param name="setupAction">An <see cref="Action{DefaultAdminUserOptions}"/> to configure the provided <see cref="DefaultAdminUserOptions"/>.</param>
         /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder ConfigureDefaultAdminUserOptions(this IEasyNetBuilder builder, Action<DefaultAdminUserOptions> setupAction)
+        public static EasyNetBuilder ConfigureDefaultAdminUserOptions(this EasyNetBuilder builder, Action<DefaultAdminUserOptions> setupAction)
         {
             Check.NotNull(builder, nameof(builder));
             Check.NotNull(setupAction, nameof(setupAction));
@@ -122,9 +122,9 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
         /// Add a default admin when EasyNet initialization.
         /// </summary>
         /// <typeparam name="TUser">The user associated with the application.</typeparam>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
         /// <returns></returns>
-        public static IEasyNetBuilder AddAdminInitializationJob<TUser>(this IEasyNetBuilder builder)
+        public static EasyNetBuilder AddAdminInitializationJob<TUser>(this EasyNetBuilder builder)
             where TUser : EasyNetUser<int>, new()
         {
             Check.NotNull(builder, nameof(builder));
@@ -139,9 +139,9 @@ namespace EasyNet.Identity.EntityFrameworkCore.DependencyInjection
         /// </summary>
         /// <typeparam name="TUser">The user associated with the application.</typeparam>
         /// <typeparam name="TPrimaryKey">The primary key of the user associated with the application.</typeparam>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
         /// <returns></returns>
-        public static IEasyNetBuilder AddAdminInitializationJob<TUser, TPrimaryKey>(this IEasyNetBuilder builder)
+        public static EasyNetBuilder AddAdminInitializationJob<TUser, TPrimaryKey>(this EasyNetBuilder builder)
             where TUser : EasyNetUser<TPrimaryKey>, new()
             where TPrimaryKey : IEquatable<TPrimaryKey>
         {

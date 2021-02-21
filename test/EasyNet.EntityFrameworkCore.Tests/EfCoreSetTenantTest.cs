@@ -4,7 +4,6 @@ using EasyNet.DependencyInjection;
 using EasyNet.Domain.Entities;
 using EasyNet.Domain.Repositories;
 using EasyNet.Domain.Uow;
-using EasyNet.EntityFrameworkCore.DependencyInjection;
 using EasyNet.EntityFrameworkCore.Extensions;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Tests.Entities;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyNet.Extensions.DependencyInjection;
 
 namespace EasyNet.EntityFrameworkCore.Tests
 {
@@ -26,12 +26,14 @@ namespace EasyNet.EntityFrameworkCore.Tests
             var services = new ServiceCollection();
 
             services
-                .AddEasyNet()
-                .AddSession<TestSession>()
-                .AddEfCore<EfCoreContext>(options =>
+                .AddEasyNet(x =>
                 {
-                    options.UseSqlite(CreateInMemoryDatabase());
-                });
+                    x.UseEfCore<EfCoreContext>(options =>
+                    {
+                        options.UseSqlite(CreateInMemoryDatabase());
+                    });
+                })
+                .AddSession<TestSession>();
 
             _serviceProvider = services.BuildServiceProvider();
 

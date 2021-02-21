@@ -3,10 +3,10 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
-using EasyNet.EntityFrameworkCore.DependencyInjection;
 using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.Extensions;
+using EasyNet.Extensions.DependencyInjection;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -24,12 +24,14 @@ namespace EasyNet.EntityFrameworkCore.Tests
             var services = new ServiceCollection();
 
             services
-                .AddEasyNet()
-                .AddSession<TestSession>()
-                .AddEfCore<EfCoreContext>(options =>
+                .AddEasyNet(x =>
                 {
-                    options.UseSqlite(CreateInMemoryDatabase());
-                });
+                    x.UseEfCore<EfCoreContext>(options =>
+                    {
+                        options.UseSqlite(CreateInMemoryDatabase());
+                    });
+                })
+                .AddSession<TestSession>();
 
             _serviceProvider = services.BuildServiceProvider();
         }
@@ -59,8 +61,8 @@ namespace EasyNet.EntityFrameworkCore.Tests
             uow2.Complete();
 
             // Assert
-            Assert.NotNull(uow2.GetPublicProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.Null(uow2.GetPublicProperty<IDbContextTransaction>("ActiveTransaction"));
+            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
             #endregion
 
@@ -75,8 +77,8 @@ namespace EasyNet.EntityFrameworkCore.Tests
             uow3.Complete();
 
             // Assert
-            Assert.NotNull(uow3.GetPublicProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.NotNull(uow3.GetPublicProperty<IDbContextTransaction>("ActiveTransaction"));
+            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
             #endregion
         }
@@ -106,8 +108,8 @@ namespace EasyNet.EntityFrameworkCore.Tests
             await uow2.CompleteAsync();
 
             // Assert
-            Assert.NotNull(uow2.GetPublicProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.Null(uow2.GetPublicProperty<IDbContextTransaction>("ActiveTransaction"));
+            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
             #endregion
 
@@ -122,8 +124,8 @@ namespace EasyNet.EntityFrameworkCore.Tests
             await uow3.CompleteAsync();
 
             // Assert
-            Assert.NotNull(uow3.GetPublicProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.NotNull(uow3.GetPublicProperty<IDbContextTransaction>("ActiveTransaction"));
+            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
             #endregion
         }

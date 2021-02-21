@@ -17,10 +17,10 @@ namespace EasyNet.DependencyInjection
         /// <summary>
         /// Configure <see cref="UnitOfWorkDefaultOptions"/>
         /// </summary>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
         /// <param name="setupAction">An <see cref="Action{UnitOfWorkDefaultOptions}"/> to configure the provided <see cref="UnitOfWorkDefaultOptions"/>.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder ConfigureUnitOfWorkDefaultOptions(this IEasyNetBuilder builder, Action<UnitOfWorkDefaultOptions> setupAction)
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder ConfigureUnitOfWorkDefaultOptions(this EasyNetBuilder builder, Action<UnitOfWorkDefaultOptions> setupAction)
         {
             Check.NotNull(builder, nameof(builder));
             Check.NotNull(setupAction, nameof(setupAction));
@@ -33,10 +33,10 @@ namespace EasyNet.DependencyInjection
         /// <summary>
         /// Add a job to be executed when EasyNet initialization.
         /// </summary>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
         /// <param name="jobTypes">The job which need to be executed when EasyNet initialization.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder AddInitializationJob(this IEasyNetBuilder builder, params Type[] jobTypes)
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddInitializationJob(this EasyNetBuilder builder, params Type[] jobTypes)
         {
             Check.NotNull(builder, nameof(builder));
             Check.NotNullOrEmpty(jobTypes, nameof(jobTypes));
@@ -61,9 +61,9 @@ namespace EasyNet.DependencyInjection
         /// Add a new <see cref="IEasyNetSession"/> implementation.
         /// </summary>
         /// <typeparam name="TSession"></typeparam>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder AddSession<TSession>(this IEasyNetBuilder builder)
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddSession<TSession>(this EasyNetBuilder builder)
             where TSession : IEasyNetSession
         {
             Check.NotNull(builder, nameof(builder));
@@ -77,9 +77,9 @@ namespace EasyNet.DependencyInjection
         /// Add a new <see cref="IIocResolver"/> implementation.
         /// </summary>
         /// <typeparam name="TIocResolver"></typeparam>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder AddIocResolver<TIocResolver>(this IEasyNetBuilder builder)
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddIocResolver<TIocResolver>(this EasyNetBuilder builder)
             where TIocResolver : IIocResolver
         {
             Check.NotNull(builder, nameof(builder));
@@ -93,9 +93,9 @@ namespace EasyNet.DependencyInjection
         /// Add a new <see cref="IEasyNetExceptionHandler"/> implementation.
         /// </summary>
         /// <typeparam name="TExceptionHandler"></typeparam>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
-        /// <returns>An <see cref="IEasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static IEasyNetBuilder AddExceptionHandler<TExceptionHandler>(this IEasyNetBuilder builder)
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddExceptionHandler<TExceptionHandler>(this EasyNetBuilder builder)
             where TExceptionHandler : IEasyNetExceptionHandler
         {
             Check.NotNull(builder, nameof(builder));

@@ -4,6 +4,7 @@ using EasyNet.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Domain.Repositories;
 using EasyNet.Domain.Uow;
+using EasyNet.EntityFrameworkCore;
 using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
 using EasyNet.EntityFrameworkCore.Domain.Uow;
@@ -12,7 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace EasyNet.EntityFrameworkCore.DependencyInjection
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extensions for configuring EasyNet using an <see cref="IMvcBuilder"/>.
@@ -23,10 +25,10 @@ namespace EasyNet.EntityFrameworkCore.DependencyInjection
         /// Add specified services to let the system support EntityFrameworkCore.
         /// </summary>
         /// <typeparam name="TDbContext">The context associated with the application.</typeparam>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
         /// <param name="setupAction">An <see cref="Action{DbContextOptionsBuilder}"/> to configure the provided <see cref="DbContextOptionsBuilder"/>.</param>
         /// <returns></returns>
-        public static IEasyNetBuilder AddEfCore<TDbContext>(this IEasyNetBuilder builder, Action<DbContextOptionsBuilder> setupAction)
+        public static EasyNetBuilder AddEfCore<TDbContext>(this EasyNetBuilder builder, Action<DbContextOptionsBuilder> setupAction)
             where TDbContext : EasyNetDbContext
         {
             Check.NotNull(builder, nameof(builder));
@@ -47,9 +49,9 @@ namespace EasyNet.EntityFrameworkCore.DependencyInjection
         /// <summary>
         /// Executes database migration command when EasyNet initialization.
         /// </summary>
-        /// <param name="builder">The <see cref="IEasyNetBuilder"/>.</param>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
         /// <returns></returns>
-        public static IEasyNetBuilder AddDatabaseMigrationJob(this IEasyNetBuilder builder)
+        public static EasyNetBuilder AddDatabaseMigrationJob(this EasyNetBuilder builder)
         {
             Check.NotNull(builder, nameof(builder));
 
