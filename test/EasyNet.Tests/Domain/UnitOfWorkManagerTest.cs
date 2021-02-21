@@ -61,7 +61,7 @@ namespace EasyNet.Tests.Domain
                 IsTransactional = false,
                 IsolationLevel = IsolationLevel.Snapshot
             };
-            var unitOfWork = unitOfWorkManager.Begin(unitOfWorkOptions);
+            var unitOfWork = unitOfWorkManager.Begin(_serviceProvider, unitOfWorkOptions);
 
             // Assert
             Assert.True(unitOfWork is IUnitOfWork);
@@ -106,7 +106,7 @@ namespace EasyNet.Tests.Domain
             // Act & Assert
 
             // Start a uow as top uow, the TransactionScope is Required.
-            using (var unitOfWork1 = unitOfWorkManager.Begin(TransactionScopeOption.Required))
+            using (var unitOfWork1 = unitOfWorkManager.Begin(_serviceProvider, TransactionScopeOption.Required))
             {
                 Assert.Same(unitOfWork1, currentUnitOfWorkProvider.Current);
 
@@ -114,7 +114,7 @@ namespace EasyNet.Tests.Domain
 
                 // Start a child uow, the TransactionScope is Required, too.
                 // The current uow is not changed. The current uow is unitOfWork1, too.
-                using (var unitOfWork2 = unitOfWorkManager.Begin(TransactionScopeOption.Required))
+                using (var unitOfWork2 = unitOfWorkManager.Begin(_serviceProvider, TransactionScopeOption.Required))
                 {
                     Assert.True(unitOfWork2 is InnerUnitOfWorkCompleteHandle);
                     Assert.Same(unitOfWork1, currentUnitOfWorkProvider.Current);
@@ -132,7 +132,7 @@ namespace EasyNet.Tests.Domain
 
                 // Start a child uow, the TransactionScope is RequiresNew.
                 // It will change the current uow to this uow.
-                using (var unitOfWork3 = unitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+                using (var unitOfWork3 = unitOfWorkManager.Begin(_serviceProvider, TransactionScopeOption.RequiresNew))
                 {
                     Assert.Same(unitOfWork3, currentUnitOfWorkProvider.Current);
                     Assert.Same(unitOfWork1, currentUnitOfWorkProvider.Current.Outer);
@@ -148,7 +148,7 @@ namespace EasyNet.Tests.Domain
 
                 // Start a child uow, the TransactionScope is Suppress.
                 // It will change the current uow to this uow.
-                using (var unitOfWork4 = unitOfWorkManager.Begin(TransactionScopeOption.Suppress))
+                using (var unitOfWork4 = unitOfWorkManager.Begin(_serviceProvider, TransactionScopeOption.Suppress))
                 {
                     Assert.Same(unitOfWork4, currentUnitOfWorkProvider.Current);
                     Assert.Same(unitOfWork1, currentUnitOfWorkProvider.Current.Outer);
@@ -157,7 +157,7 @@ namespace EasyNet.Tests.Domain
 
                     // Start a new child now, the TransactionScope is Required.
                     // The current uow is not changed. The current uow is unitOfWork4, too.
-                    using (var unitOfWork5 = unitOfWorkManager.Begin(TransactionScopeOption.Required))
+                    using (var unitOfWork5 = unitOfWorkManager.Begin(_serviceProvider, TransactionScopeOption.Required))
                     {
                         Assert.True(unitOfWork5 is InnerSuppressUnitOfWorkCompleteHandle);
                         Assert.Same(unitOfWork4, currentUnitOfWorkProvider.Current);

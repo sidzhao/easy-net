@@ -1,4 +1,5 @@
-﻿using System.Transactions;
+﻿using System;
+using System.Transactions;
 
 namespace EasyNet.Domain.Uow
 {
@@ -17,18 +18,18 @@ namespace EasyNet.Domain.Uow
 	    /// Begins a new unit of work.
 	    /// </summary>
 	    /// <returns>A handle to be able to complete the unit of work</returns>
-	    IUnitOfWorkCompleteHandle Begin();
+	    IUnitOfWorkCompleteHandle Begin(IServiceProvider serviceProvider);
 
 	    /// <summary>
 	    /// Begins a new unit of work.
 	    /// </summary>
 	    /// <returns>A handle to be able to complete the unit of work</returns>
-	    IUnitOfWorkCompleteHandle Begin(TransactionScopeOption scope);
+	    IUnitOfWorkCompleteHandle Begin(IServiceProvider serviceProvider, TransactionScopeOption scope);
 
 	    /// <summary>
 	    /// Begins a new unit of work.
 	    /// </summary>
 	    /// <returns>A handle to be able to complete the unit of work</returns>
-	    IUnitOfWorkCompleteHandle Begin(UnitOfWorkOptions options);
+	    IUnitOfWorkCompleteHandle Begin(IServiceProvider serviceProvider, UnitOfWorkOptions options);
     }
 }

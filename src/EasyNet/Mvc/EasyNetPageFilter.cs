@@ -9,11 +9,13 @@ namespace EasyNet.Mvc
 {
     public class EasyNetPageFilter : IAsyncPageFilter
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly EasyNetOptions _options;
 
-        public EasyNetPageFilter(IUnitOfWorkManager unitOfWorkManager, IOptions<EasyNetOptions> options)
+        public EasyNetPageFilter(IServiceProvider serviceProvider, IUnitOfWorkManager unitOfWorkManager, IOptions<EasyNetOptions> options)
         {
+            _serviceProvider = serviceProvider;
             _unitOfWorkManager = unitOfWorkManager;
             _options = options.Value;
         }
@@ -55,7 +57,7 @@ namespace EasyNet.Mvc
             }
 
             // 开启工作单元
-            using (var uow = _unitOfWorkManager.Begin(unitOfWorkOptions))
+            using (var uow = _unitOfWorkManager.Begin(_serviceProvider, unitOfWorkOptions))
             {
                 var result = await next();
                 if (result.Exception == null || result.ExceptionHandled)

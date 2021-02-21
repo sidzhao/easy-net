@@ -1,5 +1,6 @@
-﻿using System.Transactions;
-using EasyNet.Ioc;
+﻿using System;
+using System.Transactions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace EasyNet.Domain.Uow
@@ -11,32 +12,31 @@ namespace EasyNet.Domain.Uow
     {
         private readonly ICurrentUnitOfWorkProvider _currentUnitOfWorkProvider;
         private readonly UnitOfWorkDefaultOptions _defaultOptions;
-        private readonly IIocResolver _iocResolver;
 
         public UnitOfWorkManager(
-	        IIocResolver iocResolver,
             ICurrentUnitOfWorkProvider currentUnitOfWorkProvider,
             IOptions<UnitOfWorkDefaultOptions> defaultOptions)
         {
             _currentUnitOfWorkProvider = currentUnitOfWorkProvider;
             _defaultOptions = defaultOptions.Value;
-            _iocResolver = iocResolver;
         }
 
         public IActiveUnitOfWork Current => _currentUnitOfWorkProvider.Current;
 
-        public IUnitOfWorkCompleteHandle Begin()
+        public IUnitOfWorkCompleteHandle Begin(IServiceProvider serviceProvider)
         {
-            return Begin(new UnitOfWorkOptions());
+            return Begin(serviceProvider, new UnitOfWorkOptions());
         }
 
-        public IUnitOfWorkCompleteHandle Begin(TransactionScopeOption scope)
+        public IUnitOfWorkCompleteHandle Begin(IServiceProvider serviceProvider, TransactionScopeOption scope)
         {
-            return Begin(new UnitOfWorkOptions { Scope = scope });
+            return Begin(serviceProvider, new UnitOfWorkOptions { Scope = scope });
         }
 
-        public IUnitOfWorkCompleteHandle Begin(UnitOfWorkOptions options)
+        public IUnitOfWorkCompleteHandle Begin(IServiceProvider serviceProvider, UnitOfWorkOptions options)
         {
+            Check.NotNull(serviceProvider, nameof(serviceProvider));
+
             options.FillDefaultsForNonProvidedOptions(_defaultOptions);
 
             var outerUow = _currentUnitOfWorkProvider.Current;
@@ -48,7 +48,7 @@ namespace EasyNet.Domain.Uow
                     : new InnerUnitOfWorkCompleteHandle();
             }
 
-            var uow = _iocResolver.GetService<IUnitOfWork>();
+            var uow = serviceProvider.GetRequiredService<IUnitOfWork>();
 
             uow.Completed += (sender, args) =>
             {

@@ -1,8 +1,9 @@
 ﻿using System.Data;
 
-namespace EasyNet.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
-    public static class IsolationLevelExtensions
+    internal static class IsolationLevelExtensions
     {
         /// <summary>
         /// Converts <see cref="System.Transactions.IsolationLevel"/> to <see cref="IsolationLevel"/>.

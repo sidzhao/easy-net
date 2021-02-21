@@ -1252,7 +1252,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
         public IUnitOfWorkCompleteHandle BeginUow()
         {
-            return _serviceProvider.GetService<IUnitOfWorkManager>().Begin();
+            return _serviceProvider.GetService<IUnitOfWorkManager>().Begin(_serviceProvider);
         }
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity<int>

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Reflection;
 
-namespace EasyNet.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extension methods in an <see cref="object" />.
     /// </summary>
-    public static class ReflectionExtensions
+    internal static class ReflectionExtensions
     {
         /// <summary>
         /// Gets the value of the private field.

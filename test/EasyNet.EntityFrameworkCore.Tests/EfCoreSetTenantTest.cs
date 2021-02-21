@@ -311,7 +311,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
         public IUnitOfWorkCompleteHandle BeginUow(UnitOfWorkOptions options = null)
         {
-            return _serviceProvider.GetService<IUnitOfWorkManager>().Begin(options ?? new UnitOfWorkOptions());
+            return _serviceProvider.GetService<IUnitOfWorkManager>().Begin(_serviceProvider, options ?? new UnitOfWorkOptions());
         }
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity<int>

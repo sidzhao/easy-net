@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Reflection;
 
-namespace EasyNet.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
     public static class PropertyInfoExtensions
     {
         /// <summary>
         /// Sets the value of the property of the object with specified type.
         /// </summary>
-        public static void SetValue<TValueType>(this PropertyInfo propertyInfo, object obj, object value)
+        public static void SetValueAndAutoFit<TValueType>(this PropertyInfo propertyInfo, object obj, object value)
         {
-            propertyInfo.SetValue(obj, value, typeof(TValueType));
+            propertyInfo.SetValueAndAutoFit(obj, value, typeof(TValueType));
         }
 
         /// <summary>
         /// Sets the value of the property of the object with specified type.
         /// </summary>
-        public static void SetValue(this PropertyInfo propertyInfo, object obj, object value, Type valueType)
+        public static void SetValueAndAutoFit(this PropertyInfo propertyInfo, object obj, object value, Type valueType)
         {
             Check.NotNull(propertyInfo, nameof(propertyInfo));
             Check.NotNull(obj, nameof(obj));

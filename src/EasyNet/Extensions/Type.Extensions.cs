@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 
-namespace EasyNet.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         /// <summary>
         /// 判断指定的类型 <paramref name="type"/> 是否是指定泛型类型的子类型，或实现了指定泛型接口。

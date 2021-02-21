@@ -51,8 +51,6 @@ namespace EasyNet.Extensions.DependencyInjection
             services
                 .AddScoped<IIocResolver, AspNetCoreIocResolver>()
                 .AddTransient<IEasyNetInitializer, EasyNetInitializer>()
-                .AddScoped<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>()
-                .AddScoped<IUnitOfWorkManager, UnitOfWorkManager>()
                 .AddTransient<IEasyNetExceptionHandler, EasyNetExceptionHandler>();
 
             // Mvc
@@ -87,6 +85,8 @@ namespace EasyNet.Extensions.DependencyInjection
             }
             
             // Unit of work
+            services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
+            services.TryAddSingleton<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>();
             services.TryAddTransient<IUnitOfWork, NullUnitOfWork>();
 
             // Data

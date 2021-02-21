@@ -31,8 +31,8 @@ namespace EasyNet.Tests
             AssertSpecifiedServiceTypeAndImplementationType<IIocResolver, AspNetCoreIocResolver>(services, ServiceLifetime.Scoped);
 			AssertSpecifiedServiceTypeAndImplementationType<IHttpContextAccessor, HttpContextAccessor>(services, ServiceLifetime.Singleton);
 			AssertSpecifiedServiceTypeAndImplementationType<EasyNetUowActionFilter, EasyNetUowActionFilter>(services, ServiceLifetime.Transient);
-			AssertSpecifiedServiceTypeAndImplementationType<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(services, ServiceLifetime.Scoped);
-			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWorkManager, UnitOfWorkManager>(services, ServiceLifetime.Scoped);
+			AssertSpecifiedServiceTypeAndImplementationType<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(services, ServiceLifetime.Singleton);
+			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWorkManager, UnitOfWorkManager>(services, ServiceLifetime.Singleton);
 			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, NullUnitOfWork>(services, ServiceLifetime.Transient);
 			AssertSpecifiedServiceTypeAndImplementationType<IPrincipalAccessor, DefaultPrincipalAccessor>(services, ServiceLifetime.Singleton);
 			AssertSpecifiedServiceTypeAndImplementationType<IEasyNetSession, ClaimsEasyNetSession>(services, ServiceLifetime.Scoped);

@@ -1,11 +1,12 @@
 ﻿using System;
 
-namespace EasyNet.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extension methods for <see cref="EventHandler"/>.
     /// </summary>
-    public static class EventHandlerExtensions
+    internal static class EventHandlerExtensions
     {
 	    /// <summary>
 	    /// Raises given event safely with given arguments.

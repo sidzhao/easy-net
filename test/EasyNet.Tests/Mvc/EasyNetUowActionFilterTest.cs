@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EasyNet.CommonTests;
 using EasyNet.Domain.Uow;
 using EasyNet.Mvc;
@@ -22,13 +23,13 @@ namespace EasyNet.Tests.Mvc
 
             var uowMock = new Mock<IUnitOfWorkManager>();
             uowMock
-                .Setup(f => f.Begin(It.IsAny<UnitOfWorkOptions>()))
+                .Setup(f => f.Begin(It.IsAny<IServiceProvider>(), It.IsAny<UnitOfWorkOptions>()))
                 .Returns(() => completeHandleMock.Object);
 
             var optionsMock = new Mock<IOptions<EasyNetOptions>>();
             optionsMock
                 .Setup(f => f.Value)
-                .Returns(() => new EasyNetOptions {SuppressAutoBeginUnitOfWork = suppressAutoBeginUnitOfWork});
+                .Returns(() => new EasyNetOptions { SuppressAutoBeginUnitOfWork = suppressAutoBeginUnitOfWork });
 
             var uowActionFilterMock = new Mock<EasyNetUowActionFilter>(uowMock.Object, optionsMock.Object);
             uowActionFilterMock.As<IAsyncActionFilter>()
@@ -48,7 +49,7 @@ namespace EasyNet.Tests.Mvc
 
             // Assert
             var times = !isControllerAction || suppressAutoBeginUnitOfWork ? Times.Never() : Times.Once();
-            uowMock.Verify(f => f.Begin(It.IsAny<UnitOfWorkOptions>()), times);
+            uowMock.Verify(f => f.Begin(It.IsAny<IServiceProvider>(), It.IsAny<UnitOfWorkOptions>()), times);
             completeHandleMock.Verify(f => f.CompleteAsync(), times);
         }
     }

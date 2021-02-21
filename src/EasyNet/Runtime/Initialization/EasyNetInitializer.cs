@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Reflection;
-using EasyNet.DependencyInjection;
 using EasyNet.Domain.Uow;
-using EasyNet.Ioc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace EasyNet.Runtime.Initialization
 {
     public class EasyNetInitializer : IEasyNetInitializer
     {
-        protected readonly IIocResolver IocResolver;
+        protected readonly IServiceProvider ServiceProvider;
         protected readonly EasyNetOptions Options;
         protected readonly EasyNetInitializerOptions InitializerOptions;
 
-        public EasyNetInitializer(IIocResolver serviceProvider, IOptions<EasyNetOptions> options, IOptions<EasyNetInitializerOptions> initializerOptions)
+        public EasyNetInitializer(IServiceProvider serviceProvider, IOptions<EasyNetOptions> options, IOptions<EasyNetInitializerOptions> initializerOptions)
         {
             Check.NotNull(serviceProvider, nameof(serviceProvider));
             Check.NotNull(options, nameof(options));
 
-            IocResolver = serviceProvider;
+            ServiceProvider = serviceProvider;
             Options = options.Value;
             InitializerOptions = initializerOptions.Value;
         }
@@ -27,12 +26,12 @@ namespace EasyNet.Runtime.Initialization
         {
             foreach (var jobType in InitializerOptions.JobTypes)
             {
-                using (var scope = IocResolver.CreateScope())
+                using (var scope = ServiceProvider.CreateScope())
                 {
                     // 全局定义禁止自动开启工作单元
                     if (Options.SuppressAutoBeginUnitOfWork)
                     {
-                        ExecuteJob(scope, jobType);
+                        ExecuteJob(scope.ServiceProvider, jobType);
                         return;
                     }
 
@@ -45,16 +44,16 @@ namespace EasyNet.Runtime.Initialization
                         var uowAttr = (UnitOfWorkAttribute)attr;
                         if (uowAttr.SuppressAutoBeginUnitOfWork)
                         {
-                            ExecuteJob(scope, jobType);
+                            ExecuteJob(scope.ServiceProvider, jobType);
                             return;
                         }
 
                         unitOfWorkOptions = UnitOfWorkOptions.Create(uowAttr);
                     }
 
-                    using (var uow = scope.GetService<IUnitOfWorkManager>().Begin(unitOfWorkOptions))
+                    using (var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWorkManager>().Begin(scope.ServiceProvider, unitOfWorkOptions))
                     {
-                        ExecuteJob(scope, jobType);
+                        ExecuteJob(scope.ServiceProvider, jobType);
 
                         uow.Complete();
                     }
@@ -62,9 +61,9 @@ namespace EasyNet.Runtime.Initialization
             }
         }
 
-        protected virtual void ExecuteJob(IScopeIocResolver scopeIocResolver, Type jobType)
+        protected virtual void ExecuteJob(IServiceProvider serviceProvider, Type jobType)
         {
-            if (scopeIocResolver.GetService(jobType) is IEasyNetInitializationJob job)
+            if (serviceProvider.GetService(jobType) is IEasyNetInitializationJob job)
             {
                 job.Start();
             }

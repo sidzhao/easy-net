@@ -8,7 +8,7 @@ using EasyNet.Domain.Entities;
 using EasyNet.Domain.Entities.Auditing;
 using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Extensions;
-using EasyNet.Extensions;
+using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Linq;
 using EasyNet.Runtime.Session;
 using EasyNet.Timing;
@@ -219,7 +219,7 @@ namespace EasyNet.EntityFrameworkCore
             {
                 var userIdProperty = entityType.GetProperty("CreatorUserId");
                 if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValue(entry.Entity, EasyNetSession.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
+                userIdProperty.SetValueAndAutoFit(entry.Entity, EasyNetSession.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
             }
         }
 
@@ -237,7 +237,7 @@ namespace EasyNet.EntityFrameworkCore
             {
                 var userIdProperty = entityType.GetProperty("LastModifierUserId");
                 if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValue(entry.Entity, EasyNetSession.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
+                userIdProperty.SetValueAndAutoFit(entry.Entity, EasyNetSession.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
             }
         }
 
@@ -259,7 +259,7 @@ namespace EasyNet.EntityFrameworkCore
                 {
                     var userIdProperty = entityType.GetProperty("DeleterUserId");
                     if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {entityType.AssemblyQualifiedName}.");
-                    userIdProperty.SetValue(entry.Entity, EasyNetSession.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
+                    userIdProperty.SetValueAndAutoFit(entry.Entity, EasyNetSession.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
                 }
             }
         }
@@ -335,7 +335,7 @@ namespace EasyNet.EntityFrameworkCore
 
             if (!alreadySetTenantId)
             {
-                tenantIdProperty.SetValue(entry.Entity, GetCurrentTenantId(), tenantGeneric.GenericTypeArguments[0]);
+                tenantIdProperty.SetValueAndAutoFit(entry.Entity, GetCurrentTenantId(), tenantGeneric.GenericTypeArguments[0]);
             }
         }
 
@@ -361,7 +361,7 @@ namespace EasyNet.EntityFrameworkCore
 
             if (tenantIdProperty.GetValue(entry.Entity) == null)
             {
-                tenantIdProperty.SetValue(entry.Entity, GetCurrentTenantId(),
+                tenantIdProperty.SetValueAndAutoFit(entry.Entity, GetCurrentTenantId(),
                     tenantGeneric.GenericTypeArguments[0]);
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using EasyNet.Domain.Uow;
 using EasyNet.Extensions.DependencyInjection;
@@ -12,11 +13,13 @@ namespace EasyNet.Mvc
     /// </summary>
     public class EasyNetUowActionFilter : IAsyncActionFilter
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly EasyNetOptions _options;
 
-        public EasyNetUowActionFilter(IUnitOfWorkManager unitOfWorkManager, IOptions<EasyNetOptions> options)
+        public EasyNetUowActionFilter(IServiceProvider serviceProvider, IUnitOfWorkManager unitOfWorkManager, IOptions<EasyNetOptions> options)
         {
+            _serviceProvider = serviceProvider;
             _unitOfWorkManager = unitOfWorkManager;
             _options = options.Value;
         }
@@ -58,7 +61,7 @@ namespace EasyNet.Mvc
             }
 
             // 开启工作单元
-            using (var uow = _unitOfWorkManager.Begin(unitOfWorkOptions))
+            using (var uow = _unitOfWorkManager.Begin(_serviceProvider, unitOfWorkOptions))
             {
                 var result = await next();
                 if (result.Exception == null || result.ExceptionHandled)

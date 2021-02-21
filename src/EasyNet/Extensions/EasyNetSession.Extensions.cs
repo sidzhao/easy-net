@@ -1,7 +1,8 @@
 ﻿using System;
 using EasyNet.Runtime.Session;
 
-namespace EasyNet.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extension methods in a <see cref="IEasyNetSession" />.
