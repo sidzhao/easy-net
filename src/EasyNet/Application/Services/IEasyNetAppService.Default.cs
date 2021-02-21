@@ -1,5 +1,5 @@
-﻿using EasyNet.Data;
-using EasyNet.Ioc;
+﻿using System;
+using EasyNet.Data;
 
 namespace EasyNet.Application
 {
@@ -8,7 +8,7 @@ namespace EasyNet.Application
     /// </summary>
     public abstract class EasyNetAppService : EasyNetServiceBase, IEasyNetAppService
     {
-        protected EasyNetAppService(IIocResolver iocResolver) : base(iocResolver)
+        protected EasyNetAppService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }
@@ -16,7 +16,7 @@ namespace EasyNet.Application
     public abstract class EasyNetAppService<TEntity> : EasyNetAppService<TEntity, int>
         where TEntity : class, IEntity<int>
     {
-        protected EasyNetAppService(IIocResolver iocResolver, IRepository<TEntity, int> repository) : base(iocResolver, repository)
+        protected EasyNetAppService(IServiceProvider serviceProvider, IRepository<TEntity, int> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -24,7 +24,7 @@ namespace EasyNet.Application
     public abstract class EasyNetAppService<TEntity, TPrimaryKey> : EasyNetAppService
         where TEntity : class, IEntity<TPrimaryKey>
     {
-        protected EasyNetAppService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver)
+        protected EasyNetAppService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider)
         {
             Repository = repository;
         }

@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using EasyNet.DependencyInjection;
-using EasyNet.Ioc;
+﻿using System;
+using AutoMapper;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyNet
 {
@@ -12,17 +12,17 @@ namespace EasyNet
     /// </summary>
     public abstract class EasyNetServiceBase
     {
-        protected EasyNetServiceBase(IIocResolver iocResolver)
+        protected EasyNetServiceBase(IServiceProvider serviceProvider)
         {
-            IocResolver = iocResolver;
+            ServiceProvider = serviceProvider;
         }
 
-        protected IIocResolver IocResolver { get; }
+        protected IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Reference to <see cref="IUnitOfWorkManager"/>.
         /// </summary>
-        protected IUnitOfWorkManager UnitOfWorkManager => _uowManager ?? (_uowManager = IocResolver.GetService<IUnitOfWorkManager>());
+        protected IUnitOfWorkManager UnitOfWorkManager => _uowManager ?? (_uowManager = ServiceProvider.GetRequiredService<IUnitOfWorkManager>());
         private IUnitOfWorkManager _uowManager;
 
         /// <summary>
@@ -33,13 +33,13 @@ namespace EasyNet
         /// <summary>
         /// Gets current session information.
         /// </summary>
-        protected IEasyNetSession EasyNetSession => _asyNetSession ?? (_asyNetSession = IocResolver.GetService<IEasyNetSession>());
+        protected IEasyNetSession EasyNetSession => _asyNetSession ?? (_asyNetSession = ServiceProvider.GetRequiredService<IEasyNetSession>());
         private IEasyNetSession _asyNetSession;
 
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
-        protected IMapper ObjectMapper => _objectMapper ?? (_objectMapper = IocResolver.GetService<IMapper>());
+        protected IMapper ObjectMapper => _objectMapper ?? (_objectMapper = ServiceProvider.GetRequiredService<IMapper>());
         private IMapper _objectMapper;
     }
 }

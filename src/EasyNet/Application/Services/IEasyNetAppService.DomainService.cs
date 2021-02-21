@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.Data;
 using EasyNet.Domain;
-using EasyNet.Ioc;
 
 namespace EasyNet.Application
 {
@@ -12,7 +12,7 @@ namespace EasyNet.Application
         where TEntityDto : IEntityDto<int>
         where TDomainService : EasyNetQueryDomainService<TEntity, int>
     {
-        protected EasyNetQueryAppServiceWithDomainService(IIocResolver iocResolver, TDomainService domainService) : base(iocResolver, domainService)
+        protected EasyNetQueryAppServiceWithDomainService(IServiceProvider serviceProvider, TDomainService domainService) : base(serviceProvider, domainService)
         {
         }
     }
@@ -22,7 +22,7 @@ namespace EasyNet.Application
         where TEntityDto : IEntityDto<TPrimaryKey>
         where TDomainService : EasyNetQueryDomainService<TEntity, TPrimaryKey>
     {
-        protected EasyNetQueryAppServiceWithDomainService(IIocResolver iocResolver, TDomainService domainService) : base(iocResolver)
+        protected EasyNetQueryAppServiceWithDomainService(IServiceProvider serviceProvider, TDomainService domainService) : base(serviceProvider)
         {
             DomainService = domainService;
         }

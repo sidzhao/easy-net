@@ -4,7 +4,6 @@ using EasyNet.Data;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
-using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +39,7 @@ namespace EasyNet.Extensions.DependencyInjection
 
                 // Data
                 services.TryAddScoped<IActiveDbTransactionProvider, EfCoreActiveDbTransactionProvider>();
-
+                services.TryAddScoped<IDbConnectorCreator, EfCoreDbConnectorCreator<TDbContext>>();
 
                 // Uow
                 services.TryAddTransient<IUnitOfWork, EfCoreUnitOfWork>();

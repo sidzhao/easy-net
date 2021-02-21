@@ -1,11 +1,11 @@
-﻿using EasyNet.Data;
-using EasyNet.Ioc;
+﻿using System;
+using EasyNet.Data;
 
 namespace EasyNet.Domain
 {
     public abstract class EasyNetDomainService : EasyNetServiceBase, IEasyNetDomainService
     {
-        protected EasyNetDomainService(IIocResolver iocResolver) : base(iocResolver)
+        protected EasyNetDomainService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }
@@ -14,7 +14,7 @@ namespace EasyNet.Domain
         where TEntity : class, IEntity<int>
     {
 
-        protected EasyNetDomainService(IIocResolver iocResolver, IRepository<TEntity, int> repository) : base(iocResolver, repository)
+        protected EasyNetDomainService(IServiceProvider serviceProvider, IRepository<TEntity, int> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -24,7 +24,7 @@ namespace EasyNet.Domain
     {
 
 
-        protected EasyNetDomainService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver)
+        protected EasyNetDomainService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider)
         {
             Repository = repository;
         }

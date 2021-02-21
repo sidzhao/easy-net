@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using EasyNet.CommonTests;
 using EasyNet.Data;
-using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
-using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Tests.Entities;
+using EasyNet.EntityFrameworkCore.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
@@ -42,8 +41,6 @@ namespace EasyNet.EntityFrameworkCore.Tests
             // Assert
             AssertSpecifiedServiceTypeAndImplementationType<EfCoreContext, EfCoreContext>(services, ServiceLifetime.Scoped);
             AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, EfCoreUnitOfWork>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IActiveDbTransactionProvider, EfCoreActiveDbTransactionProvider>(services, ServiceLifetime.Scoped);
-            AssertSpecifiedServiceTypeAndImplementationType<IDbContextProvider, UnitOfWorkDbContextProvider>(services, ServiceLifetime.Scoped);
             Assert.NotNull(sqlServerOptions);
             Assert.Equal("TestConnectionString", ((RelationalOptionsExtension)sqlServerOptions).ConnectionString);
             AssertSpecifiedServiceTypeAndImplementationType<IRepository<User, long>, EfCoreRepositoryBase<EfCoreContext, User, long>>(services, ServiceLifetime.Transient);

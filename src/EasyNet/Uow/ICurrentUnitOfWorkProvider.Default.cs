@@ -31,6 +31,7 @@ namespace EasyNet.Uow
 
         private static IUnitOfWork GetCurrentUow()
         {
+            // ReSharper disable once InconsistentlySynchronizedField
             var uow = AsyncLocalUow.Value?.UnitOfWork;
             if (uow == null)
             {
@@ -39,6 +40,7 @@ namespace EasyNet.Uow
 
             if (uow.IsDisposed)
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 AsyncLocalUow.Value = null;
                 return null;
             }

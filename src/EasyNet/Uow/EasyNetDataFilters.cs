@@ -1,4 +1,6 @@
-﻿namespace EasyNet.Uow
+﻿using EasyNet.Data;
+
+namespace EasyNet.Uow
 {
     /// <summary>
     /// Standard filters of ABP.
@@ -9,7 +11,7 @@
         /// "SoftDelete".
         /// Soft delete filter.
         /// Prevents getting deleted data from database.
-        /// See <see cref="Entities.ISoftDelete"/> interface.
+        /// See <see cref="ISoftDelete"/> interface.
         /// </summary>
         public const string SoftDelete = "SoftDelete";
 

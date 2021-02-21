@@ -1,25 +1,38 @@
 ﻿using System.Threading.Tasks;
+using EasyNet.Data;
+using EasyNet.EventBus;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Ioc;
+using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
 
-namespace EasyNet.EntityFrameworkCore.Domain.Uow
+namespace EasyNet.EntityFrameworkCore.Uow
 {
     /// <summary>
     /// Implements Unit of work for Entity Framework.
     /// </summary>
     public class EfCoreUnitOfWork : UnitOfWorkBase
     {
-        protected DbContext ActiveDbContext { get; private set; }
-
-        protected IDbContextTransaction ActiveTransaction { get; private set; }
-
-        public EfCoreUnitOfWork(IIocResolver iocResolver, IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(iocResolver, defaultOptions)
+        public EfCoreUnitOfWork(
+            IEasyNetSession session,
+            IEasyNetEventMessageBuffer eventMessageBuffer,
+            ICurrentDbConnectorProvider currentDbConnectorProvider,
+            IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(session, eventMessageBuffer, defaultOptions)
         {
+            CurrentDbConnectorProvider = currentDbConnectorProvider;
         }
+
+        /// <summary>
+        /// Reference to current <see cref="ICurrentDbConnectorProvider"/>.
+        /// </summary>
+        public ICurrentDbConnectorProvider CurrentDbConnectorProvider { get; set; }
+
+        protected DbContext ActiveDbContext => CurrentDbConnectorProvider.Current?.GetDbContext();
+
+        protected IDbContextTransaction ActiveTransaction => CurrentDbConnectorProvider.Current?.GetDbContextTransaction();
+
 
         public override void SaveChanges()
         {
@@ -69,30 +82,9 @@ namespace EasyNet.EntityFrameworkCore.Domain.Uow
 #endif
         }
 
-        public virtual DbContext GetOrCreateDbContext()
-        {
-            if (ActiveDbContext == null)
-            {
-                ActiveDbContext = IocResolver.GetService<IDbContextCreator>().CreateDbContext();
-
-                if (Options.IsTransactional == true)
-                {
-                    ActiveTransaction = BeginTransaction(ActiveDbContext);
-                }
-            }
-
-            return ActiveDbContext;
-        }
-
-        protected virtual IDbContextTransaction BeginTransaction(DbContext dbContext)
-        {
-            return ActiveDbContext.Database.BeginTransaction((Options.IsolationLevel ?? System.Transactions.IsolationLevel.ReadUncommitted).ToSystemDataIsolationLevel());
-        }
-
         protected override void DisposeUow()
         {
-            ActiveTransaction?.Dispose();
-            ActiveDbContext?.Dispose();
+            CurrentDbConnectorProvider.Current?.Dispose();
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Transactions;
 using EasyNet.CommonTests;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
 using EasyNet.Tests.Session;
@@ -68,26 +67,6 @@ namespace EasyNet.Tests
         }
 
         [Fact]
-        public void TestAddIocResolver()
-        {
-            // Arrange
-            var services = new ServiceCollection();
-            services.AddSingleton(CommonTest.GetHostingEnvironment());
-
-            // Act
-            services
-                .AddEasyNet()
-                .AddIocResolver<TestIocResolver>();
-
-            var serviceProvider = services.BuildServiceProvider();
-            var iocResolver = serviceProvider.GetRequiredService<IIocResolver>();
-
-            // Assert
-            AssertSpecifiedServiceTypeAndImplementationType<IIocResolver, TestIocResolver>(services, ServiceLifetime.Scoped);
-            Assert.Equal(typeof(TestIocResolver), iocResolver.GetType());
-        }
-
-        [Fact]
         public void TestAddExceptionHandler()
         {
             // Arrange
@@ -108,23 +87,6 @@ namespace EasyNet.Tests
         }
     }
 
-    public class TestIocResolver : IIocResolver
-    {
-        public T GetService<T>(bool required = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetService(Type serviceType, bool required = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IScopeIocResolver CreateScope()
-        {
-            throw new NotImplementedException();
-        }
-    }
 
     public class TestExceptionHandler : IEasyNetExceptionHandler
     {

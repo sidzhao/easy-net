@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.Ioc;
+using EasyNet.EventBus;
+using EasyNet.Runtime.Session;
 using Microsoft.Extensions.Options;
 
 namespace EasyNet.Uow
@@ -11,7 +12,7 @@ namespace EasyNet.Uow
     /// </summary>
     public sealed class NullUnitOfWork : UnitOfWorkBase
     {
-        public NullUnitOfWork(IIocResolver iocResolver, IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(iocResolver, defaultOptions)
+        public NullUnitOfWork(IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(NullEasyNetSession.Instance, null, defaultOptions)
         {
         }
 

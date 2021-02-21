@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EasyNet.Data;
-using EasyNet.Ioc;
 
 namespace EasyNet.Application
 {
@@ -8,7 +8,7 @@ namespace EasyNet.Application
         where TEntity : class, IEntity<int>, IPassivable
         where TEntityDto : IEntityDto<int>
     {
-        protected EasyNetPassivableAppService(IIocResolver iocResolver, IRepository<TEntity, int> repository) : base(iocResolver, repository)
+        protected EasyNetPassivableAppService(IServiceProvider serviceProvider, IRepository<TEntity, int> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -17,7 +17,7 @@ namespace EasyNet.Application
         where TEntity : class, IEntity<TPrimaryKey>, IPassivable
         where TEntityDto : IEntityDto<TPrimaryKey>
     {
-        protected EasyNetPassivableAppService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver, repository)
+        protected EasyNetPassivableAppService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -26,7 +26,7 @@ namespace EasyNet.Application
         where TEntity : class, IEntity<TPrimaryKey>, IPassivable
         where TEntityDto : IEntityDto<TPrimaryKey>
     {
-        protected EasyNetPassivableAppService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver, repository)
+        protected EasyNetPassivableAppService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -36,7 +36,7 @@ namespace EasyNet.Application
         where TEntityDto : IEntityDto<TPrimaryKey>
         where TUpdateInput : IEntityDto<TPrimaryKey>
     {
-        protected EasyNetPassivableAppService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver, repository)
+        protected EasyNetPassivableAppService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider, repository)
         {
         }
 

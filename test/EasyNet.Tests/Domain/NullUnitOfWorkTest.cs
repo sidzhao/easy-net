@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Ioc;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.Extensions.Options;
@@ -88,11 +87,7 @@ namespace EasyNet.Tests.Domain
 
 		private NullUnitOfWork GetNullUnitOfWork()
 		{
-            var iocMoq = new Mock<IIocResolver>();
-            iocMoq.Setup(p => p.GetService<IEasyNetSession>(It.IsAny<bool>()))
-                .Returns(NullEasyNetSession.Instance);
-
-			return new NullUnitOfWork(iocMoq.Object, new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
+			return new NullUnitOfWork( new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
 		}
 	}
 }

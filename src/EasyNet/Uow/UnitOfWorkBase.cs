@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.EventBus;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Ioc;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.Options;
 
@@ -16,37 +15,35 @@ namespace EasyNet.Uow
     /// </summary>
     public abstract class UnitOfWorkBase : IUnitOfWork
     {
-        protected readonly IIocResolver IocResolver;
-
         /// <summary>
         /// Is <see cref="Begin"/> method called before?
         /// </summary>
         private bool _isBeginCalledBefore;
 
-	    /// <summary>
-	    /// Is <see cref="Complete"/> method called before?
-	    /// </summary>
+        /// <summary>
+        /// Is <see cref="Complete"/> method called before?
+        /// </summary>
         private bool _isCompleteCalledBefore;
 
-	    /// <summary>
-	    /// Is this unit of work successfully completed.
-	    /// </summary>
+        /// <summary>
+        /// Is this unit of work successfully completed.
+        /// </summary>
         private bool _succeed;
 
-	    /// <summary>
-	    /// A reference to the exception if this unit of work failed.
-	    /// </summary>
+        /// <summary>
+        /// A reference to the exception if this unit of work failed.
+        /// </summary>
         private Exception _exception;
 
-        protected UnitOfWorkBase(IIocResolver iocResolver, IOptions<UnitOfWorkDefaultOptions> defaultOptions)
+        protected UnitOfWorkBase(IEasyNetSession session, IEasyNetEventMessageBuffer eventMessageBuffer, IOptions<UnitOfWorkDefaultOptions> defaultOptions)
         {
             DefaultOptions = defaultOptions.Value;
+            EasyNetSession = session;
+            EventMessageBuffer = eventMessageBuffer;
 
             Id = Guid.NewGuid().ToString("N");
             _filters = DefaultOptions.Filters.ToList();
 
-            IocResolver = iocResolver;
-            EasyNetSession = iocResolver.GetService<IEasyNetSession>();
         }
 
         /// <inheritdoc/>
@@ -87,7 +84,12 @@ namespace EasyNet.Uow
         /// <summary>
         /// Reference to current <see cref="IEasyNetSession"/>.
         /// </summary>
-        public IEasyNetSession EasyNetSession { protected get; set; }
+        public IEasyNetSession EasyNetSession { get; set; }
+
+        /// <summary>
+        /// Reference to current <see cref="IEasyNetEventMessageBuffer"/>.
+        /// </summary>
+        public IEasyNetEventMessageBuffer EventMessageBuffer { get; set; }
 
         /// <inheritdoc/>
         public void Begin(UnitOfWorkOptions options)
@@ -254,20 +256,15 @@ namespace EasyNet.Uow
         /// </summary>
         protected void FlushEventMessages()
         {
-            var messageBuffer = IocResolver.GetService<IEasyNetEventMessageBuffer>(false);
-            messageBuffer?.Flush();
+            EventMessageBuffer.Flush();
         }
 
         /// <summary>
         /// Flush all event messages
         /// </summary>
-        protected async Task FlushEventMessagesAsync()
+        protected Task FlushEventMessagesAsync()
         {
-            var messageBuffer = IocResolver.GetService<IEasyNetEventMessageBuffer>(false);
-            if (messageBuffer != null)
-            {
-                await messageBuffer.FlushAsync();
-            }
+            return EventMessageBuffer.FlushAsync();
         }
 
         /// <summary>

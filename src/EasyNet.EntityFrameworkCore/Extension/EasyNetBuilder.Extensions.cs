@@ -5,7 +5,6 @@ using EasyNet.DependencyInjection;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
-using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Initialization;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;

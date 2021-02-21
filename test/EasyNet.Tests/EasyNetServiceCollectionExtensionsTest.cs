@@ -1,8 +1,6 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.Data;
-using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
@@ -28,7 +26,6 @@ namespace EasyNet.Tests
             var serviceProvider = services.BuildServiceProvider();
 
 			// Assert
-            AssertSpecifiedServiceTypeAndImplementationType<IIocResolver, AspNetCoreIocResolver>(services, ServiceLifetime.Scoped);
 			AssertSpecifiedServiceTypeAndImplementationType<IHttpContextAccessor, HttpContextAccessor>(services, ServiceLifetime.Singleton);
 			AssertSpecifiedServiceTypeAndImplementationType<EasyNetUowActionFilter, EasyNetUowActionFilter>(services, ServiceLifetime.Transient);
 			AssertSpecifiedServiceTypeAndImplementationType<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(services, ServiceLifetime.Singleton);

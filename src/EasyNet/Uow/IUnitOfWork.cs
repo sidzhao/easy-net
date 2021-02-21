@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Defines a unit of work.
-    /// Use <see cref="IUnitOfWorkManager.Begin()"/> to start a new unit of work.
+    /// Use <see cref="IUnitOfWorkManager.Begin(System.IServiceProvider)"/> to start a new unit of work.
     /// </summary>
     public interface IUnitOfWork : IActiveUnitOfWork, IUnitOfWorkCompleteHandle
     {

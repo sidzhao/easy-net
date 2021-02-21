@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EasyNet.Data;
-using EasyNet.Ioc;
 
 namespace EasyNet.Domain
 {
     public abstract class EasyNetQueryDomainService<TEntity> : EasyNetQueryDomainService<TEntity, int>, IEasyNetQueryDomainService<TEntity>
         where TEntity : class, IEntity<int>
     {
-        protected EasyNetQueryDomainService(IIocResolver iocResolver, IRepository<TEntity, int> repository) : base(iocResolver, repository)
+        protected EasyNetQueryDomainService(IServiceProvider serviceProvider, IRepository<TEntity, int> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -18,7 +17,7 @@ namespace EasyNet.Domain
     public abstract class EasyNetQueryDomainService<TEntity, TPrimaryKey> : EasyNetDomainService<TEntity, TPrimaryKey>, IEasyNetQueryDomainService<TEntity, TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>
     {
-        protected EasyNetQueryDomainService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver, repository)
+        protected EasyNetQueryDomainService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider, repository)
         {
         }
 

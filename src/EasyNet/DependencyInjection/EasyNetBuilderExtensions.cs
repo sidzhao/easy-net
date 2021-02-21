@@ -1,5 +1,4 @@
 ﻿using System;
-using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;
@@ -69,22 +68,6 @@ namespace EasyNet.DependencyInjection
             Check.NotNull(builder, nameof(builder));
 
             builder.Services.Replace(new ServiceDescriptor(typeof(IEasyNetSession), typeof(TSession), ServiceLifetime.Scoped));
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Add a new <see cref="IIocResolver"/> implementation.
-        /// </summary>
-        /// <typeparam name="TIocResolver"></typeparam>
-        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
-        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
-        public static EasyNetBuilder AddIocResolver<TIocResolver>(this EasyNetBuilder builder)
-            where TIocResolver : IIocResolver
-        {
-            Check.NotNull(builder, nameof(builder));
-
-            builder.Services.Replace(new ServiceDescriptor(typeof(IIocResolver), typeof(TIocResolver), ServiceLifetime.Scoped));
 
             return builder;
         }

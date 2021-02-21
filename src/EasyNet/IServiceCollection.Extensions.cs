@@ -1,6 +1,5 @@
 ﻿using System;
 using EasyNet.Data;
-using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;
@@ -10,8 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-// ReSharper disable once CheckNamespace
-namespace EasyNet.Extensions.DependencyInjection
+namespace EasyNet
 {
     /// <summary>
     /// Extension methods for setting up EasyNet services in an <see cref="IServiceCollection" />.
@@ -49,7 +47,6 @@ namespace EasyNet.Extensions.DependencyInjection
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services
-                .AddScoped<IIocResolver, AspNetCoreIocResolver>()
                 .AddTransient<IEasyNetInitializer, EasyNetInitializer>()
                 .AddTransient<IEasyNetExceptionHandler, EasyNetExceptionHandler>();
 
@@ -90,6 +87,7 @@ namespace EasyNet.Extensions.DependencyInjection
             services.TryAddTransient<IUnitOfWork, NullUnitOfWork>();
 
             // Data
+            services.TryAddScoped<ICurrentDbConnectorProvider, AsyncLocalCurrentDbConnectorProvider>();
             services.TryAddScoped<IActiveDbTransactionProvider, NullDbTransactionProvider>();
 
             return new EasyNetBuilder(services);

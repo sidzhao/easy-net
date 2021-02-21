@@ -1,13 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EasyNet.Data;
-using EasyNet.Ioc;
 
 namespace EasyNet.Domain
 {
     public abstract class EasyNetPassivableDomainService<TEntity> : EasyNetPassivableDomainService<TEntity, int>, IEasyNetPassivableDomainService<TEntity>
         where TEntity : class, IEntity<int>, IPassivable
     {
-        protected EasyNetPassivableDomainService(IIocResolver iocResolver, IRepository<TEntity, int> repository) : base(iocResolver, repository)
+        protected EasyNetPassivableDomainService(IServiceProvider serviceProvider, IRepository<TEntity, int> repository) : base(serviceProvider, repository)
         {
         }
     }
@@ -15,7 +15,7 @@ namespace EasyNet.Domain
     public abstract class EasyNetPassivableDomainService<TEntity, TPrimaryKey> : EasyNetCrudDomainService<TEntity, TPrimaryKey>, IEasyNetPassivableDomainService<TEntity, TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>, IPassivable
     {
-        protected EasyNetPassivableDomainService(IIocResolver iocResolver, IRepository<TEntity, TPrimaryKey> repository) : base(iocResolver, repository)
+        protected EasyNetPassivableDomainService(IServiceProvider serviceProvider, IRepository<TEntity, TPrimaryKey> repository) : base(serviceProvider, repository)
         {
         }
 

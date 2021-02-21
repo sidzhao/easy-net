@@ -1,147 +1,147 @@
-﻿using System;
-using System.Data.Common;
-using System.Threading.Tasks;
-using EasyNet.DependencyInjection;
-using EasyNet.EntityFrameworkCore.Domain.Uow;
-using EasyNet.EntityFrameworkCore.Tests.DbContext;
-using EasyNet.Extensions;
-using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Uow;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+﻿//using System;
+//using System.Data.Common;
+//using System.Threading.Tasks;
+//using EasyNet.DependencyInjection;
+//using EasyNet.EntityFrameworkCore.Tests.DbContext;
+//using EasyNet.EntityFrameworkCore.Uow;
+//using EasyNet.Extensions;
+//using EasyNet.Extensions.DependencyInjection;
+//using EasyNet.Uow;
+//using Microsoft.Data.Sqlite;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Storage;
+//using Microsoft.Extensions.DependencyInjection;
+//using Xunit;
 
-namespace EasyNet.EntityFrameworkCore.Tests
-{
-    public class EfCoreUnitOfWorkTest
-    {
-        private readonly IServiceProvider _serviceProvider;
+//namespace EasyNet.EntityFrameworkCore.Tests
+//{
+//    public class EfCoreUnitOfWorkTest
+//    {
+//        private readonly IServiceProvider _serviceProvider;
 
-        public EfCoreUnitOfWorkTest()
-        {
-            var services = new ServiceCollection();
+//        public EfCoreUnitOfWorkTest()
+//        {
+//            var services = new ServiceCollection();
 
-            services
-                .AddEasyNet(x =>
-                {
-                    x.UseEfCore<EfCoreContext>(options =>
-                    {
-                        options.UseSqlite(CreateInMemoryDatabase());
-                    });
-                })
-                .AddSession<TestSession>();
+//            services
+//                .AddEasyNet(x =>
+//                {
+//                    x.UseEfCore<EfCoreContext>(options =>
+//                    {
+//                        options.UseSqlite(CreateInMemoryDatabase());
+//                    });
+//                })
+//                .AddSession<TestSession>();
 
-            _serviceProvider = services.BuildServiceProvider();
-        }
+//            _serviceProvider = services.BuildServiceProvider();
+//        }
 
-        [Fact]
-        public void TestBegin()
-        {
-            #region Without DbContext and Transaction
+//        [Fact]
+//        public void TestBegin()
+//        {
+//            #region Without DbContext and Transaction
 
-            // Arrange
-            var uow1 = GetEfCoreUnitOfWork();
+//            // Arrange
+//            var uow1 = GetEfCoreUnitOfWork();
 
-            // Act
-            uow1.Begin(new UnitOfWorkOptions());
-            uow1.Complete();
+//            // Act
+//            uow1.Begin(new UnitOfWorkOptions());
+//            uow1.Complete();
 
-            #endregion
+//            #endregion
 
-            #region With DbContext but Transaction
+//            #region With DbContext but Transaction
 
-            // Arrange
-            var uow2 = GetEfCoreUnitOfWork();
+//            // Arrange
+//            var uow2 = GetEfCoreUnitOfWork();
 
-            // Act
-            uow2.Begin(new UnitOfWorkOptions { IsTransactional = false });
-            ((EfCoreUnitOfWork)uow2).GetOrCreateDbContext();
-            uow2.Complete();
+//            // Act
+//            uow2.Begin(new UnitOfWorkOptions { IsTransactional = false });
+//            ((EfCoreUnitOfWork)uow2).GetOrCreateDbContext();
+//            uow2.Complete();
 
-            // Assert
-            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
+//            // Assert
+//            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+//            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
-            #endregion
+//            #endregion
 
-            #region With DbContext and Transaction
+//            #region With DbContext and Transaction
 
-            // Arrange
-            var uow3 = GetEfCoreUnitOfWork();
+//            // Arrange
+//            var uow3 = GetEfCoreUnitOfWork();
 
-            // Act
-            uow3.Begin(new UnitOfWorkOptions { IsTransactional = true });
-            ((EfCoreUnitOfWork)uow3).GetOrCreateDbContext();
-            uow3.Complete();
+//            // Act
+//            uow3.Begin(new UnitOfWorkOptions { IsTransactional = true });
+//            ((EfCoreUnitOfWork)uow3).GetOrCreateDbContext();
+//            uow3.Complete();
 
-            // Assert
-            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
+//            // Assert
+//            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+//            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
-            #endregion
-        }
+//            #endregion
+//        }
 
-        [Fact]
-        public async Task TestBeginAsync()
-        {
-            #region Without DbContext and Transaction
+//        [Fact]
+//        public async Task TestBeginAsync()
+//        {
+//            #region Without DbContext and Transaction
 
-            // Arrange
-            var uow1 = GetEfCoreUnitOfWork();
+//            // Arrange
+//            var uow1 = GetEfCoreUnitOfWork();
 
-            // Act
-            uow1.Begin(new UnitOfWorkOptions());
-            await uow1.CompleteAsync();
+//            // Act
+//            uow1.Begin(new UnitOfWorkOptions());
+//            await uow1.CompleteAsync();
 
-            #endregion
+//            #endregion
 
-            #region With DbContext but Transaction
+//            #region With DbContext but Transaction
 
-            // Arrange
-            var uow2 = GetEfCoreUnitOfWork();
+//            // Arrange
+//            var uow2 = GetEfCoreUnitOfWork();
 
-            // Act
-            uow2.Begin(new UnitOfWorkOptions { IsTransactional = false });
-            ((EfCoreUnitOfWork)uow2).GetOrCreateDbContext();
-            await uow2.CompleteAsync();
+//            // Act
+//            uow2.Begin(new UnitOfWorkOptions { IsTransactional = false });
+//            ((EfCoreUnitOfWork)uow2).GetOrCreateDbContext();
+//            await uow2.CompleteAsync();
 
-            // Assert
-            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
+//            // Assert
+//            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+//            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
-            #endregion
+//            #endregion
 
-            #region With DbContext and Transaction
+//            #region With DbContext and Transaction
 
-            // Arrange
-            var uow3 = GetEfCoreUnitOfWork();
+//            // Arrange
+//            var uow3 = GetEfCoreUnitOfWork();
 
-            // Act
-            uow3.Begin(new UnitOfWorkOptions { IsTransactional = true });
-            ((EfCoreUnitOfWork)uow3).GetOrCreateDbContext();
-            await uow3.CompleteAsync();
+//            // Act
+//            uow3.Begin(new UnitOfWorkOptions { IsTransactional = true });
+//            ((EfCoreUnitOfWork)uow3).GetOrCreateDbContext();
+//            await uow3.CompleteAsync();
 
-            // Assert
-            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
+//            // Assert
+//            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
+//            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
 
-            #endregion
-        }
+//            #endregion
+//        }
 
-        private IUnitOfWork GetEfCoreUnitOfWork()
-        {
-            return _serviceProvider.GetService<IUnitOfWork>();
-        }
+//        private IUnitOfWork GetEfCoreUnitOfWork()
+//        {
+//            return _serviceProvider.GetService<IUnitOfWork>();
+//        }
 
-        private DbConnection CreateInMemoryDatabase()
-        {
-            var connection = new SqliteConnection("Filename=:memory:");
+//        private DbConnection CreateInMemoryDatabase()
+//        {
+//            var connection = new SqliteConnection("Filename=:memory:");
 
-            connection.Open();
+//            connection.Open();
 
-            return connection;
-        }
-    }
-}
+//            return connection;
+//        }
+//    }
+//}
