@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EasyNet.CommonTests;
-using EasyNet.Domain.Uow;
 using EasyNet.Mvc;
+using EasyNet.Uow;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Moq;

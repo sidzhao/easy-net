@@ -1,4 +1,4 @@
-﻿using EasyNet.Domain.Entities;
+﻿using EasyNet.Data;
 
 namespace EasyNet
 {

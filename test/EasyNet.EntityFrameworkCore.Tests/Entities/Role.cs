@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using EasyNet.Domain.Entities;
+using EasyNet.Data;
 
 namespace EasyNet.EntityFrameworkCore.Tests.Entities
 {

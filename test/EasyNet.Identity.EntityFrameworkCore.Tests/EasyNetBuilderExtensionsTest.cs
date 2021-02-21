@@ -1,5 +1,5 @@
 ﻿using EasyNet.CommonTests;
-using EasyNet.Domain.Repositories;
+using EasyNet.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Identity.EntityFrameworkCore.DependencyInjection;

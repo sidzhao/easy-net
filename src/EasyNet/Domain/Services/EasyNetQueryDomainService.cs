@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EasyNet.DependencyInjection;
-using EasyNet.Domain.Entities;
-using EasyNet.Domain.Repositories;
+using EasyNet.Data;
 using EasyNet.Ioc;
 
-namespace EasyNet.Domain.Services
+namespace EasyNet.Domain
 {
     public abstract class EasyNetQueryDomainService<TEntity> : EasyNetQueryDomainService<TEntity, int>, IEasyNetQueryDomainService<TEntity>
         where TEntity : class, IEntity<int>

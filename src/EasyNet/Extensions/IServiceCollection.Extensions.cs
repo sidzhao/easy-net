@@ -1,10 +1,10 @@
 ﻿using System;
 using EasyNet.Data;
-using EasyNet.Domain.Uow;
 using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

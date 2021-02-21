@@ -1,7 +1,7 @@
-﻿using EasyNet.Domain.Uow;
-using EasyNet.Identity.EntityFrameworkCore.DbContext;
+﻿using EasyNet.Identity.EntityFrameworkCore.DbContext;
 using EasyNet.Identity.EntityFrameworkCore.Tests.Domain.Entities;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 

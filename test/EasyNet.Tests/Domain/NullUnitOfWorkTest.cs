@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.Domain.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Ioc;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;

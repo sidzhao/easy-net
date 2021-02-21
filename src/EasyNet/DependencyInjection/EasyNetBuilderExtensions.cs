@@ -1,9 +1,9 @@
 ﻿using System;
-using EasyNet.Domain.Uow;
 using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

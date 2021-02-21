@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.Domain.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Ioc;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;

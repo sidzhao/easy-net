@@ -1,6 +1,4 @@
-﻿using EasyNet.Domain.Entities;
-
-namespace EasyNet.Domain.Services
+﻿namespace EasyNet.Domain
 {
     public interface IEasyNetDomainService
     {

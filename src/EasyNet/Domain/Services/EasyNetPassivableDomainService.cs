@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.DependencyInjection;
-using EasyNet.Domain.Entities;
-using EasyNet.Domain.Repositories;
+using EasyNet.Data;
 using EasyNet.Ioc;
 
-namespace EasyNet.Domain.Services
+namespace EasyNet.Domain
 {
     public abstract class EasyNetPassivableDomainService<TEntity> : EasyNetPassivableDomainService<TEntity, int>, IEasyNetPassivableDomainService<TEntity>
         where TEntity : class, IEntity<int>, IPassivable

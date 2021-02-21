@@ -1,6 +1,6 @@
 ﻿using System;
-using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Domain.Uow;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyNet.EntityFrameworkCore.Extensions

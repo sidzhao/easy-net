@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using EasyNet.Domain.Entities;
+﻿using System.Threading.Tasks;
+using EasyNet.Data;
 
-namespace EasyNet.Domain.Services
+namespace EasyNet.Domain
 {
     public interface IEasyNetPassivableDomainService<TEntity> : IEasyNetPassivableDomainService<TEntity, int>
         where TEntity : IEntity<int>

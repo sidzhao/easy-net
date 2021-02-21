@@ -1,4 +1,4 @@
-﻿using EasyNet.Domain.Entities.Auditing;
+﻿using EasyNet.Data;
 
 namespace EasyNet.EntityFrameworkCore.Tests.Entities
 {

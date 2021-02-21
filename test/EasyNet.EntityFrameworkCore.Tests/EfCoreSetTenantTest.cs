@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Data.Common;
 using EasyNet.DependencyInjection;
-using EasyNet.Domain.Entities;
-using EasyNet.Domain.Repositories;
-using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Extensions;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Tests.Entities;
@@ -13,7 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
+using EasyNet.Uow;
 
 namespace EasyNet.EntityFrameworkCore.Tests
 {

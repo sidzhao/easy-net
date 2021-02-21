@@ -1,6 +1,6 @@
-﻿using EasyNet.Domain.Uow;
-using EasyNet.EntityFrameworkCore.Tests.Entities;
+﻿using EasyNet.EntityFrameworkCore.Tests.Entities;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

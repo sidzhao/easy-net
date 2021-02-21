@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using EasyNet.Domain.Uow;
+using EasyNet.Uow;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

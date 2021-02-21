@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EasyNet.Domain.Entities;
+using EasyNet.Data;
 
-namespace EasyNet.Domain.Services
+namespace EasyNet.Domain
 {
     public interface IEasyNetQueryDomainService<TEntity> : IEasyNetQueryDomainService<TEntity, int>
         where TEntity : IEntity<int>

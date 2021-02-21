@@ -1,6 +1,6 @@
-﻿using EasyNet.Domain.Uow;
-using EasyNet.EntityFrameworkCore.Domain.Uow;
+﻿using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.Runtime.Initialization;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyNet.EntityFrameworkCore.Initialization

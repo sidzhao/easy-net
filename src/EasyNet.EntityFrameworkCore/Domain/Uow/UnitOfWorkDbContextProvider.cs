@@ -1,5 +1,5 @@
-﻿using EasyNet.Domain.Uow;
-using EasyNet.EntityFrameworkCore.Extensions;
+﻿using EasyNet.EntityFrameworkCore.Extensions;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyNet.EntityFrameworkCore.Domain.Uow

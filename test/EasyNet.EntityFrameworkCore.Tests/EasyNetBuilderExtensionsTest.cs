@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using EasyNet.CommonTests;
 using EasyNet.Data;
-using EasyNet.Domain.Repositories;
-using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
 using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Tests.Entities;
 using EasyNet.Extensions.DependencyInjection;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Sqlite.Infrastructure.Internal;

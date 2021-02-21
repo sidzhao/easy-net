@@ -1,5 +1,4 @@
-﻿using EasyNet.Domain.Entities;
-using EasyNet.Domain.Repositories;
+﻿using EasyNet.Data;
 
 namespace EasyNet.EntityFrameworkCore.Domain.Repositories
 {

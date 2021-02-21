@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using EasyNet.Domain.Entities;
-using EasyNet.Domain.Repositories;
+using EasyNet.Data;
 using EasyNet.EntityFrameworkCore.Domain.Repositories;
 
 namespace EasyNet.EntityFrameworkCore.Extensions

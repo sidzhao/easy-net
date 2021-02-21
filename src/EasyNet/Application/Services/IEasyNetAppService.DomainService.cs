@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EasyNet.Application.Dto;
-using EasyNet.Domain.Entities;
-using EasyNet.Domain.Services;
+using EasyNet.Data;
+using EasyNet.Domain;
 using EasyNet.Ioc;
 
-namespace EasyNet.Application.Services
+namespace EasyNet.Application
 {
     public abstract class EasyNetQueryAppServiceWithDomainService<TEntity, TEntityDto, TDomainService, TGetAllInput> : EasyNetQueryAppServiceWithDomainService<TEntity, TEntityDto, int, TDomainService, TGetAllInput>
         where TEntity : class, IEntity<int>

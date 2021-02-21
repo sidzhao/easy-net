@@ -1,11 +1,11 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.Data;
 using EasyNet.DependencyInjection;
-using EasyNet.Domain.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Ioc;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

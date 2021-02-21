@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using EasyNet.Data;
-using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Domain.Uow;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 

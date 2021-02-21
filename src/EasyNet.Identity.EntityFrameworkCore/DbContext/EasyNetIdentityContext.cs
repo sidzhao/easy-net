@@ -1,7 +1,7 @@
 ﻿using System;
-using EasyNet.Domain.Uow;
 using EasyNet.Identity.EntityFrameworkCore.Domain.Entities;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 

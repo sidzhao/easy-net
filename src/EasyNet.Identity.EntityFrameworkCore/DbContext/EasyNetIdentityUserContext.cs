@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.Identity.EntityFrameworkCore.Domain.Entities;
 using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;

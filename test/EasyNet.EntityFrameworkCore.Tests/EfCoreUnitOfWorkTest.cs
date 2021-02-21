@@ -2,11 +2,11 @@
 using System.Data.Common;
 using System.Threading.Tasks;
 using EasyNet.DependencyInjection;
-using EasyNet.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Domain.Uow;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.Extensions;
 using EasyNet.Extensions.DependencyInjection;
+using EasyNet.Uow;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
