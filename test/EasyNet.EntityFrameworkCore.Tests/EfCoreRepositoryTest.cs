@@ -773,7 +773,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 Assert.True(activeAny);
                 Assert.False(zeroAny);
             }
-            
+
             if (useUow)
             {
                 using var uow = BeginUow();
@@ -792,603 +792,750 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
         #region Insert
 
-        [Fact]
-        public void TestInsert()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestInsert(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
-            var creationAuditedRepo = GetRepository<TestCreationAudited>();
-
-            #region Insert but not SaveChanges
-
-            // Act
-            var user5 = new User
+            void Do()
             {
-                Name = "User5",
-                RoleId = 1
-            };
-            userRepo.Insert(user5);
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
+                var creationAuditedRepo = GetRepository<TestCreationAudited>();
 
-            var role3 = new Role
+                #region Insert but not SaveChanges
+
+                // Act
+                var user5 = new User
+                {
+                    Name = "User5",
+                    RoleId = 1
+                };
+                userRepo.Insert(user5);
+
+                var role3 = new Role
+                {
+                    Name = "Role3",
+                };
+                roleRepo.Insert(role3);
+
+                var creationAudited1 = new TestCreationAudited();
+                creationAuditedRepo.Insert(creationAudited1);
+
+                // Assert
+                Assert.Equal(0, user5.Id);
+                Assert.Equal(useUow ? 3 : 4, userRepo.GetAll().AsNoTracking().Count());
+
+                Assert.Equal(0, role3.Id);
+                Assert.Equal(2, roleRepo.GetAll().AsNoTracking().Count());
+
+                Assert.Equal(0, creationAudited1.Id);
+                Assert.Equal(0, creationAuditedRepo.GetAll().AsNoTracking().Count());
+
+                #endregion
+
+                #region SaveChanges
+
+                // Act
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+
+                // Assert
+                Assert.Equal(5, user5.Id);
+                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 4 : 5, userRepo.GetAll().AsNoTracking().Count());
+
+                Assert.Equal(3, role3.Id);
+                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 3));
+                Assert.Equal(3, roleRepo.GetAll().AsNoTracking().Count());
+
+                Assert.Equal(1, creationAudited1.Id);
+                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1)?.CreatorUserId);
+                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().Count());
+
+                #endregion
+            }
+
+            if (useUow)
             {
-                Name = "Role3",
-            };
-            roleRepo.Insert(role3);
+                using var uow = BeginUow();
 
-            var creationAudited1 = new TestCreationAudited();
-            creationAuditedRepo.Insert(creationAudited1);
+                Do();
 
-            // Assert
-            Assert.Equal(0, user5.Id);
-            Assert.Equal(3, userRepo.GetAll().AsNoTracking().Count());
-
-            Assert.Equal(0, role3.Id);
-            Assert.Equal(2, roleRepo.GetAll().AsNoTracking().Count());
-
-            Assert.Equal(0, creationAudited1.Id);
-            Assert.Equal(0, creationAuditedRepo.GetAll().AsNoTracking().Count());
-
-            #endregion
-
-            #region SaveChanges
-
-            // Act
-            ((IUnitOfWork)uow).SaveChanges();
-
-            // Assert
-            Assert.Equal(5, user5.Id);
-            Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
-            Assert.Equal(4, userRepo.GetAll().AsNoTracking().Count());
-
-            Assert.Equal(3, role3.Id);
-            Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 3));
-            Assert.Equal(3, roleRepo.GetAll().AsNoTracking().Count());
-
-            Assert.Equal(1, creationAudited1.Id);
-            Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1)?.CreatorUserId);
-            Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().Count());
-
-            #endregion
-
-            // Complete uow
-            uow.Complete();
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestInsertAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestInsertAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
-            var creationAuditedRepo = GetRepository<TestCreationAudited>();
-
-            #region Insert but not SaveChanges
-
-            // Act
-            var user5 = new User
+            async Task DoAsync()
             {
-                Name = "User5",
-                RoleId = 1
-            };
-            await userRepo.InsertAsync(user5);
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
+                var creationAuditedRepo = GetRepository<TestCreationAudited>();
 
-            var role3 = new Role
+                #region Insert but not SaveChanges
+
+                // Act
+                var user5 = new User
+                {
+                    Name = "User5",
+                    RoleId = 1
+                };
+                await userRepo.InsertAsync(user5);
+
+                var role3 = new Role
+                {
+                    Name = "Role3",
+                };
+                await roleRepo.InsertAsync(role3);
+
+                var creationAudited1 = new TestCreationAudited();
+                await creationAuditedRepo.InsertAsync(creationAudited1);
+
+                // Assert
+                Assert.Equal(0, user5.Id);
+                Assert.Equal(useUow ? 3 : 4, await userRepo.GetAll().AsNoTracking().CountAsync());
+
+                Assert.Equal(0, role3.Id);
+                Assert.Equal(2, await roleRepo.GetAll().AsNoTracking().CountAsync());
+
+                Assert.Equal(0, creationAudited1.Id);
+                Assert.Equal(0, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+
+                #endregion
+
+                #region SaveChanges
+
+                // Act
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+
+                // Assert
+                Assert.Equal(5, user5.Id);
+                Assert.Equal(useUow ? 4 : 5, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
+
+                Assert.Equal(3, role3.Id);
+                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 3));
+                Assert.Equal(3, await roleRepo.GetAll().AsNoTracking().CountAsync());
+
+                Assert.Equal(1, creationAudited1.Id);
+                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1))?.CreatorUserId);
+                Assert.Equal(1, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+
+                #endregion
+            }
+
+            if (useUow)
             {
-                Name = "Role3",
-            };
-            await roleRepo.InsertAsync(role3);
+                using var uow = BeginUow();
 
-            var creationAudited1 = new TestCreationAudited();
-            await creationAuditedRepo.InsertAsync(creationAudited1);
+                await DoAsync();
 
-            // Assert
-            Assert.Equal(0, user5.Id);
-            Assert.Equal(3, await userRepo.GetAll().AsNoTracking().CountAsync());
-
-            Assert.Equal(0, role3.Id);
-            Assert.Equal(2, await roleRepo.GetAll().AsNoTracking().CountAsync());
-
-            Assert.Equal(0, creationAudited1.Id);
-            Assert.Equal(0, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
-
-            #endregion
-
-            #region SaveChanges
-
-            // Act
-            await ((IUnitOfWork)uow).SaveChangesAsync();
-
-            // Assert
-            Assert.Equal(5, user5.Id);
-            Assert.Equal(4, await userRepo.GetAll().AsNoTracking().CountAsync());
-            Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
-
-            Assert.Equal(3, role3.Id);
-            Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 3));
-            Assert.Equal(3, await roleRepo.GetAll().AsNoTracking().CountAsync());
-
-            Assert.Equal(1, creationAudited1.Id);
-            Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1))?.CreatorUserId);
-            Assert.Equal(1, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
-
-            #endregion
-
-            // Complete uow
-            await uow.CompleteAsync();
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
-        [Fact]
-        public void TestInsertAndGetId()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestInsertAndGetId(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
-            var creationAuditedRepo = GetRepository<TestCreationAudited>();
-
-            // Act
-            var role3 = new Role
+            void Do()
             {
-                Name = "Role3"
-            };
-            roleRepo.InsertAndGetId(role3);
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
+                var creationAuditedRepo = GetRepository<TestCreationAudited>();
 
-            var user5 = new User
+                // Act
+                var role3 = new Role
+                {
+                    Name = "Role3"
+                };
+                roleRepo.InsertAndGetId(role3);
+
+                var user5 = new User
+                {
+                    Name = "User5",
+                    RoleId = role3.Id
+                };
+                userRepo.InsertAndGetId(user5);
+
+                var creationAudited1 = new TestCreationAudited();
+                creationAuditedRepo.InsertAndGetId(creationAudited1);
+
+                // Assert
+                Assert.Equal(3, role3.Id);
+                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 3));
+                Assert.Equal(3, roleRepo.GetAll().AsNoTracking().Count());
+
+                Assert.Equal(5, user5.Id);
+                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 4 : 5, userRepo.GetAll().AsNoTracking().Count());
+
+                Assert.Equal(1, creationAudited1.Id);
+                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1)?.CreatorUserId);
+                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().Count());
+            }
+
+            if (useUow)
             {
-                Name = "User5",
-                RoleId = role3.Id
-            };
-            userRepo.InsertAndGetId(user5);
+                using var uow = BeginUow();
 
-            var creationAudited1 = new TestCreationAudited();
-            creationAuditedRepo.InsertAndGetId(creationAudited1);
+                Do();
 
-            // Assert
-            Assert.Equal(3, role3.Id);
-            Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 3));
-            Assert.Equal(3, roleRepo.GetAll().AsNoTracking().Count());
-
-            Assert.Equal(5, user5.Id);
-            Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
-            Assert.Equal(4, userRepo.GetAll().AsNoTracking().Count());
-
-            Assert.Equal(1, creationAudited1.Id);
-            Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1)?.CreatorUserId);
-            Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().Count());
-
-            // Complete uow
-            uow.Complete();
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestInsertAndGetIdAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestInsertAndGetIdAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
-            var creationAuditedRepo = GetRepository<TestCreationAudited>();
-
-            // Act
-            var role3 = new Role
+            async Task DoAsync()
             {
-                Name = "Role3"
-            };
-            await roleRepo.InsertAndGetIdAsync(role3);
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
+                var creationAuditedRepo = GetRepository<TestCreationAudited>();
 
-            var user5 = new User
+                // Act
+                var role3 = new Role
+                {
+                    Name = "Role3"
+                };
+                await roleRepo.InsertAndGetIdAsync(role3);
+
+                var user5 = new User
+                {
+                    Name = "User5",
+                    RoleId = 1
+                };
+                await userRepo.InsertAndGetIdAsync(user5);
+
+                var creationAudited1 = new TestCreationAudited();
+                await creationAuditedRepo.InsertAndGetIdAsync(creationAudited1);
+
+                // Assert
+                Assert.Equal(3, role3.Id);
+                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 3));
+                Assert.Equal(3, await roleRepo.GetAll().AsNoTracking().CountAsync());
+
+                Assert.Equal(5, user5.Id);
+                Assert.Equal(useUow ? 4 : 5, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
+
+                Assert.Equal(1, creationAudited1.Id);
+                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1))?.CreatorUserId);
+                Assert.Equal(1, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+            }
+
+            if (useUow)
             {
-                Name = "User5",
-                RoleId = 1
-            };
-            await userRepo.InsertAndGetIdAsync(user5);
+                using var uow = BeginUow();
 
-            var creationAudited1 = new TestCreationAudited();
-            await creationAuditedRepo.InsertAndGetIdAsync(creationAudited1);
+                await DoAsync();
 
-            // Assert
-            Assert.Equal(3, role3.Id);
-            Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 3));
-            Assert.Equal(3, await roleRepo.GetAll().AsNoTracking().CountAsync());
-
-            Assert.Equal(5, user5.Id);
-            Assert.Equal(4, await userRepo.GetAll().AsNoTracking().CountAsync());
-            Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
-
-            Assert.Equal(1, creationAudited1.Id);
-            Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1))?.CreatorUserId);
-            Assert.Equal(1, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
-
-            // Complete uow
-            await uow.CompleteAsync();
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region Update
 
-        [Fact]
-        public void TestUpdate()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestUpdate(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
-            var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
-
-            #region Get then update
-
-            // Act
-            var user1 = userRepo.Get(1);
-            user1.Name = "TestUser1";
-            userRepo.Update(user1);
-
-            var modificationAudited1 = modificationAuditedRepo.Get(1);
-            modificationAudited1.Name = "TestUpdate1";
-            modificationAuditedRepo.Update(modificationAudited1);
-
-            ((IUnitOfWork)uow).SaveChanges();
-
-            // Assert
-            Assert.Equal("TestUser1", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user1.Id).Name);
-
-            Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited1.Id).LastModifierUserId);
-
-            #endregion
-
-            #region Attach
-
-            // Act
-            var user2 = new User
+            void Do(IActiveUnitOfWork uow)
             {
-                Id = 2,
-                TenantId = 1,
-                Name = "TestUser2",
-                RoleId = 1
-            };
-            userRepo.Update(user2);
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
+                var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
 
-            var role1 = new Role
-            {
-                Id = 1,
-                TenantId = null,
-                Name = "Admin1"
-            };
-            roleRepo.Update(role1);
+                #region Get then update
 
-            var modificationAudited2 = new TestModificationAudited
-            {
-                Id = 2,
-                Name = "TestUpdate2"
-            };
-            modificationAudited2.Name = "TestUpdate2";
-            modificationAuditedRepo.Update(modificationAudited2);
+                // Act
+                var user1 = userRepo.Get(1);
+                user1.Name = "TestUser1";
+                userRepo.Update(user1);
 
-            ((IUnitOfWork)uow).SaveChanges();
+                var modificationAudited1 = modificationAuditedRepo.Get(1);
+                modificationAudited1.Name = "TestUpdate1";
+                modificationAuditedRepo.Update(modificationAudited1);
 
-            // Assert
-            Assert.Equal("TestUser2", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user2.Id).Name);
-            Assert.Equal(1, roleRepo.Count());
-            Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited2.Id).LastModifierUserId);
-            using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.MayHaveTenant))
-            {
-                Assert.Equal(2, roleRepo.Count());
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+
+                // Assert
+                Assert.Equal("TestUser1", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user1.Id).Name);
+
+                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited1.Id).LastModifierUserId);
+
+                #endregion
+
+                #region Attach
+
+                // Act
+                var user2 = new User
+                {
+                    Id = 2,
+                    TenantId = 1,
+                    Name = "TestUser2",
+                    RoleId = 1
+                };
+                userRepo.Update(user2);
+
+                var role1 = new Role
+                {
+                    Id = 1,
+                    TenantId = null,
+                    Name = "Admin1"
+                };
+                roleRepo.Update(role1);
+
+                var modificationAudited2 = new TestModificationAudited
+                {
+                    Id = 2,
+                    Name = "TestUpdate2"
+                };
+                modificationAudited2.Name = "TestUpdate2";
+                modificationAuditedRepo.Update(modificationAudited2);
+
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+
+                // Assert
+                Assert.Equal("TestUser2", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user2.Id).Name);
+                Assert.Equal(useUow ? 1 : 2, roleRepo.Count());
+                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited2.Id).LastModifierUserId);
+                if (useUow)
+                {
+                    using (uow.DisableFilter(EasyNetDataFilters.MayHaveTenant))
+                    {
+                        Assert.Equal(2, roleRepo.Count());
+                    }
+                }
+
+                #endregion
+
+                #region Update with action
+
+                // Act
+                userRepo.Update(3, user =>
+                {
+                    user.Name = "TestUser3";
+                });
+
+                modificationAuditedRepo.Update(3, user =>
+                {
+                    user.Name = "TestUpdate3";
+                });
+
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+
+                // Assert
+                Assert.Equal("TestUser3", userRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).Name);
+                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).LastModifierUserId);
+
+                #endregion
             }
 
-            #endregion
-
-            #region Update with action
-
-            // Act
-            userRepo.Update(3, user =>
+            if (useUow)
             {
-                user.Name = "TestUser3";
-            });
+                using var uow = BeginUow();
 
-            modificationAuditedRepo.Update(3, user =>
+                Do((IActiveUnitOfWork)uow);
+
+                uow.Complete();
+            }
+            else
             {
-                user.Name = "TestUpdate3";
-            });
-
-            ((IUnitOfWork)uow).SaveChanges();
-
-            // Assert
-            Assert.Equal("TestUser3", userRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).Name);
-            Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).LastModifierUserId);
-
-            #endregion
-
-            // Complete uow
-            uow.Complete();
+                Do(null);
+            }
         }
 
-        [Fact]
-        public async Task TestUpdateAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestUpdateAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
-            var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
-
-            #region Get then update
-
-            // Act
-            var user1 = await userRepo.GetAsync(1);
-            user1.Name = "TestUser1";
-            await userRepo.UpdateAsync(user1);
-
-            var modificationAudited1 = await modificationAuditedRepo.GetAsync(1);
-            modificationAudited1.Name = "TestUpdate1";
-            await modificationAuditedRepo.UpdateAsync(modificationAudited1);
-
-            await ((IUnitOfWork)uow).SaveChangesAsync();
-
-            // Assert
-            Assert.Equal("TestUser1", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user1.Id)).Name);
-
-            Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited1.Id)).LastModifierUserId);
-
-            #endregion
-
-            #region Attach
-
-            // Act
-            var user2 = new User
+            async Task DoAsync(IActiveUnitOfWork uow)
             {
-                Id = 2,
-                TenantId = 1,
-                Name = "TestUser2",
-                RoleId = 1
-            };
-            await userRepo.UpdateAsync(user2);
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
+                var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
 
-            var role1 = new Role
-            {
-                Id = 1,
-                TenantId = null,
-                Name = "Admin1"
-            };
-            await roleRepo.UpdateAsync(role1);
+                #region Get then update
 
-            var modificationAudited2 = new TestModificationAudited
-            {
-                Id = 2,
-                Name = "TestUpdate2"
-            };
-            modificationAudited2.Name = "TestUpdate2";
-            await modificationAuditedRepo.UpdateAsync(modificationAudited2);
+                // Act
+                var user1 = await userRepo.GetAsync(1);
+                user1.Name = "TestUser1";
+                await userRepo.UpdateAsync(user1);
 
-            await ((IUnitOfWork)uow).SaveChangesAsync();
+                var modificationAudited1 = await modificationAuditedRepo.GetAsync(1);
+                modificationAudited1.Name = "TestUpdate1";
+                await modificationAuditedRepo.UpdateAsync(modificationAudited1);
 
-            // Assert
-            Assert.Equal("TestUser2", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user2.Id)).Name);
-            Assert.Equal(1, await roleRepo.CountAsync());
-            Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited2.Id)).LastModifierUserId);
-            using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.MayHaveTenant))
-            {
-                Assert.Equal(2, await roleRepo.CountAsync());
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+
+                // Assert
+                Assert.Equal("TestUser1", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user1.Id)).Name);
+
+                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited1.Id)).LastModifierUserId);
+
+                #endregion
+
+                #region Attach
+
+                // Act
+                var user2 = new User
+                {
+                    Id = 2,
+                    TenantId = 1,
+                    Name = "TestUser2",
+                    RoleId = 1
+                };
+                await userRepo.UpdateAsync(user2);
+
+                var role1 = new Role
+                {
+                    Id = 1,
+                    TenantId = null,
+                    Name = "Admin1"
+                };
+                await roleRepo.UpdateAsync(role1);
+
+                var modificationAudited2 = new TestModificationAudited
+                {
+                    Id = 2,
+                    Name = "TestUpdate2"
+                };
+                modificationAudited2.Name = "TestUpdate2";
+                await modificationAuditedRepo.UpdateAsync(modificationAudited2);
+
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+
+                // Assert
+                Assert.Equal("TestUser2", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user2.Id)).Name);
+                Assert.Equal(useUow ? 1 : 2, await roleRepo.CountAsync());
+                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited2.Id)).LastModifierUserId);
+                if (useUow)
+                {
+                    using (uow.DisableFilter(EasyNetDataFilters.MayHaveTenant))
+                    {
+                        Assert.Equal(2, await roleRepo.CountAsync());
+                    }
+                }
+
+                #endregion
+
+                #region Update with action
+
+                // Act
+                await userRepo.UpdateAsync(3, user =>
+                {
+                    user.Name = "TestUser3";
+                    return Task.CompletedTask;
+                });
+
+                await modificationAuditedRepo.UpdateAsync(3, audited =>
+                {
+                    audited.Name = "TestUpdate3";
+
+                    return Task.CompletedTask;
+                });
+
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+
+                // Assert
+                Assert.Equal("TestUser3", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).Name);
+
+                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).LastModifierUserId);
+
+                #endregion
             }
 
-            #endregion
-
-            #region Update with action
-
-            // Act
-            await userRepo.UpdateAsync(3, user =>
+            if (useUow)
             {
-                user.Name = "TestUser3";
-                return Task.CompletedTask;
-            });
+                using var uow = BeginUow();
 
-            await modificationAuditedRepo.UpdateAsync(3, audited =>
-             {
-                 audited.Name = "TestUpdate3";
+                await DoAsync((IActiveUnitOfWork)uow);
 
-                 return Task.CompletedTask;
-             });
-
-            await ((IUnitOfWork)uow).SaveChangesAsync();
-
-            // Assert
-            Assert.Equal("TestUser3", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).Name);
-
-            Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).LastModifierUserId);
-
-            #endregion
-
-            // Complete uow
-            await uow.CompleteAsync();
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync(null);
+            }
         }
 
         #endregion
 
         #region InsertOrUpdate
 
-        [Fact]
-        public void TestInsertOrUpdate()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestInsertOrUpdate(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
-
-            // Act
-            var modificationAudited1 = new TestModificationAudited
+            void Do()
             {
-                Id = 1,
-                Name = "TestUpdate1"
-            };
-            modificationAuditedRepo.InsertOrUpdate(modificationAudited1);
+                // Arrange
+                var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
 
-            var modificationAudited4 = new TestModificationAudited
+                // Act
+                var modificationAudited1 = new TestModificationAudited
+                {
+                    Id = 1,
+                    Name = "TestUpdate1"
+                };
+                modificationAuditedRepo.InsertOrUpdate(modificationAudited1);
+
+                var modificationAudited4 = new TestModificationAudited
+                {
+                    Name = "TestUpdate4"
+                };
+                modificationAuditedRepo.InsertOrUpdate(modificationAudited4);
+
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+
+                // Assert
+                Assert.Equal(4, modificationAuditedRepo.Count());
+                Assert.Equal("TestUpdate1", modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).Name);
+                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).LastModifierUserId);
+                Assert.Equal("TestUpdate4", modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 4).Name);
+                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 4).CreatorUserId);
+            }
+
+            if (useUow)
             {
-                Name = "TestUpdate4"
-            };
-            modificationAuditedRepo.InsertOrUpdate(modificationAudited4);
+                using var uow = BeginUow();
 
-            ((IUnitOfWork)uow).SaveChanges();
+                Do();
 
-            // Assert
-            Assert.Equal(4, modificationAuditedRepo.Count());
-            Assert.Equal("TestUpdate1", modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).Name);
-            Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).LastModifierUserId);
-            Assert.Equal("TestUpdate4", modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 4).Name);
-            Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 4).CreatorUserId);
-
-            // Complete uow
-            uow.Complete();
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestInsertOrUpdateAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestInsertOrUpdateAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
-
-            // Act
-            var modificationAudited1 = new TestModificationAudited
+            async Task DoAsync()
             {
-                Id = 1,
-                Name = "TestUpdate1"
-            };
-            await modificationAuditedRepo.InsertOrUpdateAsync(modificationAudited1);
+                // Arrange
+                var modificationAuditedRepo = GetRepository<TestModificationAudited, long>();
 
-            var modificationAudited4 = new TestModificationAudited
+                // Act
+                var modificationAudited1 = new TestModificationAudited
+                {
+                    Id = 1,
+                    Name = "TestUpdate1"
+                };
+                await modificationAuditedRepo.InsertOrUpdateAsync(modificationAudited1);
+
+                var modificationAudited4 = new TestModificationAudited
+                {
+                    Name = "TestUpdate4"
+                };
+                await modificationAuditedRepo.InsertOrUpdateAsync(modificationAudited4);
+
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+
+                // Assert
+                Assert.Equal(4, await modificationAuditedRepo.CountAsync());
+                Assert.Equal("TestUpdate1", (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).Name);
+                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).LastModifierUserId);
+                Assert.Equal("TestUpdate4", (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 4)).Name);
+                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 4)).CreatorUserId);
+            }
+
+            if (useUow)
             {
-                Name = "TestUpdate4"
-            };
-            await modificationAuditedRepo.InsertOrUpdateAsync(modificationAudited4);
+                using var uow = BeginUow();
 
-            await ((IUnitOfWork)uow).SaveChangesAsync();
+                await DoAsync();
 
-            // Assert
-            Assert.Equal(4, await modificationAuditedRepo.CountAsync());
-            Assert.Equal("TestUpdate1", (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).Name);
-            Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).LastModifierUserId);
-            Assert.Equal("TestUpdate4", (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 4)).Name);
-            Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 4)).CreatorUserId);
-
-            // Complete uow
-            await uow.CompleteAsync();
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region Hard Delete
 
-        [Fact]
-        public void TestHardDelete()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestHardDelete(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            #region Delete by id
+                #region Delete by id
 
-            // Act
-            userRepo.Delete(1);
+                // Act
+                userRepo.Delete(1);
 
-            ((IUnitOfWork)uow).SaveChanges();
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
-            // Assert
-            Assert.Null(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1));
-            Assert.Equal(2, userRepo.GetAll().AsNoTracking().Count());
+                // Assert
+                Assert.Null(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1));
+                Assert.Equal(useUow ? 2 : 3, userRepo.GetAll().AsNoTracking().Count());
 
-            #endregion
+                #endregion
 
-            #region Delete by entity
+                #region Delete by entity
 
-            // Act
-            userRepo.Delete(userRepo.Get(2));
+                // Act
+                userRepo.Delete(userRepo.Get(2));
 
-            ((IUnitOfWork)uow).SaveChanges();
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
-            // Assert
-            Assert.Null(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 2));
-            Assert.Equal(1, userRepo.GetAll().AsNoTracking().Count());
+                // Assert
+                Assert.Null(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 2));
+                Assert.Equal(useUow ? 1 : 2, userRepo.GetAll().AsNoTracking().Count());
 
-            #endregion
+                #endregion
 
-            #region Delete by predicate
+                #region Delete by predicate
 
-            // Act
-            userRepo.Delete(p => p.RoleId == 2);
+                // Act
+                userRepo.Delete(p => p.RoleId == 2);
 
-            ((IUnitOfWork)uow).SaveChanges();
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
-            // Assert
-            Assert.Equal(0, userRepo.GetAll().AsNoTracking().Count());
+                // Assert
+                Assert.Equal(0, userRepo.GetAll().AsNoTracking().Count());
 
-            #endregion
+                #endregion
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestHardDeleteAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestHardDeleteAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            #region Delete by id
+                #region Delete by id
 
-            // Act
-            await userRepo.DeleteAsync(1);
+                // Act
+                await userRepo.DeleteAsync(1);
 
-            await ((IUnitOfWork)uow).SaveChangesAsync();
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
-            // Assert
-            Assert.Null(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1));
-            Assert.Equal(2, await userRepo.GetAll().AsNoTracking().CountAsync());
+                // Assert
+                Assert.Null(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1));
+                Assert.Equal(useUow ? 2 : 3, await userRepo.GetAll().AsNoTracking().CountAsync());
 
-            #endregion
+                #endregion
 
-            #region Delete by entity
+                #region Delete by entity
 
-            // Act
-            await userRepo.DeleteAsync(await userRepo.GetAsync(2));
+                // Act
+                await userRepo.DeleteAsync(await userRepo.GetAsync(2));
 
-            await ((IUnitOfWork)uow).SaveChangesAsync();
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
-            // Assert
-            Assert.Null(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 2));
-            Assert.Equal(1, await userRepo.GetAll().AsNoTracking().CountAsync());
+                // Assert
+                Assert.Null(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 2));
+                Assert.Equal(useUow ? 1 : 2, await userRepo.GetAll().AsNoTracking().CountAsync());
 
-            #endregion
+                #endregion
 
-            #region Delete by predicate
+                #region Delete by predicate
 
-            // Act
-            await userRepo.DeleteAsync(p => p.RoleId == 2);
+                // Act
+                await userRepo.DeleteAsync(p => p.RoleId == 2);
 
-            await ((IUnitOfWork)uow).SaveChangesAsync();
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
-            // Assert
-            Assert.Equal(0, await userRepo.GetAll().AsNoTracking().CountAsync());
+                // Assert
+                Assert.Equal(0, await userRepo.GetAll().AsNoTracking().CountAsync());
 
-            #endregion
+                #endregion
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region SoftDelet
 
-        [Fact]
-        public void TestSoftDelete()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestSoftDelete(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.SoftDelete))
+            void Do()
             {
+                // Arrange
                 var deletionAuditedRepo = GetRepository<TestDeletionAudited>();
 
                 #region Delete by id
@@ -1396,7 +1543,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 // Act
                 deletionAuditedRepo.Delete(1);
 
-                ((IUnitOfWork)uow).SaveChanges();
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(1, deletionAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).DeleterUserId);
@@ -1410,7 +1557,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 // Act
                 deletionAuditedRepo.Delete(deletionAuditedRepo.Get(2));
 
-                ((IUnitOfWork)uow).SaveChanges();
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(1, deletionAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 2).DeleterUserId);
@@ -1424,7 +1571,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 // Act
                 deletionAuditedRepo.Delete(p => p.IsActive == false);
 
-                ((IUnitOfWork)uow).SaveChanges();
+                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(3,
@@ -1434,17 +1581,31 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 #endregion
             }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.SoftDelete))
+                {
+                    Do();
+                }
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestSoftDeleteAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestSoftDeleteAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.SoftDelete))
+            async Task DoAsync()
             {
+                // Arrange
                 var deletionAuditedRepo = GetRepository<TestDeletionAudited>();
 
                 #region Delete by id
@@ -1452,7 +1613,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 // Act
                 await deletionAuditedRepo.DeleteAsync(1);
 
-                await ((IUnitOfWork)uow).SaveChangesAsync();
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(1,
@@ -1467,7 +1628,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 // Act
                 await deletionAuditedRepo.DeleteAsync(await deletionAuditedRepo.GetAsync(2));
 
-                await ((IUnitOfWork)uow).SaveChangesAsync();
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(1,
@@ -1482,7 +1643,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 // Act
                 await deletionAuditedRepo.DeleteAsync(p => p.IsActive == false);
 
-                await ((IUnitOfWork)uow).SaveChangesAsync();
+                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(3,
@@ -1493,8 +1654,21 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 #endregion
             }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.SoftDelete))
+                {
+                    await DoAsync();
+                }
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
@@ -1571,6 +1745,11 @@ namespace EasyNet.EntityFrameworkCore.Tests
         public IRepository<TEntity, TPrimaryKey> GetRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
         {
             return _serviceProvider.GetService<IRepository<TEntity, TPrimaryKey>>();
+        }
+
+        public ICurrentDbConnectorProvider GetCurrentDbConnectorProvider()
+        {
+            return _serviceProvider.GetRequiredService<ICurrentDbConnectorProvider>();
         }
     }
 
