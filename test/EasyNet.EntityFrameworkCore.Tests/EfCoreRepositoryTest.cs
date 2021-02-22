@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.Data;
 using EasyNet.DependencyInjection;
-using EasyNet.EntityFrameworkCore.Extensions;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Tests.Entities;
 using EasyNet.Extensions.DependencyInjection;
@@ -42,441 +41,751 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
         #region Get
 
-        [Fact]
-        public void TestGet()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestGet(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var roleRepo = GetRepository<Role>();
+            void Do()
+            {
+                // Arrange
+                var roleRepo = GetRepository<Role>();
 
-            // Act
-            var role = roleRepo.Get(2);
+                // Act
+                var role = roleRepo.Get(2);
 
-            // Assert
-            Assert.Equal("User", role.Name);
+                // Assert
+                Assert.Equal("User", role.Name);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestGetAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestGetAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var roleRepo = GetRepository<Role>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var roleRepo = GetRepository<Role>();
 
-            // Act
-            var role = await roleRepo.GetAsync(2);
+                // Act
+                var role = await roleRepo.GetAsync(2);
 
-            // Assert
-            Assert.Equal("User", role.Name);
+                // Assert
+                Assert.Equal("User", role.Name);
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region GetAllList
 
-        [Fact]
-        public void TestGetAllList()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestGetAllList(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var users = userRepo.GetAllList();
+                // Act
+                var users = userRepo.GetAllList();
 
-            // Assert
-            Assert.Equal(3, users.Count);
-            Assert.Equal("User2", users[1].Name);
+                // Assert
+                Assert.Equal(useUow ? 3 : 4, users.Count);
+                Assert.Equal("User2", users[1].Name);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public void TestGetAllListByPredicate()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestGetAllListByPredicate(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var users = userRepo.GetAllList(p => p.Status == Status.Active);
+                // Act
+                var users = userRepo.GetAllList(p => p.Status == Status.Active);
 
-            // Assert
-            Assert.Equal(2, users.Count);
-            Assert.Equal("User2", users[1].Name);
+                // Assert
+                Assert.Equal(useUow ? 2 : 3, users.Count);
+                Assert.Equal("User2", users[1].Name);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestGetAllListAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestGetAllListAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var users = await userRepo.GetAllListAsync();
+                // Act
+                var users = await userRepo.GetAllListAsync();
 
-            // Assert
-            Assert.Equal(3, users.Count);
-            Assert.Equal("User2", users[1].Name);
+                // Assert
+                Assert.Equal(useUow ? 3 : 4, users.Count);
+                Assert.Equal("User2", users[1].Name);
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
-        [Fact]
-        public async Task TestGetAllListByPredicateAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestGetAllListByPredicateAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
 
-            // Act
-            var users = await userRepo.GetAllListAsync(p => p.Status == Status.Active);
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Assert
-            Assert.Equal(2, users.Count);
-            Assert.Equal("User2", users[1].Name);
+                // Act
+                var users = await userRepo.GetAllListAsync(p => p.Status == Status.Active);
 
-            // Complete uow
-            await uow.CompleteAsync();
+                // Assert
+                Assert.Equal(useUow ? 2 : 3, users.Count);
+                Assert.Equal("User2", users[1].Name);
+            }
+
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region Signle
 
-        [Fact]
-        public void TestSingle()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestSingle(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user = userRepo.Single(p => p.Name == "User3");
+                // Act
+                var user = userRepo.Single(p => p.Name == "User3");
 
-            // Assert
-            Assert.NotNull(user);
-            Assert.Throws<InvalidOperationException>(
-                () => userRepo.Single(p => p.Name == "User4"));
+                // Assert
+                Assert.NotNull(user);
+                if (useUow)
+                {
+                    Assert.Throws<InvalidOperationException>(
+                        () => userRepo.Single(p => p.Name == "User4"));
+                }
+                else
+                {
+                    Assert.NotNull(userRepo.Single(p => p.Name == "User4"));
+                }
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestSingleAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestSingleAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user = await userRepo.SingleAsync(p => p.Name == "User3");
+                // Act
+                var user = await userRepo.SingleAsync(p => p.Name == "User3");
 
-            // Assert
-            Assert.NotNull(user);
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await userRepo.SingleAsync(p => p.Name == "User4"));
+                // Assert
+                Assert.NotNull(user);
 
-            // Complete uow
-            await uow.CompleteAsync();
+                if (useUow)
+                {
+                    await Assert.ThrowsAsync<InvalidOperationException>(
+                        async () => await userRepo.SingleAsync(p => p.Name == "User4"));
+                }
+                else
+                {
+                    Assert.NotNull(await userRepo.SingleAsync(p => p.Name == "User4"));
+                }
+            }
+
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region SignleOrDefault
 
-        [Fact]
-        public void TestSingleOrDefault()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestSingleOrDefault(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user3 = userRepo.SingleOrDefault(p => p.Name == "User3");
-            var user4 = userRepo.SingleOrDefault(p => p.Name == "User4");
-            var user0 = userRepo.SingleOrDefault(p => p.Name == "User0");
+                // Act
+                var user3 = userRepo.SingleOrDefault(p => p.Name == "User3");
+                var user4 = userRepo.SingleOrDefault(p => p.Name == "User4");
+                var user0 = userRepo.SingleOrDefault(p => p.Name == "User0");
 
-            // Assert
-            Assert.NotNull(user3);
-            Assert.Null(user4);
-            Assert.Null(user0);
+                // Assert
+                Assert.NotNull(user3);
+                if (useUow)
+                {
+                    Assert.Null(user4);
+                }
+                else
+                {
+                    Assert.NotNull(user4);
+                }
+                Assert.Null(user0);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestSingleOrDefaultAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestSingleOrDefaultAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user3 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User3");
-            var user4 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User4");
-            var user0 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User0");
+                // Act
+                var user3 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User3");
+                var user4 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User4");
+                var user0 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User0");
 
-            // Assert
-            Assert.NotNull(user3);
-            Assert.Null(user4);
-            Assert.Null(user0);
+                // Assert
+                Assert.NotNull(user3);
+                if (useUow)
+                {
+                    Assert.Null(user4);
+                }
+                else
+                {
+                    Assert.NotNull(user4);
+                }
+                Assert.Null(user0);
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region First
 
-        [Fact]
-        public void TestFirst()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestFirst(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user = userRepo.First();
-            var inactiveUser = userRepo.First(p => p.Status == Status.Inactive);
+                // Act
+                var user = userRepo.First();
+                var inactiveUser = userRepo.First(p => p.Status == Status.Inactive);
 
-            // Assert
-            Assert.NotNull(user);
-            Assert.NotNull(inactiveUser);
-            Assert.Equal("User1", user.Name);
-            Assert.Equal("User3", inactiveUser.Name);
-            Assert.Throws<InvalidOperationException>(() => userRepo.First(p => p.Name == "User0"));
+                // Assert
+                Assert.NotNull(user);
+                Assert.NotNull(inactiveUser);
+                Assert.Equal("User1", user.Name);
+                Assert.Equal("User3", inactiveUser.Name);
+                Assert.Throws<InvalidOperationException>(() => userRepo.First(p => p.Name == "User0"));
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestFirstAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestFirstAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user = await userRepo.FirstAsync();
-            var inactiveUser = await userRepo.FirstAsync(p => p.Status == Status.Inactive);
+                // Act
+                var user = await userRepo.FirstAsync();
+                var inactiveUser = await userRepo.FirstAsync(p => p.Status == Status.Inactive);
 
-            // Assert
-            Assert.NotNull(user);
-            Assert.NotNull(inactiveUser);
-            Assert.Equal("User1", user.Name);
-            Assert.Equal("User3", inactiveUser.Name);
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await userRepo.FirstAsync(p => p.Name == "User0"));
+                // Assert
+                Assert.NotNull(user);
+                Assert.NotNull(inactiveUser);
+                Assert.Equal("User1", user.Name);
+                Assert.Equal("User3", inactiveUser.Name);
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    async () => await userRepo.FirstAsync(p => p.Name == "User0"));
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region FirstOrDefault
 
-        [Fact]
-        public void TestFirstOrDefault()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestFirstOrDefault(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user = userRepo.FirstOrDefault();
-            var inactiveUser = userRepo.FirstOrDefault(p => p.Status == Status.Inactive);
-            var nullUser = userRepo.FirstOrDefault(p => p.Name == "User0");
+                // Act
+                var user = userRepo.FirstOrDefault();
+                var inactiveUser = userRepo.FirstOrDefault(p => p.Status == Status.Inactive);
+                var nullUser = userRepo.FirstOrDefault(p => p.Name == "User0");
 
-            // Assert
-            Assert.NotNull(user);
-            Assert.NotNull(inactiveUser);
-            Assert.Null(nullUser);
-            Assert.Equal("User1", user.Name);
-            Assert.Equal("User3", inactiveUser.Name);
+                // Assert
+                Assert.NotNull(user);
+                Assert.NotNull(inactiveUser);
+                Assert.Null(nullUser);
+                Assert.Equal("User1", user.Name);
+                Assert.Equal("User3", inactiveUser.Name);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestFirstOrDefaultAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestFirstOrDefaultAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var user = await userRepo.FirstOrDefaultAsync();
-            var inactiveUser = await userRepo.FirstOrDefaultAsync(p => p.Status == Status.Inactive);
-            var nullUser = await userRepo.FirstOrDefaultAsync(p => p.Name == "User0");
+                // Act
+                var user = await userRepo.FirstOrDefaultAsync();
+                var inactiveUser = await userRepo.FirstOrDefaultAsync(p => p.Status == Status.Inactive);
+                var nullUser = await userRepo.FirstOrDefaultAsync(p => p.Name == "User0");
 
-            // Assert
-            Assert.NotNull(user);
-            Assert.NotNull(inactiveUser);
-            Assert.Null(nullUser);
-            Assert.Equal("User1", user.Name);
-            Assert.Equal("User3", inactiveUser.Name);
+                // Assert
+                Assert.NotNull(user);
+                Assert.NotNull(inactiveUser);
+                Assert.Null(nullUser);
+                Assert.Equal("User1", user.Name);
+                Assert.Equal("User3", inactiveUser.Name);
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region Count
 
-        [Fact]
-        public void TestCount()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestCount(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
 
-            // Act
-            var count = userRepo.Count();
-            var activeCount = userRepo.Count(p => p.Status == Status.Active);
-            var zeroCount = userRepo.Count(p => p.Name == "Zero");
-            var roleCount = roleRepo.Count();
+                // Act
+                var count = userRepo.Count();
+                var activeCount = userRepo.Count(p => p.Status == Status.Active);
+                var zeroCount = userRepo.Count(p => p.Name == "Zero");
+                var roleCount = roleRepo.Count();
 
-            // Assert
-            Assert.Equal(3, count);
-            Assert.Equal(2, activeCount);
-            Assert.Equal(0, zeroCount);
-            Assert.Equal(2, roleCount);
+                // Assert
+                Assert.Equal(useUow ? 3 : 4, count);
+                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(0, zeroCount);
+                Assert.Equal(2, roleCount);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestCountAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestCountAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
-            var roleRepo = GetRepository<Role>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+                var roleRepo = GetRepository<Role>();
 
-            // Act
-            var count = await userRepo.CountAsync();
-            var activeCount = await userRepo.CountAsync(p => p.Status == Status.Active);
-            var zeroCount = await userRepo.CountAsync(p => p.Name == "Zero");
-            var roleCount = await roleRepo.CountAsync();
+                // Act
+                var count = await userRepo.CountAsync();
+                var activeCount = await userRepo.CountAsync(p => p.Status == Status.Active);
+                var zeroCount = await userRepo.CountAsync(p => p.Name == "Zero");
+                var roleCount = await roleRepo.CountAsync();
 
-            // Assert
-            Assert.Equal(3, count);
-            Assert.Equal(2, activeCount);
-            Assert.Equal(0, zeroCount);
-            Assert.Equal(2, roleCount);
+                // Assert
+                Assert.Equal(useUow ? 3 : 4, count);
+                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(0, zeroCount);
+                Assert.Equal(2, roleCount);
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region LongCount
 
-        [Fact]
-        public void TestLongCount()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestLongCount(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var count = userRepo.LongCount();
-            var activeCount = userRepo.LongCount(p => p.Status == Status.Active);
-            var zeroCount = userRepo.Count(p => p.Name == "Zero");
+                // Act
+                var count = userRepo.LongCount();
+                var activeCount = userRepo.LongCount(p => p.Status == Status.Active);
+                var zeroCount = userRepo.Count(p => p.Name == "Zero");
 
-            // Assert
-            Assert.Equal(3, count);
-            Assert.Equal(2, activeCount);
-            Assert.Equal(0, zeroCount);
+                // Assert
+                Assert.Equal(useUow ? 3 : 4, count);
+                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(0, zeroCount);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestLongCountAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestLongCountAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var count = await userRepo.LongCountAsync();
-            var activeCount = await userRepo.LongCountAsync(p => p.Status == Status.Active);
-            var zeroCount = await userRepo.CountAsync(p => p.Name == "Zero");
+                // Act
+                var count = await userRepo.LongCountAsync();
+                var activeCount = await userRepo.LongCountAsync(p => p.Status == Status.Active);
+                var zeroCount = await userRepo.CountAsync(p => p.Name == "Zero");
 
-            // Assert
-            Assert.Equal(3, count);
-            Assert.Equal(2, activeCount);
-            Assert.Equal(0, zeroCount);
+                // Assert
+                Assert.Equal(useUow ? 3 : 4, count);
+                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(0, zeroCount);
+            }
 
-            // Complete uow
-            await uow.CompleteAsync();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
 
         #region Any
 
-        [Fact]
-        public void TestAny()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestAny(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var activeAny = userRepo.Any(p => p.Status == Status.Active);
-            var zeroAny = userRepo.Any(p => p.Name == "Zero");
+                // Act
+                var activeAny = userRepo.Any(p => p.Status == Status.Active);
+                var zeroAny = userRepo.Any(p => p.Name == "Zero");
 
-            // Assert
-            Assert.True(activeAny);
-            Assert.False(zeroAny);
+                // Assert
+                Assert.True(activeAny);
+                Assert.False(zeroAny);
+            }
 
-            // Complete uow
-            uow.Complete();
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
         }
 
-        [Fact]
-        public async Task TestAnyAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestAnyAsync(bool useUow)
         {
-            // Arrange
-            using var uow = BeginUow();
-            var userRepo = GetRepository<User, long>();
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
 
-            // Act
-            var activeAny = await userRepo.AnyAsync(p => p.Status == Status.Active);
-            var zeroAny = await userRepo.AnyAsync(p => p.Name == "Zero");
+                // Act
+                var activeAny = await userRepo.AnyAsync(p => p.Status == Status.Active);
+                var zeroAny = await userRepo.AnyAsync(p => p.Name == "Zero");
 
-            // Assert
-            Assert.True(activeAny);
-            Assert.False(zeroAny);
+                // Assert
+                Assert.True(activeAny);
+                Assert.False(zeroAny);
+            }
+            
+            if (useUow)
+            {
+                using var uow = BeginUow();
 
-            // Complete uow
-            await uow.CompleteAsync();
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
         }
 
         #endregion
@@ -764,7 +1073,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
             Assert.Equal("TestUser2", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user2.Id).Name);
             Assert.Equal(1, roleRepo.Count());
             Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited2.Id).LastModifierUserId);
-            using (((IActiveUnitOfWork) uow).DisableFilter(EasyNetDataFilters.MayHaveTenant))
+            using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.MayHaveTenant))
             {
                 Assert.Equal(2, roleRepo.Count());
             }
@@ -857,7 +1166,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
             // Assert
             Assert.Equal("TestUser2", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user2.Id)).Name);
-            Assert.Equal(1,  await roleRepo.CountAsync());
+            Assert.Equal(1, await roleRepo.CountAsync());
             Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited2.Id)).LastModifierUserId);
             using (((IActiveUnitOfWork)uow).DisableFilter(EasyNetDataFilters.MayHaveTenant))
             {

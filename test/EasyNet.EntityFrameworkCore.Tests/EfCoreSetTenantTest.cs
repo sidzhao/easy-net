@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.Common;
 using EasyNet.DependencyInjection;
-using EasyNet.EntityFrameworkCore.Extensions;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Tests.Entities;
 using Microsoft.Data.Sqlite;
