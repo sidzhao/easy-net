@@ -2,7 +2,8 @@
 using EasyNet.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace EasyNet.EntityFrameworkCore.Domain.Repositories
+// ReSharper disable once CheckNamespace
+namespace EasyNet.EntityFrameworkCore.Data
 {
     public interface IEfCoreRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> 
         where TEntity : class, IEntity<TPrimaryKey>

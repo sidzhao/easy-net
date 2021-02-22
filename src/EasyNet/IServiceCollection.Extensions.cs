@@ -88,7 +88,6 @@ namespace EasyNet
 
             // Data
             services.TryAddScoped<ICurrentDbConnectorProvider, AsyncLocalCurrentDbConnectorProvider>();
-            services.TryAddScoped<IActiveDbTransactionProvider, NullDbTransactionProvider>();
 
             return new EasyNetBuilder(services);
         }

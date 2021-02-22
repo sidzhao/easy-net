@@ -15,24 +15,20 @@ namespace EasyNet.EntityFrameworkCore.Uow
     /// </summary>
     public class EfCoreUnitOfWork : UnitOfWorkBase
     {
+        protected readonly IDbConnectorCreator DbConnectorCreator;
+
         public EfCoreUnitOfWork(
+            IDbConnectorCreator dbConnectorCreator,
             IEasyNetSession session,
             IEasyNetEventMessageBuffer eventMessageBuffer,
-            ICurrentDbConnectorProvider currentDbConnectorProvider,
             IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(session, eventMessageBuffer, defaultOptions)
         {
-            CurrentDbConnectorProvider = currentDbConnectorProvider;
+            DbConnectorCreator = dbConnectorCreator;
         }
 
-        /// <summary>
-        /// Reference to current <see cref="ICurrentDbConnectorProvider"/>.
-        /// </summary>
-        public ICurrentDbConnectorProvider CurrentDbConnectorProvider { get; set; }
+        protected DbContext ActiveDbContext => DbConnector?.GetDbContext();
 
-        protected DbContext ActiveDbContext => CurrentDbConnectorProvider.Current?.GetDbContext();
-
-        protected IDbContextTransaction ActiveTransaction => CurrentDbConnectorProvider.Current?.GetDbContextTransaction();
-
+        protected IDbContextTransaction ActiveTransaction => DbConnector?.GetDbContextTransaction();
 
         public override void SaveChanges()
         {
@@ -84,7 +80,7 @@ namespace EasyNet.EntityFrameworkCore.Uow
 
         protected override void DisposeUow()
         {
-            CurrentDbConnectorProvider.Current?.Dispose();
+            // Do nothing
         }
     }
 }

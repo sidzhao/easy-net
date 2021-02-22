@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using EasyNet.Data;
+﻿using EasyNet.Data;
 using EasyNet.EntityFrameworkCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -19,7 +17,7 @@ namespace EasyNet.Extensions.DependencyInjection
                 return efCoreDbConnector.DbContext;
             }
 
-            throw new EasyNetException($"The IDbConnector is not {typeof(EfCoreDbConnector)}.");
+            throw new EasyNetException($"The interface {typeof(IDbConnector).AssemblyQualifiedName} is not implemented with class {typeof(EfCoreDbConnector)}.");
         }
 
         public static IDbContextTransaction GetDbContextTransaction(this IDbConnector dbConnector)
@@ -31,7 +29,7 @@ namespace EasyNet.Extensions.DependencyInjection
                 return efCoreDbConnector.DbContextTransaction;
             }
 
-            throw new EasyNetException($"The IDbConnector is not {typeof(EfCoreDbConnector)}.");
+            throw new EasyNetException($"The interface {typeof(IDbConnector).AssemblyQualifiedName} is not implemented with class {typeof(EfCoreDbConnector)}.");
         }
     }
 }

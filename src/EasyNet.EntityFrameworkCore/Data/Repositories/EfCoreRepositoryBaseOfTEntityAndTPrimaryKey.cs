@@ -4,9 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EasyNet.Data;
+using EasyNet.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
-namespace EasyNet.EntityFrameworkCore.Domain.Repositories
+// ReSharper disable once CheckNamespace
+namespace EasyNet.EntityFrameworkCore.Data
 {
     /// <summary>
     /// Implements IRepository for Entity Framework.
@@ -22,9 +24,9 @@ namespace EasyNet.EntityFrameworkCore.Domain.Repositories
 
         protected virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
 
-        public EfCoreRepositoryBase(IDbContextProvider dbContextProvider)
+        public EfCoreRepositoryBase(ICurrentDbConnectorProvider currentDbConnectorProvider)
         {
-            DbContext = (TDbContext)dbContextProvider.GetDbContext();
+            DbContext = (TDbContext)currentDbConnectorProvider.GetOrCreate().GetDbContext();
         }
 
         /// <inheritdoc/>

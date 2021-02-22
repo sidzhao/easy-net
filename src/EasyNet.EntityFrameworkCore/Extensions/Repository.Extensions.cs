@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using EasyNet.Data;
-using EasyNet.EntityFrameworkCore.Domain.Repositories;
+using EasyNet.EntityFrameworkCore.Data;
 
-namespace EasyNet.EntityFrameworkCore.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
-    public static class RepositoryExtensions
+    public static class EasyNetEfCoreRepositoryExtensions
     {
         public static IQueryable<TEntity> GetAll<TEntity>(this IRepository<TEntity> repository) where TEntity : class, IEntity<int>
         {

@@ -6,8 +6,14 @@
     public interface ICurrentDbConnectorProvider
     {
         /// <summary>
-        /// Gets/sets current <see cref="IDbConnector"/>.
+        /// Gets current <see cref="IDbConnector"/>.
         /// </summary>
-        IDbConnector Current { get; set; }
+        IDbConnector Current { get; }
+
+        /// <summary>
+        /// Gets current <see cref="IDbConnector"/>. If it's null then create it directly.
+        /// </summary>
+        /// <returns></returns>
+        IDbConnector GetOrCreate();
     }
 }

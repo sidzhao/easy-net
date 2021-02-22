@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EasyNet.Data;
 
 namespace EasyNet.Uow
 {
@@ -25,11 +26,16 @@ namespace EasyNet.Uow
         /// This event is raised when this UOW is disposed.
         /// </summary>
         event EventHandler Disposed;
-
+        
         /// <summary>
         /// Gets if this unit of work is transactional.
         /// </summary>
         UnitOfWorkOptions Options { get; }
+
+        /// <summary>
+        /// Gets the database connector for this unit of work.
+        /// </summary>
+        IDbConnector DbConnector { get; }
 
         /// <summary>
         /// Gets data filter configurations for this unit of work.

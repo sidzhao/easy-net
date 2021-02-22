@@ -3,7 +3,7 @@ using System.Reflection;
 using EasyNet.Data;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.EntityFrameworkCore.Data;
-using EasyNet.EntityFrameworkCore.Domain.Repositories;
+using EasyNet.EntityFrameworkCore.Uow;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +15,7 @@ namespace EasyNet.Extensions.DependencyInjection
     /// <summary>
     /// Extensions for configuring EasyNet using an <see cref="EasyNetOptions"/>.
     /// </summary>
-    public static class EasyNetOptionsExtensions
+    public static class EasyNetOptionsEfCoreExtensions
     {
         /// <summary>
         /// Add specified services to let the system support EntityFrameworkCore.
@@ -34,11 +34,8 @@ namespace EasyNet.Extensions.DependencyInjection
             {
                 // DbContext
                 services.AddDbContext<TDbContext>(setupAction);
-                services.AddScoped<IDbContextProvider, UnitOfWorkDbContextProvider>();
-                services.AddTransient<IDbContextCreator, DbContextCreator<TDbContext>>();
 
                 // Data
-                services.TryAddScoped<IActiveDbTransactionProvider, EfCoreActiveDbTransactionProvider>();
                 services.TryAddScoped<IDbConnectorCreator, EfCoreDbConnectorCreator<TDbContext>>();
 
                 // Uow

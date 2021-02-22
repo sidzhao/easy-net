@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyNet.Data;
 using EasyNet.EventBus;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
@@ -60,6 +61,8 @@ namespace EasyNet.Uow
 
         /// <inheritdoc/>
         public event EventHandler Disposed;
+
+        public IDbConnector DbConnector { get; private set; }
 
         /// <inheritdoc/>
         public UnitOfWorkOptions Options { get; private set; }
@@ -225,6 +228,7 @@ namespace EasyNet.Uow
             }
 
             DisposeUow();
+            DbConnector?.Dispose();
             OnDisposed();
         }
 
@@ -290,6 +294,16 @@ namespace EasyNet.Uow
         protected virtual void OnDisposed()
         {
             Disposed.InvokeSafely(this);
+        }
+
+        internal void SetDbConnector(IDbConnector dbConnector)
+        {
+            if (DbConnector != null)
+            {
+                throw new EasyNetException("Already has a database connector in unit of work.");
+            }
+
+            DbConnector = dbConnector;
         }
 
         private void PreventMultipleBegin()

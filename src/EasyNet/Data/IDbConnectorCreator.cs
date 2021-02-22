@@ -1,7 +1,9 @@
-﻿namespace EasyNet.Data
+﻿using EasyNet.Uow;
+
+namespace EasyNet.Data
 {
     public interface IDbConnectorCreator
     {
-        IDbConnector Create();
+        IDbConnector Create(UnitOfWorkOptions options = null);
     }
 }

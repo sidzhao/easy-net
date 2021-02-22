@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNet.Data;
-using EasyNet.EntityFrameworkCore.Extensions;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Linq;
 using EasyNet.Runtime.Session;

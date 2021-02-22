@@ -2,9 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace EasyNet.EntityFrameworkCore.Extensions
+// ReSharper disable once CheckNamespace
+namespace EasyNet.Extensions.DependencyInjection
 {
-    public static class EntityEntryExtensions
+    internal static class EntityEntryExtensions
     {
         /// <summary>
         /// Check if the entity and its associated Owned entity have changed.
