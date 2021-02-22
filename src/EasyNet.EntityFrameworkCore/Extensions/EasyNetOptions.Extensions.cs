@@ -15,7 +15,7 @@ namespace EasyNet.Extensions.DependencyInjection
     /// <summary>
     /// Extensions for configuring EasyNet using an <see cref="EasyNetOptions"/>.
     /// </summary>
-    public static class EasyNetOptionsEfCoreExtensions
+    public static class EasyNetOptionsExtensions
     {
         /// <summary>
         /// Add specified services to let the system support EntityFrameworkCore.
