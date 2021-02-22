@@ -1,5 +1,5 @@
 ﻿using EasyNet.Identity.EntityFrameworkCore.DbContext;
-using EasyNet.Identity.EntityFrameworkCore.Tests.Domain.Entities;
+using EasyNet.Identity.EntityFrameworkCore.Tests.Entities;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;

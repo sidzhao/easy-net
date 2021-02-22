@@ -1,11 +1,12 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.Data;
+using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Identity.EntityFrameworkCore.DependencyInjection;
 using EasyNet.Identity.EntityFrameworkCore.Domain;
 using EasyNet.Identity.EntityFrameworkCore.Domain.Entities;
 using EasyNet.Identity.EntityFrameworkCore.Tests.DbContext;
-using EasyNet.Identity.EntityFrameworkCore.Tests.Domain.Entities;
+using EasyNet.Identity.EntityFrameworkCore.Tests.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +25,12 @@ namespace EasyNet.Identity.EntityFrameworkCore.Tests
 
             // Act
             services
-                .AddEasyNet()
-                .AddEfCore<IdentityContext>(options =>
+                .AddEasyNet(x =>
                 {
-                    options.UseSqlite("TestConnectionString");
+                    x.UseEfCore<IdentityContext>(options =>
+                    {
+                        options.UseSqlite("TestConnectionString");
+                    });
                 })
                 .AddIdentityCore<User, IdentityContext>();
 
