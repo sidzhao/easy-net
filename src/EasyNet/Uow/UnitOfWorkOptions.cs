@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Transactions;
+using EasyNet.Extensions.DependencyInjection;
 
 namespace EasyNet.Uow
 {
@@ -41,6 +42,12 @@ namespace EasyNet.Uow
         /// Can be used to enable/disable some filters.
         /// </summary>
         public List<DataFilterConfiguration> FilterOverrides { get; }
+
+        public System.Data.IsolationLevel GetSystemDataIsolationLevel()
+        {
+            return (IsolationLevel ?? System.Transactions.IsolationLevel.ReadUncommitted)
+                .ToSystemDataIsolationLevel();
+        }
 
         internal void FillDefaultsForNonProvidedOptions(UnitOfWorkDefaultOptions defaultOptions)
         {

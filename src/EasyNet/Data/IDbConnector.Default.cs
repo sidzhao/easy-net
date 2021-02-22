@@ -10,11 +10,8 @@ namespace EasyNet.Data
 
         public virtual void Dispose()
         {
-            Connection?.Dispose();
-            Connection = null;
-
             Transaction?.Dispose();
-            Transaction = null;
+            Connection?.Dispose();
         }
     }
 }
