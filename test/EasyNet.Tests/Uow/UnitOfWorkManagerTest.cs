@@ -6,7 +6,7 @@ using EasyNet.Uow;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EasyNet.Tests.Domain
+namespace EasyNet.Tests.Uow
 {
     public class UnitOfWorkManagerTest
     {

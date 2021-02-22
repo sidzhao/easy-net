@@ -1,7 +1,7 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.Data;
-using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Mvc;
+using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.AspNetCore.Http;
@@ -27,19 +27,30 @@ namespace EasyNet.Tests
 
 			// Assert
 			AssertSpecifiedServiceTypeAndImplementationType<IHttpContextAccessor, HttpContextAccessor>(services, ServiceLifetime.Singleton);
-			AssertSpecifiedServiceTypeAndImplementationType<EasyNetUowActionFilter, EasyNetUowActionFilter>(services, ServiceLifetime.Transient);
-			AssertSpecifiedServiceTypeAndImplementationType<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(services, ServiceLifetime.Singleton);
-			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWorkManager, UnitOfWorkManager>(services, ServiceLifetime.Singleton);
-			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, NullUnitOfWork>(services, ServiceLifetime.Transient);
+			
+			// Session
 			AssertSpecifiedServiceTypeAndImplementationType<IPrincipalAccessor, DefaultPrincipalAccessor>(services, ServiceLifetime.Singleton);
 			AssertSpecifiedServiceTypeAndImplementationType<IEasyNetSession, ClaimsEasyNetSession>(services, ServiceLifetime.Scoped);
-            AssertSpecifiedServiceTypeAndImplementationType<EasyNetUowActionFilter, EasyNetUowActionFilter>(services, ServiceLifetime.Transient);
+
+			// Exception
+            AssertSpecifiedServiceTypeAndImplementationType<IEasyNetExceptionHandler, EasyNetExceptionHandler>(services, ServiceLifetime.Transient);
+
+			// Unit of work
+			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWorkManager, UnitOfWorkManager>(services, ServiceLifetime.Singleton);
+            AssertSpecifiedServiceTypeAndImplementationType<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(services, ServiceLifetime.Singleton);
+			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, NullUnitOfWork>(services, ServiceLifetime.Transient);
+
+			// Data
+            AssertSpecifiedServiceTypeAndImplementationType<ICurrentDbConnectorProvider, AsyncLocalCurrentDbConnectorProvider>(services, ServiceLifetime.Scoped);
+
+			// Initializer
+            AssertSpecifiedServiceTypeAndImplementationType<IEasyNetInitializer, EasyNetInitializer>(services, ServiceLifetime.Transient);
+
+			// Mvc
+			AssertSpecifiedServiceTypeAndImplementationType<EasyNetUowActionFilter, EasyNetUowActionFilter>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<EasyNetExceptionFilter, EasyNetExceptionFilter>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<EasyNetResultFilter, EasyNetResultFilter>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<EasyNetPageFilter, EasyNetPageFilter>(services, ServiceLifetime.Transient);
-			AssertSpecifiedServiceTypeAndImplementationType<IEasyNetExceptionHandler, EasyNetExceptionHandler>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IActiveDbTransactionProvider, NullDbTransactionProvider>(services, ServiceLifetime.Scoped);
-
 			var mvcOptions = serviceProvider.GetRequiredService<IOptions<MvcOptions>>().Value;
 			Assert.Contains(mvcOptions.Filters, p => ((ServiceFilterAttribute)p).ServiceType == typeof(EasyNetUowActionFilter));
             Assert.Contains(mvcOptions.Filters, p => ((ServiceFilterAttribute)p).ServiceType == typeof(EasyNetExceptionFilter));

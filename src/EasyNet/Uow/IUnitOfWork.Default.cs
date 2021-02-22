@@ -12,7 +12,7 @@ namespace EasyNet.Uow
     /// </summary>
     public sealed class NullUnitOfWork : UnitOfWorkBase
     {
-        public NullUnitOfWork(IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(NullEasyNetSession.Instance, null, defaultOptions)
+        public NullUnitOfWork(IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(NullEasyNetSession.Instance, defaultOptions)
         {
         }
 

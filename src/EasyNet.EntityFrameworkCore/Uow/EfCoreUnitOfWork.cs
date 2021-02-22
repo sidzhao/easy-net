@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using EasyNet.Data;
-using EasyNet.EventBus;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
@@ -18,10 +17,9 @@ namespace EasyNet.EntityFrameworkCore.Uow
         protected readonly IDbConnectorCreator DbConnectorCreator;
 
         public EfCoreUnitOfWork(
-            IDbConnectorCreator dbConnectorCreator,
             IEasyNetSession session,
-            IEasyNetEventMessageBuffer eventMessageBuffer,
-            IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(session, eventMessageBuffer, defaultOptions)
+            IDbConnectorCreator dbConnectorCreator,
+            IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(session, defaultOptions)
         {
             DbConnectorCreator = dbConnectorCreator;
         }
@@ -41,7 +39,7 @@ namespace EasyNet.EntityFrameworkCore.Uow
             {
                 return ActiveDbContext.SaveChangesAsync();
             }
-
+            
             return Task.CompletedTask;
         }
 

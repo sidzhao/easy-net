@@ -1,11 +1,9 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
-namespace EasyNet.Tests.Domain
+namespace EasyNet.Tests.Uow
 {
     public class AsyncLocalCurrentUnitOfWorkProviderTest
     {

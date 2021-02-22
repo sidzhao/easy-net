@@ -36,15 +36,15 @@ namespace EasyNet.Uow
         /// </summary>
         private Exception _exception;
 
-        protected UnitOfWorkBase(IEasyNetSession session, IEasyNetEventMessageBuffer eventMessageBuffer, IOptions<UnitOfWorkDefaultOptions> defaultOptions)
+        protected UnitOfWorkBase(IEasyNetSession session, IOptions<UnitOfWorkDefaultOptions> defaultOptions)
         {
+            Check.NotNull(session, nameof(session));
+
             DefaultOptions = defaultOptions.Value;
             EasyNetSession = session;
-            EventMessageBuffer = eventMessageBuffer;
 
             Id = Guid.NewGuid().ToString("N");
             _filters = DefaultOptions.Filters.ToList();
-
         }
 
         /// <inheritdoc/>
@@ -89,11 +89,6 @@ namespace EasyNet.Uow
         /// </summary>
         public IEasyNetSession EasyNetSession { get; set; }
 
-        /// <summary>
-        /// Reference to current <see cref="IEasyNetEventMessageBuffer"/>.
-        /// </summary>
-        public IEasyNetEventMessageBuffer EventMessageBuffer { get; set; }
-
         /// <inheritdoc/>
         public void Begin(UnitOfWorkOptions options)
         {
@@ -122,7 +117,6 @@ namespace EasyNet.Uow
             try
             {
                 CompleteUow();
-                FlushEventMessages();
                 _succeed = true;
                 OnCompleted();
             }
@@ -140,7 +134,6 @@ namespace EasyNet.Uow
             try
             {
                 await CompleteUowAsync();
-                await FlushEventMessagesAsync();
                 _succeed = true;
                 OnCompleted();
             }
@@ -254,22 +247,6 @@ namespace EasyNet.Uow
         /// Should be implemented by derived classes to dispose UOW.
         /// </summary>
         protected abstract void DisposeUow();
-
-        /// <summary>
-        /// Flush all event messages
-        /// </summary>
-        protected void FlushEventMessages()
-        {
-            EventMessageBuffer.Flush();
-        }
-
-        /// <summary>
-        /// Flush all event messages
-        /// </summary>
-        protected Task FlushEventMessagesAsync()
-        {
-            return EventMessageBuffer.FlushAsync();
-        }
 
         /// <summary>
         /// Called to trigger <see cref="Completed"/> event.

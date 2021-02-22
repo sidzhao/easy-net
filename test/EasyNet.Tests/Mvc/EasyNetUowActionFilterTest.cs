@@ -21,6 +21,8 @@ namespace EasyNet.Tests.Mvc
             // Arrange
             var completeHandleMock = new Mock<IUnitOfWorkCompleteHandle>();
 
+            var serviceProvider = new Mock<IServiceProvider>();
+
             var uowMock = new Mock<IUnitOfWorkManager>();
             uowMock
                 .Setup(f => f.Begin(It.IsAny<IServiceProvider>(), It.IsAny<UnitOfWorkOptions>()))
@@ -31,7 +33,7 @@ namespace EasyNet.Tests.Mvc
                 .Setup(f => f.Value)
                 .Returns(() => new EasyNetOptions { SuppressAutoBeginUnitOfWork = suppressAutoBeginUnitOfWork });
 
-            var uowActionFilterMock = new Mock<EasyNetUowActionFilter>(uowMock.Object, optionsMock.Object);
+            var uowActionFilterMock = new Mock<EasyNetUowActionFilter>(serviceProvider.Object, uowMock.Object, optionsMock.Object);
             uowActionFilterMock.As<IAsyncActionFilter>()
                 .Setup(f => f.OnActionExecutionAsync(
                     It.IsAny<ActionExecutingContext>(),
