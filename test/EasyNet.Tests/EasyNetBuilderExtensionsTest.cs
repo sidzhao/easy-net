@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EasyNet.CommonTests;
 using EasyNet.DependencyInjection;
-using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
 using EasyNet.Tests.Session;

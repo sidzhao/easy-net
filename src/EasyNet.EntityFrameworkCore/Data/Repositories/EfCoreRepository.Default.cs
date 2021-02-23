@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
@@ -30,22 +31,19 @@ namespace EasyNet.EntityFrameworkCore.Data
         where TEntity : class, IEntity<TPrimaryKey>
         where TDbContext : EasyNetDbContext
     {
-        protected TDbContext DbContext { get; }
-
-        protected virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
+        protected readonly TDbContext DbContext;
 
         public EfCoreRepositoryBase(ICurrentDbConnectorProvider currentDbConnectorProvider)
         {
             DbContext = (TDbContext)currentDbConnectorProvider.GetOrCreate().GetDbContext();
         }
+        protected virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
 
-        /// <inheritdoc/>
         public DbContext GetDbContext()
         {
             return DbContext;
         }
 
-        /// <inheritdoc/>
         public IQueryable<TEntity> GetAll()
         {
             return Table.AsQueryable();
@@ -53,31 +51,26 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         #region Select/Get/Query
 
-        /// <inheritdoc/>
         public virtual List<TEntity> GetAllList()
         {
             return GetAll().ToList();
         }
 
-        /// <inheritdoc/>
-        public virtual Task<List<TEntity>> GetAllListAsync()
+        public virtual Task<List<TEntity>> GetAllListAsync(CancellationToken cancellationToken = default)
         {
-            return GetAll().ToListAsync();
+            return GetAll().ToListAsync(cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().Where(predicate).ToList();
         }
 
-        /// <inheritdoc/>
-        public virtual Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().Where(predicate).ToListAsync();
+            return GetAll().Where(predicate).ToListAsync(cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual TEntity Get(TPrimaryKey id)
         {
             var entity = SingleOrDefault(CreateEqualityExpressionForId(id));
@@ -87,107 +80,91 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entity;
         }
 
-        /// <inheritdoc/>
-        public virtual async Task<TEntity> GetAsync(TPrimaryKey id)
+        public virtual async Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
-            var entity = await SingleOrDefaultAsync(CreateEqualityExpressionForId(id));
+            var entity = await SingleOrDefaultAsync(CreateEqualityExpressionForId(id), cancellationToken);
 
             if (entity == null) throw new EasyNetNotFoundEntityException<TEntity, TPrimaryKey>(id);
 
             return entity;
         }
 
-        /// <inheritdoc/>
         public virtual TEntity Single(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().Single(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().SingleAsync(predicate);
+            return GetAll().SingleAsync(predicate, cancellationToken);
         }
 
-        /// <inheritdoc/>
         public TEntity First()
         {
             return GetAll().First();
         }
 
-        /// <inheritdoc/>
-        public Task<TEntity> FirstAsync()
+        public Task<TEntity> FirstAsync(CancellationToken cancellationToken = default)
         {
-            return GetAll().FirstAsync();
+            return GetAll().FirstAsync(cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual TEntity First(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().First(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().FirstAsync(predicate);
+            return GetAll().FirstAsync(predicate, cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().SingleOrDefault(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().SingleOrDefaultAsync(predicate);
+            return GetAll().SingleOrDefaultAsync(predicate, cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual TEntity FirstOrDefault()
         {
             return GetAll().FirstOrDefault();
         }
 
-        /// <inheritdoc/>
-        public virtual Task<TEntity> FirstOrDefaultAsync()
+        public virtual Task<TEntity> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
         {
-            return GetAll().FirstOrDefaultAsync();
+            return GetAll().FirstOrDefaultAsync(cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().FirstOrDefault(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().FirstOrDefaultAsync(predicate);
+            return GetAll().FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
         #endregion
 
         #region Insert
 
-        /// <inheritdoc/>
         public virtual TEntity Insert(TEntity entity)
         {
             Table.Add(entity);
             return entity;
         }
 
-        /// <inheritdoc/>
-        public virtual async Task<TEntity> InsertAsync(TEntity entity)
+        public virtual async Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            await Table.AddAsync(entity);
+            await Table.AddAsync(entity, cancellationToken);
             return entity;
         }
 
-        /// <inheritdoc/>
         public virtual TPrimaryKey InsertAndGetId(TEntity entity)
         {
             Insert(entity);
@@ -200,20 +177,18 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entity.Id;
         }
 
-        /// <inheritdoc/>
-        public virtual async Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity)
+        public virtual async Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            await InsertAsync(entity);
+            await InsertAsync(entity, cancellationToken);
 
             if (MayHaveTemporaryKey(entity))
             {
-                await DbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync(cancellationToken);
             }
 
             return entity.Id;
         }
 
-        /// <inheritdoc/>
         public virtual TEntity InsertOrUpdate(TEntity entity)
         {
             if (MayHaveTemporaryKey(entity))
@@ -228,22 +203,20 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entity;
         }
 
-        /// <inheritdoc/>
-        public async Task<TEntity> InsertOrUpdateAsync(TEntity entity)
+        public async Task<TEntity> InsertOrUpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             if (MayHaveTemporaryKey(entity))
             {
-                await InsertAsync(entity);
+                await InsertAsync(entity, cancellationToken);
             }
             else
             {
-                await UpdateAsync(entity);
+                await UpdateAsync(entity, cancellationToken);
             }
 
             return entity;
         }
 
-        /// <inheritdoc/>
         public TPrimaryKey InsertOrUpdateAndGetId(TEntity entity)
         {
             entity = InsertOrUpdate(entity);
@@ -256,14 +229,13 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entity.Id;
         }
 
-        /// <inheritdoc/>
-        public async Task<TPrimaryKey> InsertOrUpdateAndGetIdAsync(TEntity entity)
+        public async Task<TPrimaryKey> InsertOrUpdateAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            entity = await InsertOrUpdateAsync(entity);
+            entity = await InsertOrUpdateAsync(entity, cancellationToken);
 
             if (MayHaveTemporaryKey(entity))
             {
-                await DbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync(cancellationToken);
             }
 
             return entity.Id;
@@ -273,7 +245,6 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         #region Update
 
-        /// <inheritdoc/>
         public virtual TEntity Update(TEntity entity)
         {
             AttachIfNot(entity);
@@ -281,14 +252,12 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entity;
         }
 
-        /// <inheritdoc/>
-        public virtual Task<TEntity> UpdateAsync(TEntity entity)
+        public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             entity = Update(entity);
             return Task.FromResult(entity);
         }
 
-        /// <inheritdoc/>
         public virtual TEntity Update(TPrimaryKey id, Action<TEntity> updateAction)
         {
             var entity = Get(id);
@@ -303,10 +272,9 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entity;
         }
 
-        /// <inheritdoc/>
-        public virtual async Task<TEntity> UpdateAsync(TPrimaryKey id, Func<TEntity, Task> updateAction)
+        public virtual async Task<TEntity> UpdateAsync(TPrimaryKey id, Func<TEntity, Task> updateAction, CancellationToken cancellationToken = default)
         {
-            var entity = await GetAsync(id);
+            var entity = await GetAsync(id, cancellationToken);
             await updateAction(entity);
 
             if (DbContext.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.NoTracking)
@@ -322,22 +290,19 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         #region Delete
 
-        /// <inheritdoc/>
         public virtual void Delete(TEntity entity)
         {
             AttachIfNot(entity);
             Table.Remove(entity);
         }
 
-        /// <inheritdoc/>
-        public virtual Task DeleteAsync(TEntity entity)
+        public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             Delete(entity);
 
             return Task.CompletedTask;
         }
 
-        /// <inheritdoc/>
         public virtual void Delete(TPrimaryKey id)
         {
             var entity = GetFromChangeTrackerOrNull(id);
@@ -356,26 +321,23 @@ namespace EasyNet.EntityFrameworkCore.Data
             // Don't do anything if no entity can be found.
         }
 
-        /// <inheritdoc/>
-        public virtual async Task DeleteAsync(TPrimaryKey id)
+        public virtual async Task DeleteAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
             var entity = GetFromChangeTrackerOrNull(id);
             if (entity != null)
             {
-                Delete(entity);
-                return;
+                await DeleteAsync(entity, cancellationToken);
             }
 
-            entity = await SingleOrDefaultAsync(CreateEqualityExpressionForId(id));
+            entity = await SingleOrDefaultAsync(CreateEqualityExpressionForId(id), cancellationToken);
             if (entity != null)
             {
-                Delete(entity);
+                await DeleteAsync(entity, cancellationToken);
             }
 
             // Don't do anything if no entity can be found.
         }
 
-        /// <inheritdoc/>
         public virtual void Delete(Expression<Func<TEntity, bool>> predicate)
         {
             var entities = GetAllList(predicate);
@@ -386,10 +348,9 @@ namespace EasyNet.EntityFrameworkCore.Data
             }
         }
 
-        /// <inheritdoc/>
-        public virtual async Task DeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            var entities = await GetAllListAsync(predicate);
+            var entities = await GetAllListAsync(predicate, cancellationToken);
 
             foreach (var entity in entities)
             {
@@ -401,64 +362,54 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         #region Aggregates
 
-        /// <inheritdoc/>
         public virtual int Count()
         {
             return GetAll().Count();
         }
 
-        /// <inheritdoc/>
-        public virtual Task<int> CountAsync()
+        public virtual Task<int> CountAsync(CancellationToken cancellationToken = default)
         {
-            return GetAll().CountAsync();
+            return GetAll().CountAsync(cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual int Count(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().Count(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().CountAsync(predicate);
+            return GetAll().CountAsync(predicate, cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual long LongCount()
         {
             return GetAll().LongCount();
         }
 
-        /// <inheritdoc/>
-        public virtual Task<long> LongCountAsync()
+        public virtual Task<long> LongCountAsync(CancellationToken cancellationToken = default)
         {
-            return GetAll().LongCountAsync();
+            return GetAll().LongCountAsync(cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual long LongCount(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().LongCount(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().LongCountAsync(predicate);
+            return GetAll().LongCountAsync(predicate, cancellationToken);
         }
 
-        /// <inheritdoc/>
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
             return GetAll().Any(predicate);
         }
 
-        /// <inheritdoc/>
-        public virtual Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return GetAll().AnyAsync(predicate);
+            return GetAll().AnyAsync(predicate, cancellationToken);
         }
 
         #endregion

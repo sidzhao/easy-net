@@ -15,7 +15,7 @@ using Xunit;
 
 namespace EasyNet.EntityFrameworkCore.Tests
 {
-    public class EasyNetBuilderExtensionsTest : DependencyInjectionTest
+    public class ServiceCollectionExtensionsTest : DependencyInjectionTest
     {
         [Fact]
         public void TestAddEfCoreAsMainOrmTechnology()

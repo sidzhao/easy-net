@@ -12,7 +12,7 @@ using Xunit;
 
 namespace EasyNet.Tests
 {
-	public class EasyNetServiceCollectionExtensionsTest : DependencyInjectionTest
+	public class CollectionExtensionsTest : DependencyInjectionTest
 	{
 		[Fact]
 		public void TestAddEasyNet()

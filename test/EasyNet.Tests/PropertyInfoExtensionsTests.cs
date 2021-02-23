@@ -2,7 +2,7 @@
 using EasyNet.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EasyNet.Tests.Extensions
+namespace EasyNet.Tests
 {
     public class PropertyInfoExtensionsTests
     {
