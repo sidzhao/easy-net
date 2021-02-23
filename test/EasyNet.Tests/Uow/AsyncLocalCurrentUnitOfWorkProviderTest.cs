@@ -93,9 +93,9 @@ namespace EasyNet.Tests.Uow
             Assert.Same(unitOfWork1, currentUnitOfWorkProvider.Current);
         }
 
-        private NullUnitOfWork GetNullUnitOfWork()
+        private DefaultUnitOfWork GetNullUnitOfWork()
         {
-            return new NullUnitOfWork(new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
+            return new DefaultUnitOfWork(new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
         }
     }
 }

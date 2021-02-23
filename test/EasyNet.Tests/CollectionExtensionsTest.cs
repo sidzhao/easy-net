@@ -38,7 +38,7 @@ namespace EasyNet.Tests
 			// Unit of work
 			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWorkManager, UnitOfWorkManager>(services, ServiceLifetime.Singleton);
             AssertSpecifiedServiceTypeAndImplementationType<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(services, ServiceLifetime.Singleton);
-			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, NullUnitOfWork>(services, ServiceLifetime.Transient);
+			AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, DefaultUnitOfWork>(services, ServiceLifetime.Transient);
 
 			// Data
             AssertSpecifiedServiceTypeAndImplementationType<ICurrentDbConnectorProvider, AsyncLocalCurrentDbConnectorProvider>(services, ServiceLifetime.Scoped);

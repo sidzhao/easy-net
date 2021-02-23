@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using EasyNet.EventBus;
+﻿using System.Data;
+using System.Threading.Tasks;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.Options;
 
@@ -10,39 +10,35 @@ namespace EasyNet.Uow
     /// It's used if no component registered for <see cref="IUnitOfWork"/>.
     /// This ensures working EasyNet without a database.
     /// </summary>
-    public sealed class NullUnitOfWork : UnitOfWorkBase
+    public sealed class DefaultUnitOfWork : UnitOfWorkBase
     {
-        public NullUnitOfWork(IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(NullEasyNetSession.Instance, defaultOptions)
+        public DefaultUnitOfWork(IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(NullEasyNetSession.Instance, defaultOptions)
         {
         }
+
+        private IDbTransaction ActiveTransaction => DbConnector?.Transaction;
 
         public override void SaveChanges()
         {
 
         }
 
-        /// <inheritdoc/>
         public override Task SaveChangesAsync()
         {
             return Task.FromResult(0);
         }
 
-        /// <inheritdoc/>
-        protected override void BeginUow()
-        {
-
-        }
-
-        /// <inheritdoc/>
         protected override void CompleteUow()
         {
-
+            ActiveTransaction?.Commit();
         }
 
         /// <inheritdoc/>
         protected override Task CompleteUowAsync()
         {
-            return Task.FromResult(0);
+            ActiveTransaction?.Commit();
+
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>

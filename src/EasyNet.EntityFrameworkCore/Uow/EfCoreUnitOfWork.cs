@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
@@ -14,14 +13,10 @@ namespace EasyNet.EntityFrameworkCore.Uow
     /// </summary>
     public class EfCoreUnitOfWork : UnitOfWorkBase
     {
-        protected readonly IDbConnectorCreator DbConnectorCreator;
-
         public EfCoreUnitOfWork(
             IEasyNetSession session,
-            IDbConnectorCreator dbConnectorCreator,
             IOptions<UnitOfWorkDefaultOptions> defaultOptions) : base(session, defaultOptions)
         {
-            DbConnectorCreator = dbConnectorCreator;
         }
 
         protected DbContext ActiveDbContext => DbConnector?.GetDbContext();

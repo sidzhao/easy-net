@@ -16,7 +16,7 @@ namespace EasyNet.Tests.Uow
         {
             var services = new ServiceCollection();
             services.AddTransient<IEasyNetSession, NullEasyNetSession>();
-            services.AddTransient<IUnitOfWork, NullUnitOfWork>();
+            services.AddTransient<IUnitOfWork, DefaultUnitOfWork>();
             services.AddScoped<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>();
             services.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
             services.Configure<UnitOfWorkDefaultOptions>(o =>
@@ -49,9 +49,9 @@ namespace EasyNet.Tests.Uow
             Assert.Same(unitOfWork, unitOfWorkManager.Current);
             Assert.Same(unitOfWork, currentUnitOfWorkProvider.Current);
             Assert.Same(unitOfWorkManager.Current, currentUnitOfWorkProvider.Current);
-            Assert.Equal(false, ((NullUnitOfWork)unitOfWork).Options.IsTransactional);
-            Assert.Equal(IsolationLevel.Snapshot, ((NullUnitOfWork)unitOfWork).Options.IsolationLevel);
-            Assert.Equal(TimeSpan.Zero, ((NullUnitOfWork)unitOfWork).Options.Timeout);
+            Assert.Equal(false, ((DefaultUnitOfWork)unitOfWork).Options.IsTransactional);
+            Assert.Equal(IsolationLevel.Snapshot, ((DefaultUnitOfWork)unitOfWork).Options.IsolationLevel);
+            Assert.Equal(TimeSpan.Zero, ((DefaultUnitOfWork)unitOfWork).Options.Timeout);
 
             #endregion
 

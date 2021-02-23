@@ -84,7 +84,7 @@ namespace EasyNet
             // Unit of work
             services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
             services.TryAddSingleton<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>();
-            services.TryAddTransient<IUnitOfWork, NullUnitOfWork>();
+            services.TryAddTransient<IUnitOfWork, DefaultUnitOfWork>();
 
             // Data
             services.TryAddScoped<ICurrentDbConnectorProvider, AsyncLocalCurrentDbConnectorProvider>();

@@ -83,9 +83,9 @@ namespace EasyNet.Tests.Uow
 			Assert.True(nullUnitOfWork.IsDisposed);
 		}
 
-		private NullUnitOfWork GetNullUnitOfWork()
+		private DefaultUnitOfWork GetNullUnitOfWork()
 		{
-			return new NullUnitOfWork( new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
+			return new DefaultUnitOfWork( new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
 		}
 	}
 }
