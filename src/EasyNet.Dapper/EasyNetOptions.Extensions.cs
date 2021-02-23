@@ -33,11 +33,11 @@ namespace EasyNet.Extensions.DependencyInjection
 
         private static void RegisterRepositories(IServiceCollection services, params Assembly[] assemblies)
         {
-            var entityInterface = typeof(IEntity);
+            var entityInterface = typeof(IEntity<>);
 
             foreach (var assembly in assemblies)
             {
-                var types = assembly.GetExportedTypes().Where(p => entityInterface.IsAssignableFrom(p));
+                var types = assembly.GetExportedTypes().Where(p => p.HasImplementedRawGeneric(entityInterface));
                 foreach (var entityType in types)
                 {
                     // Try to get id property

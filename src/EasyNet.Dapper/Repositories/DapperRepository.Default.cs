@@ -42,7 +42,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual List<TEntity> GetAllList()
         {
-          throw new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public virtual Task<List<TEntity>> GetAllListAsync(CancellationToken cancellationToken = default)
@@ -76,7 +76,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
+        public virtual Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -100,7 +100,7 @@ namespace EasyNet.Dapper.Data
         {
             return Connection.QuerySingleAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
-        
+
         public TEntity First()
         {
             throw new NotImplementedException();
@@ -188,7 +188,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -198,7 +198,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -208,7 +208,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public async Task<TEntity> InsertOrUpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public Task<TEntity> InsertOrUpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -218,7 +218,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public async Task<TPrimaryKey> InsertOrUpdateAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public Task<TPrimaryKey> InsertOrUpdateAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -242,7 +242,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task<TEntity> UpdateAsync(TPrimaryKey id, Func<TEntity, Task> updateAction, CancellationToken cancellationToken = default)
+        public virtual Task<TEntity> UpdateAsync(TPrimaryKey id, Func<TEntity, Task> updateAction, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -266,7 +266,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task DeleteAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
+        public virtual Task DeleteAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -276,7 +276,7 @@ namespace EasyNet.Dapper.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        public virtual Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
