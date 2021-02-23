@@ -17,23 +17,6 @@ namespace EasyNet.EntityFrameworkCore.Data
             ServiceProvider = serviceProvider;
         }
 
-        public IDbConnector Create(UnitOfWorkOptions options = null)
-        {
-            var dbConnector = new EfCoreDbConnector
-            {
-                DbContext = ServiceProvider.GetRequiredService<TDbContext>()
-            };
-
-            if (options?.IsTransactional != null && options.IsTransactional.Value)
-            {
-                dbConnector.DbContextTransaction = dbConnector.DbContext.Database.BeginTransaction(
-                    (options.IsolationLevel ?? System.Transactions.IsolationLevel.ReadUncommitted)
-                    .ToSystemDataIsolationLevel());
-            }
-
-            return dbConnector;
-        }
-
         public IDbConnector Create(bool beginTransaction = false, IsolationLevel? isolationLevel = null)
         {
             var dbConnector = new EfCoreDbConnector

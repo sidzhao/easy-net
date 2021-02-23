@@ -279,12 +279,12 @@ namespace EasyNet.Data.Tests
 
         #endregion
 
-        public IDapperRepository<TEntity> GetDapperRepository<TEntity>() where TEntity : class, IEntity<int>
+        protected IDapperRepository<TEntity> GetDapperRepository<TEntity>() where TEntity : class, IEntity<int>
         {
             return ServiceProvider.GetService<IDapperRepository<TEntity>>();
         }
 
-        public IDapperRepository<TEntity, TPrimaryKey> GetDapperRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
+        protected IDapperRepository<TEntity, TPrimaryKey> GetDapperRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
         {
             return ServiceProvider.GetService<IDapperRepository<TEntity, TPrimaryKey>>();
         }

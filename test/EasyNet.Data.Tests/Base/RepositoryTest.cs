@@ -1682,7 +1682,7 @@ namespace EasyNet.Data.Tests.Base
 
         #endregion
 
-        private DbConnection CreateInMemoryDatabase()
+        protected DbConnection CreateInMemoryDatabase()
         {
             var connection = new SqliteConnection("Filename=:memory:");
 
