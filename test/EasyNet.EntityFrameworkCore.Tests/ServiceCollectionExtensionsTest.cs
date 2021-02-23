@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using EasyNet.CommonTests;
-using EasyNet.CommonTests.Entities;
+using EasyNet.CommonTests.Core.Entities;
 using EasyNet.Data;
 using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;

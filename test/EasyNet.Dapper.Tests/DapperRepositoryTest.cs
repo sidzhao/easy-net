@@ -1,7 +1,7 @@
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using EasyNet.CommonTests.Util;
+using EasyNet.CommonTests.Core;
 using EasyNet.Dapper.Data;
 using EasyNet.Data;
 using EasyNet.Uow;
@@ -20,7 +20,7 @@ namespace EasyNet.Dapper.Tests
             services
                 .AddEasyNet(x =>
                 {
-                    x.Assemblies = new[] {this.GetType().Assembly};
+                    x.Assemblies = new[] { this.GetType().Assembly };
                     x.UseSqlLite("Filename=:memory:");
                     x.UseDapper();
                 });
@@ -38,7 +38,8 @@ namespace EasyNet.Dapper.Tests
 
         private void InitData()
         {
-            var connection = _serviceProvider.GetService<IDbConnectorCreator>().Create().Connection;
+            using var dbConnectorCreator = _serviceProvider.GetService<IDbConnectorCreator>().Create();
+            var connection = dbConnectorCreator.Connection;
 
             DatabaseHelper.InitData(connection);
         }

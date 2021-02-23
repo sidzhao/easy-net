@@ -2,7 +2,8 @@ using System;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using EasyNet.CommonTests.Entities;
+using EasyNet.CommonTests.Core;
+using EasyNet.CommonTests.Core.Entities;
 using EasyNet.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
@@ -55,7 +56,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var role = roleRepo.Get(2);
 
                 // Assert
-                Assert.Equal("User", role.Name);
+                Assert.Equal("Admin1", role.Name);
             }
 
             if (useUow)
@@ -86,7 +87,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var role = await roleRepo.GetAsync(2);
 
                 // Assert
-                Assert.Equal("User", role.Name);
+                Assert.Equal("Admin1", role.Name);
             }
 
             if (useUow)
@@ -121,7 +122,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var users = userRepo.GetAllList();
 
                 // Assert
-                Assert.Equal(useUow ? 3 : 4, users.Count);
+                Assert.Equal(useUow ? 2 : 6, users.Count);
                 Assert.Equal("User2", users[1].Name);
             }
 
@@ -153,8 +154,15 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var users = userRepo.GetAllList(p => p.Status == Status.Active);
 
                 // Assert
-                Assert.Equal(useUow ? 2 : 3, users.Count);
-                Assert.Equal("User2", users[1].Name);
+                Assert.Equal(useUow ? 1 : 4, users.Count);
+                if (useUow)
+                {
+                    Assert.Equal("User1", users[0].Name);
+                }
+                else
+                {
+                    Assert.Equal("User3", users[1].Name);
+                }
             }
 
             if (useUow)
@@ -185,7 +193,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var users = await userRepo.GetAllListAsync();
 
                 // Assert
-                Assert.Equal(useUow ? 3 : 4, users.Count);
+                Assert.Equal(useUow ? 2 : 6, users.Count);
                 Assert.Equal("User2", users[1].Name);
             }
 
@@ -218,8 +226,15 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var users = await userRepo.GetAllListAsync(p => p.Status == Status.Active);
 
                 // Assert
-                Assert.Equal(useUow ? 2 : 3, users.Count);
-                Assert.Equal("User2", users[1].Name);
+                Assert.Equal(useUow ? 1 : 4, users.Count);
+                if (useUow)
+                {
+                    Assert.Equal("User1", users[0].Name);
+                }
+                else
+                {
+                    Assert.Equal("User3", users[1].Name);
+                }
             }
 
             if (useUow)
@@ -251,7 +266,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var userRepo = GetRepository<User, long>();
 
                 // Act
-                var user = userRepo.Single(p => p.Name == "User3");
+                var user = userRepo.Single(p => p.Name == "User2");
 
                 // Assert
                 Assert.NotNull(user);
@@ -291,7 +306,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var userRepo = GetRepository<User, long>();
 
                 // Act
-                var user = await userRepo.SingleAsync(p => p.Name == "User3");
+                var user = await userRepo.SingleAsync(p => p.Name == "User2");
 
                 // Assert
                 Assert.NotNull(user);
@@ -336,12 +351,11 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var userRepo = GetRepository<User, long>();
 
                 // Act
-                var user3 = userRepo.SingleOrDefault(p => p.Name == "User3");
+                var user2 = userRepo.SingleOrDefault(p => p.Name == "User2");
                 var user4 = userRepo.SingleOrDefault(p => p.Name == "User4");
                 var user0 = userRepo.SingleOrDefault(p => p.Name == "User0");
 
                 // Assert
-                Assert.NotNull(user3);
                 if (useUow)
                 {
                     Assert.Null(user4);
@@ -350,6 +364,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 {
                     Assert.NotNull(user4);
                 }
+                Assert.NotNull(user2);
                 Assert.Null(user0);
             }
 
@@ -378,12 +393,11 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var userRepo = GetRepository<User, long>();
 
                 // Act
-                var user3 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User3");
+                var user2 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User2");
                 var user4 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User4");
                 var user0 = await userRepo.SingleOrDefaultAsync(p => p.Name == "User0");
 
                 // Assert
-                Assert.NotNull(user3);
                 if (useUow)
                 {
                     Assert.Null(user4);
@@ -392,6 +406,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 {
                     Assert.NotNull(user4);
                 }
+                Assert.NotNull(user2);
                 Assert.Null(user0);
             }
 
@@ -431,7 +446,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 Assert.NotNull(user);
                 Assert.NotNull(inactiveUser);
                 Assert.Equal("User1", user.Name);
-                Assert.Equal("User3", inactiveUser.Name);
+                Assert.Equal("User2", inactiveUser.Name);
                 Assert.Throws<InvalidOperationException>(() => userRepo.First(p => p.Name == "User0"));
             }
 
@@ -467,7 +482,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 Assert.NotNull(user);
                 Assert.NotNull(inactiveUser);
                 Assert.Equal("User1", user.Name);
-                Assert.Equal("User3", inactiveUser.Name);
+                Assert.Equal("User2", inactiveUser.Name);
                 await Assert.ThrowsAsync<InvalidOperationException>(
                     async () => await userRepo.FirstAsync(p => p.Name == "User0"));
             }
@@ -510,7 +525,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 Assert.NotNull(inactiveUser);
                 Assert.Null(nullUser);
                 Assert.Equal("User1", user.Name);
-                Assert.Equal("User3", inactiveUser.Name);
+                Assert.Equal("User2", inactiveUser.Name);
             }
 
             if (useUow)
@@ -547,7 +562,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 Assert.NotNull(inactiveUser);
                 Assert.Null(nullUser);
                 Assert.Equal("User1", user.Name);
-                Assert.Equal("User3", inactiveUser.Name);
+                Assert.Equal("User2", inactiveUser.Name);
             }
 
             if (useUow)
@@ -586,10 +601,10 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var roleCount = roleRepo.Count();
 
                 // Assert
-                Assert.Equal(useUow ? 3 : 4, count);
-                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(useUow ? 2 : 6, count);
+                Assert.Equal(useUow ? 1 : 4, activeCount);
                 Assert.Equal(0, zeroCount);
-                Assert.Equal(2, roleCount);
+                Assert.Equal(useUow ? 2 : 4, roleCount);
             }
 
             if (useUow)
@@ -624,10 +639,10 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var roleCount = await roleRepo.CountAsync();
 
                 // Assert
-                Assert.Equal(useUow ? 3 : 4, count);
-                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(useUow ? 2 : 6, count);
+                Assert.Equal(useUow ? 1 : 4, activeCount);
                 Assert.Equal(0, zeroCount);
-                Assert.Equal(2, roleCount);
+                Assert.Equal(useUow ? 2 : 4, roleCount);
             }
 
             if (useUow)
@@ -664,8 +679,8 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var zeroCount = userRepo.Count(p => p.Name == "Zero");
 
                 // Assert
-                Assert.Equal(useUow ? 3 : 4, count);
-                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(useUow ? 2 : 6, count);
+                Assert.Equal(useUow ? 1 : 4, activeCount);
                 Assert.Equal(0, zeroCount);
             }
 
@@ -699,8 +714,8 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var zeroCount = await userRepo.CountAsync(p => p.Name == "Zero");
 
                 // Assert
-                Assert.Equal(useUow ? 3 : 4, count);
-                Assert.Equal(useUow ? 2 : 3, activeCount);
+                Assert.Equal(useUow ? 2 : 6, count);
+                Assert.Equal(useUow ? 1 : 4, activeCount);
                 Assert.Equal(0, zeroCount);
             }
 
@@ -807,31 +822,34 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 #region Insert but not SaveChanges
 
                 // Act
-                var user5 = new User
+                var user = new User
                 {
-                    Name = "User5",
+                    Name = "TempUser1",
                     RoleId = 1
                 };
-                userRepo.Insert(user5);
+                userRepo.Insert(user);
 
-                var role3 = new Role
+                var role = new Role
                 {
-                    Name = "Role3",
+                    Name = "TempRole1",
                 };
-                roleRepo.Insert(role3);
+                roleRepo.Insert(role);
 
-                var creationAudited1 = new TestCreationAudited();
+                var creationAudited1 = new TestCreationAudited
+                {
+                    Name = "TempCreation1"
+                };
                 creationAuditedRepo.Insert(creationAudited1);
 
                 // Assert
-                Assert.Equal(0, user5.Id);
-                Assert.Equal(useUow ? 3 : 4, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(0, user.Id);
+                Assert.Equal(useUow ? 2 : 6, userRepo.GetAll().AsNoTracking().Count());
 
-                Assert.Equal(0, role3.Id);
-                Assert.Equal(2, roleRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(0, role.Id);
+                Assert.Equal(useUow ? 2 : 4, roleRepo.GetAll().AsNoTracking().Count());
 
                 Assert.Equal(0, creationAudited1.Id);
-                Assert.Equal(0, creationAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(3, creationAuditedRepo.GetAll().AsNoTracking().Count());
 
                 #endregion
 
@@ -841,17 +859,17 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
-                Assert.Equal(5, user5.Id);
-                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
-                Assert.Equal(useUow ? 4 : 5, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(7, user.Id);
+                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, userRepo.GetAll().AsNoTracking().Count());
 
-                Assert.Equal(3, role3.Id);
-                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 3));
-                Assert.Equal(3, roleRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(5, role.Id);
+                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, roleRepo.GetAll().AsNoTracking().Count());
 
-                Assert.Equal(1, creationAudited1.Id);
-                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1)?.CreatorUserId);
-                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(4, creationAudited1.Id);
+                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
+                Assert.Equal(4, creationAuditedRepo.GetAll().AsNoTracking().Count());
 
                 #endregion
             }
@@ -885,31 +903,34 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 #region Insert but not SaveChanges
 
                 // Act
-                var user5 = new User
+                var user = new User
                 {
-                    Name = "User5",
+                    Name = "TempUser1",
                     RoleId = 1
                 };
-                await userRepo.InsertAsync(user5);
+                await userRepo.InsertAsync(user);
 
-                var role3 = new Role
+                var role = new Role
                 {
-                    Name = "Role3",
+                    Name = "TempRole1",
                 };
-                await roleRepo.InsertAsync(role3);
+                await roleRepo.InsertAsync(role);
 
-                var creationAudited1 = new TestCreationAudited();
+                var creationAudited1 = new TestCreationAudited
+                {
+                    Name = "TempCreation1"
+                };
                 await creationAuditedRepo.InsertAsync(creationAudited1);
 
                 // Assert
-                Assert.Equal(0, user5.Id);
-                Assert.Equal(useUow ? 3 : 4, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(0, user.Id);
+                Assert.Equal(useUow ? 2 : 6, await userRepo.GetAll().AsNoTracking().CountAsync());
 
-                Assert.Equal(0, role3.Id);
-                Assert.Equal(2, await roleRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(0, role.Id);
+                Assert.Equal(useUow ? 2 : 4, await roleRepo.GetAll().AsNoTracking().CountAsync());
 
                 Assert.Equal(0, creationAudited1.Id);
-                Assert.Equal(0, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(3, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
 
                 #endregion
 
@@ -919,17 +940,17 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
-                Assert.Equal(5, user5.Id);
-                Assert.Equal(useUow ? 4 : 5, await userRepo.GetAll().AsNoTracking().CountAsync());
-                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
+                Assert.Equal(7, user.Id);
+                Assert.Equal(useUow ? 3 : 7, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 7));
 
-                Assert.Equal(3, role3.Id);
-                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 3));
-                Assert.Equal(3, await roleRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(5, role.Id);
+                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, await roleRepo.GetAll().AsNoTracking().CountAsync());
 
-                Assert.Equal(1, creationAudited1.Id);
-                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1))?.CreatorUserId);
-                Assert.Equal(1, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(4, creationAudited1.Id);
+                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 4))?.CreatorUserId);
+                Assert.Equal(4, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
 
                 #endregion
             }
@@ -961,34 +982,37 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var creationAuditedRepo = GetRepository<TestCreationAudited>();
 
                 // Act
-                var role3 = new Role
+                var role = new Role
                 {
-                    Name = "Role3"
+                    Name = "TempRole1"
                 };
-                roleRepo.InsertAndGetId(role3);
+                roleRepo.InsertAndGetId(role);
 
-                var user5 = new User
+                var user = new User
                 {
-                    Name = "User5",
-                    RoleId = role3.Id
+                    Name = "TempUser1",
+                    RoleId = role.Id
                 };
-                userRepo.InsertAndGetId(user5);
+                userRepo.InsertAndGetId(user);
 
-                var creationAudited1 = new TestCreationAudited();
+                var creationAudited1 = new TestCreationAudited
+                {
+                    Name = "TempCreation"
+                };
                 creationAuditedRepo.InsertAndGetId(creationAudited1);
 
                 // Assert
-                Assert.Equal(3, role3.Id);
-                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 3));
-                Assert.Equal(3, roleRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(5, role.Id);
+                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, roleRepo.GetAll().AsNoTracking().Count());
 
-                Assert.Equal(5, user5.Id);
-                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
-                Assert.Equal(useUow ? 4 : 5, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(7, user.Id);
+                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, userRepo.GetAll().AsNoTracking().Count());
 
-                Assert.Equal(1, creationAudited1.Id);
-                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1)?.CreatorUserId);
-                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(4, creationAudited1.Id);
+                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
+                Assert.Equal(4, creationAuditedRepo.GetAll().AsNoTracking().Count());
             }
 
             if (useUow)
@@ -1018,34 +1042,37 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 var creationAuditedRepo = GetRepository<TestCreationAudited>();
 
                 // Act
-                var role3 = new Role
+                var role = new Role
                 {
-                    Name = "Role3"
+                    Name = "TempRole1"
                 };
-                await roleRepo.InsertAndGetIdAsync(role3);
+                await roleRepo.InsertAndGetIdAsync(role);
 
-                var user5 = new User
+                var user = new User
                 {
-                    Name = "User5",
+                    Name = "TempUser1",
                     RoleId = 1
                 };
-                await userRepo.InsertAndGetIdAsync(user5);
+                await userRepo.InsertAndGetIdAsync(user);
 
-                var creationAudited1 = new TestCreationAudited();
+                var creationAudited1 = new TestCreationAudited
+                {
+                    Name = "TempCreation"
+                };
                 await creationAuditedRepo.InsertAndGetIdAsync(creationAudited1);
 
                 // Assert
-                Assert.Equal(3, role3.Id);
-                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 3));
-                Assert.Equal(3, await roleRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(5, role.Id);
+                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, await roleRepo.GetAll().AsNoTracking().CountAsync());
 
-                Assert.Equal(5, user5.Id);
-                Assert.Equal(useUow ? 4 : 5, await userRepo.GetAll().AsNoTracking().CountAsync());
-                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
+                Assert.Equal(7, user.Id);
+                Assert.Equal(useUow ? 3 : 7, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 7));
 
-                Assert.Equal(1, creationAudited1.Id);
-                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1))?.CreatorUserId);
-                Assert.Equal(1, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(4, creationAudited1.Id);
+                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 4))?.CreatorUserId);
+                Assert.Equal(4, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
             }
 
             if (useUow)
@@ -1130,13 +1157,13 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 // Assert
                 Assert.Equal("TestUser2", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user2.Id).Name);
-                Assert.Equal(useUow ? 1 : 2, roleRepo.Count());
+                Assert.Equal(useUow ? 1 : 4, roleRepo.Count());
                 Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited2.Id).LastModifierUserId);
                 if (useUow)
                 {
                     using (uow.DisableFilter(EasyNetDataFilters.MayHaveTenant))
                     {
-                        Assert.Equal(2, roleRepo.Count());
+                        Assert.Equal(4, roleRepo.Count());
                     }
                 }
 
@@ -1144,22 +1171,21 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 #region Update with action
 
-                // Act
-                userRepo.Update(3, user =>
+                if (!useUow)
                 {
-                    user.Name = "TestUser3";
-                });
+                    // Act
+                    userRepo.Update(3, user => { user.Name = "TestUser3"; });
 
-                modificationAuditedRepo.Update(3, user =>
-                {
-                    user.Name = "TestUpdate3";
-                });
+                    modificationAuditedRepo.Update(3, user => { user.Name = "TestUpdate3"; });
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
-                // Assert
-                Assert.Equal("TestUser3", userRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).Name);
-                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).LastModifierUserId);
+                    // Assert
+                    Assert.Equal("TestUser3", userRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).Name);
+                    Assert.Equal(1,
+                        modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).LastModifierUserId);
+
+                }
 
                 #endregion
             }
@@ -1242,13 +1268,13 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 // Assert
                 Assert.Equal("TestUser2", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user2.Id)).Name);
-                Assert.Equal(useUow ? 1 : 2, await roleRepo.CountAsync());
+                Assert.Equal(useUow ? 1 : 4, await roleRepo.CountAsync());
                 Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited2.Id)).LastModifierUserId);
                 if (useUow)
                 {
                     using (uow.DisableFilter(EasyNetDataFilters.MayHaveTenant))
                     {
-                        Assert.Equal(2, await roleRepo.CountAsync());
+                        Assert.Equal(4, await roleRepo.CountAsync());
                     }
                 }
 
@@ -1256,26 +1282,32 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 #region Update with action
 
-                // Act
-                await userRepo.UpdateAsync(3, user =>
+                if (!useUow)
                 {
-                    user.Name = "TestUser3";
-                    return Task.CompletedTask;
-                });
+                    // Act
+                    await userRepo.UpdateAsync(3, user =>
+                    {
+                        user.Name = "TestUser3";
+                        return Task.CompletedTask;
+                    });
 
-                await modificationAuditedRepo.UpdateAsync(3, audited =>
-                {
-                    audited.Name = "TestUpdate3";
+                    await modificationAuditedRepo.UpdateAsync(3, audited =>
+                    {
+                        audited.Name = "TestUpdate3";
 
-                    return Task.CompletedTask;
-                });
+                        return Task.CompletedTask;
+                    });
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
-                // Assert
-                Assert.Equal("TestUser3", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).Name);
+                    // Assert
+                    Assert.Equal("TestUser3",
+                        (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).Name);
 
-                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).LastModifierUserId);
+                    Assert.Equal(1,
+                        (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).LastModifierUserId);
+                }
+
 
                 #endregion
             }
@@ -1417,7 +1449,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 // Assert
                 Assert.Null(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 1));
-                Assert.Equal(useUow ? 2 : 3, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(useUow ? 1 : 5, userRepo.GetAll().AsNoTracking().Count());
 
                 #endregion
 
@@ -1430,7 +1462,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 // Assert
                 Assert.Null(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 2));
-                Assert.Equal(useUow ? 1 : 2, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(useUow ? 0 : 4, userRepo.GetAll().AsNoTracking().Count());
 
                 #endregion
 
@@ -1442,7 +1474,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
-                Assert.Equal(0, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(useUow ? 0 : 1, userRepo.GetAll().AsNoTracking().Count());
 
                 #endregion
             }
@@ -1480,7 +1512,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 // Assert
                 Assert.Null(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 1));
-                Assert.Equal(useUow ? 2 : 3, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(useUow ? 1 : 5, await userRepo.GetAll().AsNoTracking().CountAsync());
 
                 #endregion
 
@@ -1493,7 +1525,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
                 // Assert
                 Assert.Null(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 2));
-                Assert.Equal(useUow ? 1 : 2, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(useUow ? 0 : 4, await userRepo.GetAll().AsNoTracking().CountAsync());
 
                 #endregion
 
@@ -1505,7 +1537,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
                 await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
-                Assert.Equal(0, await userRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(useUow ? 0 : 1, await userRepo.GetAll().AsNoTracking().CountAsync());
 
                 #endregion
             }
@@ -1537,7 +1569,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
             {
                 // Arrange
                 var deletionAuditedRepo = GetRepository<TestDeletionAudited>();
-
+                
                 #region Delete by id
 
                 // Act
@@ -1684,52 +1716,58 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
         private void InitData()
         {
-            var context = _serviceProvider.GetService<EfCoreContext>();
-            context.Database.EnsureCreated();
+            //using var scope = _serviceProvider.CreateScope();
+            var dbConnectorCreator = _serviceProvider.GetService<IDbConnectorCreator>().Create();
+            var connection = dbConnectorCreator.Connection;
 
-            // Insert default roles.
-            context.Roles.Add(new Role { TenantId = 1, Name = "Admin" });
-            context.SaveChanges();
-            context.Roles.Add(new Role { TenantId = 1, Name = "User" });
-            context.SaveChanges();
+            DatabaseHelper.InitData(connection);
 
-            // Insert default users.
-            context.Users.Add(new User { TenantId = 1, Name = "User1", Status = Status.Active, RoleId = 1 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 1, Name = "User2", Status = Status.Active, RoleId = 2 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 1, Name = "User3", Status = Status.Inactive, RoleId = 2 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 2, Name = "User4", Status = Status.Active, RoleId = 2 });
-            context.SaveChanges();
+            //var context = _serviceProvider.GetService<EfCoreContext>();
+            //context.Database.EnsureCreated();
 
-            // Insert default test modification audited records.
-            context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update1" });
-            context.SaveChanges();
-            context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update2" });
-            context.SaveChanges();
-            context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update3" });
-            context.SaveChanges();
+            //// Insert default roles.
+            //context.Roles.Add(new Role { TenantId = 1, Name = "Admin" });
+            //context.SaveChanges();
+            //context.Roles.Add(new Role { TenantId = 1, Name = "User" });
+            //context.SaveChanges();
 
-            // Insert default test deletion audited records.
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false, IsDeleted = true });
-            context.SaveChanges();
+            //// Insert default users.
+            //context.Users.Add(new User { TenantId = 1, Name = "User1", Status = Status.Active, RoleId = 1 });
+            //context.SaveChanges();
+            //context.Users.Add(new User { TenantId = 1, Name = "User2", Status = Status.Active, RoleId = 2 });
+            //context.SaveChanges();
+            //context.Users.Add(new User { TenantId = 1, Name = "User3", Status = Status.Inactive, RoleId = 2 });
+            //context.SaveChanges();
+            //context.Users.Add(new User { TenantId = 2, Name = "User4", Status = Status.Active, RoleId = 2 });
+            //context.SaveChanges();
 
-            // Clear all change trackers
-            foreach (var entry in context.ChangeTracker.Entries())
-            {
-                entry.State = EntityState.Detached;
-            }
+            //// Insert default test modification audited records.
+            //context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update1" });
+            //context.SaveChanges();
+            //context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update2" });
+            //context.SaveChanges();
+            //context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update3" });
+            //context.SaveChanges();
+
+            //// Insert default test deletion audited records.
+            //context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
+            //context.SaveChanges();
+            //context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false });
+            //context.SaveChanges();
+            //context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
+            //context.SaveChanges();
+            //context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
+            //context.SaveChanges();
+            //context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false });
+            //context.SaveChanges();
+            //context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false, IsDeleted = true });
+            //context.SaveChanges();
+
+            //// Clear all change trackers
+            //foreach (var entry in context.ChangeTracker.Entries())
+            //{
+            //    entry.State = EntityState.Detached;
+            //}
         }
 
         public IUnitOfWorkCompleteHandle BeginUow()

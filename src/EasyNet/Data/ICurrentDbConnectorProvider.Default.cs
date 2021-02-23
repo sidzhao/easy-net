@@ -38,7 +38,7 @@ namespace EasyNet.Data
             }
         }
 
-        public IDbConnector GetOrCreate()
+        public virtual IDbConnector GetOrCreate()
         {
             if (Current != null)
                 return Current;

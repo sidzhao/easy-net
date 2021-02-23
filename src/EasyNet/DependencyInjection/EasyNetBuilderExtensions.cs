@@ -1,4 +1,5 @@
 ﻿using System;
+using EasyNet.Data;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;
@@ -68,6 +69,22 @@ namespace EasyNet.DependencyInjection
             Check.NotNull(builder, nameof(builder));
 
             builder.Services.Replace(new ServiceDescriptor(typeof(IEasyNetSession), typeof(TSession), ServiceLifetime.Scoped));
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Add a new <see cref="ICurrentDbConnectorProvider"/> implementation.
+        /// </summary>
+        /// <typeparam name="TICurrentDbConnectorProvider"></typeparam>
+        /// <param name="builder">The <see cref="EasyNetBuilder"/>.</param>
+        /// <returns>An <see cref="EasyNetBuilder"/> that can be used to further configure the EasyNet services.</returns>
+        public static EasyNetBuilder AddCurrentDbConnectorProvider<TICurrentDbConnectorProvider>(this EasyNetBuilder builder)
+            where TICurrentDbConnectorProvider : ICurrentDbConnectorProvider
+        {
+            Check.NotNull(builder, nameof(builder));
+
+            builder.Services.Replace(new ServiceDescriptor(typeof(ICurrentDbConnectorProvider), typeof(TICurrentDbConnectorProvider), ServiceLifetime.Scoped));
 
             return builder;
         }

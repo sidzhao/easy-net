@@ -1,4 +1,4 @@
-﻿using EasyNet.CommonTests.Entities;
+﻿using EasyNet.CommonTests.Core.Entities;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;

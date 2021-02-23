@@ -8,7 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
-using EasyNet.CommonTests.Entities;
+using EasyNet.CommonTests;
+using EasyNet.CommonTests.Core;
+using EasyNet.CommonTests.Core.Entities;
 using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;
@@ -31,11 +33,10 @@ namespace EasyNet.EntityFrameworkCore.Tests
                         options.UseSqlite(CreateInMemoryDatabase());
                     });
                 })
-                .AddSession<TestSession>();
+                .AddSession<TestSession>()
+                .AddCurrentDbConnectorProvider<TestCurrentDbConnectorProvider>();
 
             _serviceProvider = services.BuildServiceProvider();
-
-            InitData();
         }
 
         [Fact]
@@ -53,7 +54,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
             var rolesNormal = roleRepo.GetAllList();
 
             // Assert
-            Assert.Single(usersNormal);
+            Assert.Equal(2, usersNormal.Count);
             Assert.Equal(2, rolesNormal.Count);
 
             #endregion
@@ -155,7 +156,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
             var rolesNormal = await roleRepo.GetAllListAsync();
 
             // Assert
-            Assert.Single(usersNormal);
+            Assert.Equal(2, usersNormal.Count);
             Assert.Equal(2, rolesNormal.Count);
 
             #endregion
@@ -249,62 +250,6 @@ namespace EasyNet.EntityFrameworkCore.Tests
             connection.Open();
 
             return connection;
-        }
-
-        private void InitData()
-        {
-            var context = _serviceProvider.GetService<EfCoreContext>();
-            context.Database.EnsureCreated();
-
-            // Insert default roles.
-            context.Roles.Add(new Role { TenantId = 1, Name = "Admin" });
-            context.SaveChanges();
-            context.Roles.Add(new Role { TenantId = 1, Name = "Admin1" });
-            context.SaveChanges();
-            context.Roles.Add(new Role { TenantId = 2, Name = "User" });
-            context.SaveChanges();
-            context.Roles.Add(new Role { TenantId = 3, Name = "Client" });
-            context.SaveChanges();
-
-            // Insert default users.
-            context.Users.Add(new User { TenantId = 1, Name = "User1", Status = Status.Active, RoleId = 1 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 2, Name = "User2", Status = Status.Active, RoleId = 2 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 2, Name = "User3", Status = Status.Inactive, RoleId = 2 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 2, Name = "User4", Status = Status.Active, RoleId = 2 });
-            context.SaveChanges();
-            context.Users.Add(new User { TenantId = 3, Name = "User5", Status = Status.Active, RoleId = 4 });
-            context.SaveChanges();
-
-            // Insert default test modification audited records.
-            context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update1" });
-            context.SaveChanges();
-            context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update2" });
-            context.SaveChanges();
-            context.TestModificationAudited.Add(new TestModificationAudited { Name = "Update3" });
-            context.SaveChanges();
-
-            // Insert default test deletion audited records.
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = true });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false });
-            context.SaveChanges();
-            context.TestDeletionAudited.Add(new TestDeletionAudited { IsActive = false, IsDeleted = true });
-            context.SaveChanges();
-
-            // Clear all change trackers
-            foreach (var entry in context.ChangeTracker.Entries())
-            {
-                entry.State = EntityState.Detached;
-            }
         }
 
         public IUnitOfWorkCompleteHandle BeginUow(UnitOfWorkOptions options = null)

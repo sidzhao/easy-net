@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using System.Transactions;
 using EasyNet.CommonTests;
+using EasyNet.CommonTests.Core;
+using EasyNet.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
@@ -63,6 +65,24 @@ namespace EasyNet.Tests
             Assert.Equal("1", session.UserId);
             Assert.Equal("Test", session.UserName);
             Assert.Equal("Admin", session.Role);
+        }
+
+        [Fact]
+        public void TestAddCurrentDbConnectorProvider()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            services.AddSingleton(CommonTest.GetHostingEnvironment());
+
+            // Act
+            services
+                .AddEasyNet()
+                .AddCurrentDbConnectorProvider<TestCurrentDbConnectorProvider>();
+
+            services.BuildServiceProvider();
+
+            // Assert
+            AssertSpecifiedServiceTypeAndImplementationType<ICurrentDbConnectorProvider, TestCurrentDbConnectorProvider>(services, ServiceLifetime.Scoped);
         }
 
         [Fact]
