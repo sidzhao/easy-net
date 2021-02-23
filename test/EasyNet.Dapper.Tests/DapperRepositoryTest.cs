@@ -1,6 +1,11 @@
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using EasyNet.CommonTests.Util;
+using EasyNet.Dapper.Data;
+using EasyNet.Data;
+using EasyNet.Uow;
+using Xunit;
 
 namespace EasyNet.Dapper.Tests
 {
@@ -22,7 +27,39 @@ namespace EasyNet.Dapper.Tests
 
             _serviceProvider = services.BuildServiceProvider();
 
-            //InitData();
+            InitData();
+        }
+
+        [Fact]
+        public void TestGetAll()
+        {
+
+        }
+
+        private void InitData()
+        {
+            var connection = _serviceProvider.GetService<IDbConnectorCreator>().Create().Connection;
+
+            DatabaseHelper.InitData(connection);
+        }
+        public IUnitOfWorkCompleteHandle BeginUow()
+        {
+            return _serviceProvider.GetService<IUnitOfWorkManager>().Begin(_serviceProvider);
+        }
+
+        public IDapperRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity<int>
+        {
+            return _serviceProvider.GetService<IDapperRepository<TEntity>>();
+        }
+
+        public IDapperRepository<TEntity, TPrimaryKey> GetRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
+        {
+            return _serviceProvider.GetService<IDapperRepository<TEntity, TPrimaryKey>>();
+        }
+
+        public ICurrentDbConnectorProvider GetCurrentDbConnectorProvider()
+        {
+            return _serviceProvider.GetRequiredService<ICurrentDbConnectorProvider>();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using EasyNet.Data;
 
-namespace EasyNet.EntityFrameworkCore.Tests.Entities
+namespace EasyNet.CommonTests.Entities
 {
     [Table("Users")]
     public class User : Entity<long>, IMustHaveTenant<long>
@@ -12,7 +12,7 @@ namespace EasyNet.EntityFrameworkCore.Tests.Entities
 
         public Status Status { get; set; }
 
-        public int RoleId { get; set; }
+        public long RoleId { get; set; }
 
         public virtual Role Role { get; set; }
     }

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using EasyNet.CommonTests;
+using EasyNet.CommonTests.Entities;
 using EasyNet.Data;
 using EasyNet.EntityFrameworkCore.Data;
 using EasyNet.EntityFrameworkCore.Tests.DbContext;
-using EasyNet.EntityFrameworkCore.Tests.Entities;
 using EasyNet.EntityFrameworkCore.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;

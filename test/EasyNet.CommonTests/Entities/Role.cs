@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using EasyNet.Data;
 
-namespace EasyNet.EntityFrameworkCore.Tests.Entities
+namespace EasyNet.CommonTests.Entities
 {
     [Table("Roles")]
     public class Role : Entity, IMayHaveTenant<long>

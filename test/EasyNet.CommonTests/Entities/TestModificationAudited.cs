@@ -1,6 +1,6 @@
 ﻿using EasyNet.Data;
 
-namespace EasyNet.EntityFrameworkCore.Tests.Entities
+namespace EasyNet.CommonTests.Entities
 {
     public class TestModificationAudited : AuditedEntity<long, long>
     {
