@@ -40,7 +40,7 @@ namespace EasyNet.Data
 
         public IDbConnector GetOrCreate()
         {
-            if (Current != null) 
+            if (Current != null)
                 return Current;
 
             // If the current unit of work is null, then create DbConnector directly and put into AsyncLocal.
@@ -55,7 +55,10 @@ namespace EasyNet.Data
             {
                 if (CurrentUnitOfWorkProvider.Current is UnitOfWorkBase uow)
                 {
-                    uow.SetDbConnector(DbConnectorCreator.Create(uow.Options));
+                    uow.SetDbConnector(DbConnectorCreator.Create(
+                        uow.Options.IsTransactional ?? false, 
+                        uow.Options.GetSystemDataIsolationLevel()));
+
                     return uow.DbConnector;
                 }
 

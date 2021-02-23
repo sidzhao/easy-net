@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;
@@ -28,6 +29,23 @@ namespace EasyNet.EntityFrameworkCore.Data
                 dbConnector.DbContextTransaction = dbConnector.DbContext.Database.BeginTransaction(
                     (options.IsolationLevel ?? System.Transactions.IsolationLevel.ReadUncommitted)
                     .ToSystemDataIsolationLevel());
+            }
+
+            return dbConnector;
+        }
+
+        public IDbConnector Create(bool beginTransaction = false, IsolationLevel? isolationLevel = null)
+        {
+            var dbConnector = new EfCoreDbConnector
+            {
+                DbContext = ServiceProvider.GetRequiredService<TDbContext>()
+            };
+
+            if (beginTransaction)
+            {
+                dbConnector.DbContextTransaction = isolationLevel != null ?
+                    dbConnector.DbContext.Database.BeginTransaction(isolationLevel.Value) :
+                    dbConnector.DbContext.Database.BeginTransaction();
             }
 
             return dbConnector;

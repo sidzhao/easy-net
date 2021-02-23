@@ -31,9 +31,9 @@ namespace EasyNet.Extensions.DependencyInjection
         /// Add specified services to let the system use SqlLite.
         /// </summary>
         /// <param name="options">The <see cref="EasyNetOptions"/>.</param>
-        /// <param name="setupAction">An <see cref="Action{EasyNetSqlLiteOptions}"/> to configure the provided <see cref="EasyNetSqlLiteOptions"/>.</param>
+        /// <param name="setupAction">An <see cref="Action{EasyNetSqlLiteOptions}"/> to configure the provided <see cref="SqlLiteOptions"/>.</param>
         /// <returns></returns>
-        public static void UseSqlLite(this EasyNetOptions options, Action<EasyNetSqlLiteOptions> setupAction)
+        public static void UseSqlLite(this EasyNetOptions options, Action<SqlLiteOptions> setupAction)
         {
             Check.NotNull(options, nameof(options));
             Check.NotNull(setupAction, nameof(setupAction));
@@ -42,7 +42,7 @@ namespace EasyNet.Extensions.DependencyInjection
             {
                 services.Configure(setupAction);
 
-                services.TryAddSingleton<IDbConnectorCreator, EasyNetSqlLiteConnectorCreator>();
+                services.TryAddSingleton<IDbConnectorCreator, SqlLiteConnectorCreator>();
             });
         }
     }

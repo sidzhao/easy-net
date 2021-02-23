@@ -18,4 +18,16 @@
     <ProjectReference Include="..\EasyNet\EasyNet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="C:\Users\Sid\.nuget\packages\sqlitepclraw.lib.e_sqlite3\2.0.4\build\net461\..\..\runtimes\win-x86\native\e_sqlite3.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\Sid\.nuget\packages\sqlitepclraw.lib.e_sqlite3\2.0.4\build\net461\..\..\runtimes\win-x64\native\e_sqlite3.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\Sid\.nuget\packages\sqlitepclraw.lib.e_sqlite3\2.0.4\build\net461\..\..\runtimes\win-arm\native\e_sqlite3.dll" />
+  </ItemGroup>
+
 </Project>

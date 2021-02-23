@@ -1,5 +1,5 @@
-using System;
 using System.Data;
+using EasyNet.Extensions.DependencyInjection;
 using EasyNet.SqlLite.Data;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -13,7 +13,7 @@ namespace EasyNet.SqlLite.Tests
         {
             // Arrange
             var connectionString = "Filename=:memory:";
-            var creator = new EasyNetSqlLiteConnectorCreator(new OptionsWrapper<EasyNetSqlLiteOptions>(new EasyNetSqlLiteOptions
+            var creator = new SqlLiteConnectorCreator(new OptionsWrapper<SqlLiteOptions>(new SqlLiteOptions
             {
                 ConnectionString = "Filename=:memory:"
             }));
@@ -22,10 +22,11 @@ namespace EasyNet.SqlLite.Tests
 
             // Act
             var dbConnector = creator.Create();
-            dbConnector.Connection.Open();
 
             // Assert
             Assert.NotNull(dbConnector.Connection);
+            Assert.Null(dbConnector.Transaction);
+            Assert.Equal(ConnectionState.Open, dbConnector.Connection.State);
             Assert.Same(dbConnector.Connection.ConnectionString, connectionString);
 
             #endregion
@@ -36,6 +37,42 @@ namespace EasyNet.SqlLite.Tests
             dbConnector.Dispose();
 
             // Assert
+            Assert.Equal(ConnectionState.Closed, dbConnector.Connection.State);
+
+            #endregion
+        }
+
+        [Fact]
+        public void TestCreateDbConnectorWithTransaction()
+        {
+            // Arrange
+            var connectionString = "Filename=:memory:";
+            var creator = new SqlLiteConnectorCreator(new OptionsWrapper<SqlLiteOptions>(new SqlLiteOptions
+            {
+                ConnectionString = "Filename=:memory:"
+            }));
+
+            #region Create
+
+            // Act
+            var dbConnector = creator.Create(beginTransaction: true);
+
+            // Assert
+            Assert.NotNull(dbConnector.Connection);
+            Assert.NotNull(dbConnector.Transaction);
+            Assert.Same(dbConnector.Connection.ConnectionString, connectionString);
+            Assert.Equal(ConnectionState.Open, dbConnector.Connection.State);
+            Assert.False(dbConnector.Transaction.GetPrivateField<bool>("_completed"));
+
+            #endregion
+
+            #region Dispose
+
+            // Act
+            dbConnector.Dispose();
+
+            // Assert
+            Assert.True(dbConnector.Transaction.GetPrivateField<bool>("_completed"));
             Assert.Equal(ConnectionState.Closed, dbConnector.Connection.State);
 
             #endregion

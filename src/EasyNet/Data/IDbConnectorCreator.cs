@@ -1,9 +1,9 @@
-﻿using EasyNet.Uow;
+﻿using System.Data;
 
 namespace EasyNet.Data
 {
     public interface IDbConnectorCreator
     {
-        IDbConnector Create(UnitOfWorkOptions uowOptions = null);
+        IDbConnector Create(bool beginTransaction = false, IsolationLevel? isolationLevel = null);
     }
 }
