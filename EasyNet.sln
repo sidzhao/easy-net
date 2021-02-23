@@ -29,11 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.SqlLite", "src\Easy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.SqlLite.Tests", "test\EasyNet.SqlLite.Tests\EasyNet.SqlLite.Tests.csproj", "{DB23AE58-70BD-41FC-9013-1DEB4B385627}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNet.Dapper", "src\EasyNet.Dapper\EasyNet.Dapper.csproj", "{6E43A632-AA21-42D3-88D4-C4D72D83131A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Dapper", "src\EasyNet.Dapper\EasyNet.Dapper.csproj", "{6E43A632-AA21-42D3-88D4-C4D72D83131A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNet.Dapper.Tests", "test\EasyNet.Dapper.Tests\EasyNet.Dapper.Tests.csproj", "{05336749-9413-4A34-9CEB-EAE199377B21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Dapper.Tests", "test\EasyNet.Dapper.Tests\EasyNet.Dapper.Tests.csproj", "{05336749-9413-4A34-9CEB-EAE199377B21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNet.Data.Tests", "test\EasyNet.Data.Tests\EasyNet.Data.Tests.csproj", "{C784926D-03AB-4180-B62F-B96848F9B76E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Data.Tests", "test\EasyNet.Data.Tests\EasyNet.Data.Tests.csproj", "{C784926D-03AB-4180-B62F-B96848F9B76E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDapper", "..\easy-dapper\src\EasyDapper\EasyDapper.csproj", "{D75CEF2C-577C-4251-B605-A53096BBFAD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{C784926D-03AB-4180-B62F-B96848F9B76E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C784926D-03AB-4180-B62F-B96848F9B76E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C784926D-03AB-4180-B62F-B96848F9B76E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75CEF2C-577C-4251-B605-A53096BBFAD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75CEF2C-577C-4251-B605-A53096BBFAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75CEF2C-577C-4251-B605-A53096BBFAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75CEF2C-577C-4251-B605-A53096BBFAD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

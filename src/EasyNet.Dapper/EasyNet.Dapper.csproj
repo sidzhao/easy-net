@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\easy-dapper\src\EasyDapper\EasyDapper.csproj" />
     <ProjectReference Include="..\EasyNet\EasyNet.csproj" />
   </ItemGroup>
 
