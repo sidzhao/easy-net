@@ -31,7 +31,7 @@ namespace EasyNet.Data.Tests.Base
 
                 // Act
                 var role2 = roleRepo.Get(2);
-                
+
                 // Assert
                 Assert.Equal("Admin1", role2.Name);
 
@@ -70,10 +70,19 @@ namespace EasyNet.Data.Tests.Base
                 var roleRepo = GetRepository<Role>();
 
                 // Act
-                var role = await roleRepo.GetAsync(2);
+                var role2 = await roleRepo.GetAsync(2);
 
                 // Assert
-                Assert.Equal("Admin1", role.Name);
+                Assert.Equal("Admin1", role2.Name);
+
+                if (useUow)
+                {
+                    await Assert.ThrowsAsync<EasyNetNotFoundEntityException<Role, int>>(async () => await roleRepo.GetAsync(3));
+                }
+                else
+                {
+                    Assert.NotNull(roleRepo.Get(3));
+                }
             }
 
             if (useUow)
@@ -1555,7 +1564,7 @@ namespace EasyNet.Data.Tests.Base
             {
                 // Arrange
                 var deletionAuditedRepo = GetRepository<TestDeletionAudited>();
-                
+
                 #region Delete by id
 
                 // Act
@@ -1706,7 +1715,7 @@ namespace EasyNet.Data.Tests.Base
         }
 
         public virtual IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity<int>
-        { 
+        {
             return ServiceProvider.GetService<IRepository<TEntity>>();
         }
 
