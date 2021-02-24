@@ -37,7 +37,14 @@ namespace EasyNet.Data.Tests.Base
 
                 if (useUow)
                 {
-                    Assert.Throws<EasyNetNotFoundEntityException<Role, int>>(() => roleRepo.Get(3));
+                    try
+                    {
+                        roleRepo.Get(3);
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.True(ex is EasyNetNotFoundEntityException<Role, int> || ex is InvalidOperationException);
+                    }
                 }
                 else
                 {
@@ -77,11 +84,18 @@ namespace EasyNet.Data.Tests.Base
 
                 if (useUow)
                 {
-                    await Assert.ThrowsAsync<EasyNetNotFoundEntityException<Role, int>>(async () => await roleRepo.GetAsync(3));
+                    try
+                    {
+                        await roleRepo.GetAsync(3);
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.True(ex is EasyNetNotFoundEntityException<Role, int> || ex is InvalidOperationException);
+                    }
                 }
                 else
                 {
-                    Assert.NotNull(roleRepo.Get(3));
+                    Assert.NotNull(roleRepo.GetAsync(3));
                 }
             }
 

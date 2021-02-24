@@ -42,7 +42,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="param">The parameters to pass, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
-        TEntity Single(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        TEntity GetSingle(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets exactly one entity with sql.
@@ -51,7 +51,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="param">The parameters to pass, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
-        Task<TEntity> SingleAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<TEntity> GetSingleAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets a first entity with sql.
@@ -60,7 +60,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="param">The parameters to pass, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
-        TEntity First(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        TEntity GetFirst(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets a first entity with sql.
@@ -69,7 +69,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="param">The parameters to pass, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
-        Task<TEntity> FirstAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<TEntity> GetFirstAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets only one entity or null with sql.
@@ -79,7 +79,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
         /// <returns>The <see cref="TEntity"/> or null.</returns>
-        TEntity SingleOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        TEntity GetSingleOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets only one entity or null with sql.
@@ -89,7 +89,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
         /// <returns>The <see cref="TEntity"/> or null.</returns>
-        Task<TEntity> SingleOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<TEntity> GetSingleOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets a first entity or null with sql.
@@ -99,7 +99,7 @@ namespace EasyNet.Dapper.Data
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
         /// <returns>The <see cref="TEntity"/> or null.</returns>
-        TEntity FirstOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        TEntity GetFirstOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
 
         /// <summary>
         /// Gets a first entity or null with sql.
@@ -109,6 +109,6 @@ namespace EasyNet.Dapper.Data
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
         /// <returns>The <see cref="TEntity"/> or null.</returns>
-        Task<TEntity> FirstOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<TEntity> GetFirstOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null);
     }
 }

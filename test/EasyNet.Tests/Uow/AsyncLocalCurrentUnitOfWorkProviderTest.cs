@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -24,7 +25,7 @@ namespace EasyNet.Tests.Uow
             var currentUnitOfWorkProvider = new AsyncLocalCurrentUnitOfWorkProvider();
 
             // Act
-            var unitOfWork = GetNullUnitOfWork();
+            var unitOfWork = GetUnitOfWork();
             currentUnitOfWorkProvider.Current = unitOfWork;
 
             // Assert
@@ -43,7 +44,7 @@ namespace EasyNet.Tests.Uow
             var currentUnitOfWorkProvider = new AsyncLocalCurrentUnitOfWorkProvider();
 
             // Act
-            var unitOfWork = GetNullUnitOfWork();
+            var unitOfWork = GetUnitOfWork();
             currentUnitOfWorkProvider.Current = unitOfWork;
             await Task.Delay(500);
 
@@ -59,10 +60,10 @@ namespace EasyNet.Tests.Uow
 
 
             // Act
-            var unitOfWork1 = GetNullUnitOfWork();
+            var unitOfWork1 = GetUnitOfWork();
             currentUnitOfWorkProvider.Current = unitOfWork1;
 
-            var unitOfWork2 = GetNullUnitOfWork();
+            var unitOfWork2 = GetUnitOfWork();
             currentUnitOfWorkProvider.Current = unitOfWork2;
 
             // Assert
@@ -81,10 +82,10 @@ namespace EasyNet.Tests.Uow
             var currentUnitOfWorkProvider = new AsyncLocalCurrentUnitOfWorkProvider();
 
             // Act
-            var unitOfWork1 = GetNullUnitOfWork();
+            var unitOfWork1 = GetUnitOfWork();
             currentUnitOfWorkProvider.Current = unitOfWork1;
 
-            var unitOfWork2 = GetNullUnitOfWork();
+            var unitOfWork2 = GetUnitOfWork();
             currentUnitOfWorkProvider.Current = unitOfWork2;
 
             currentUnitOfWorkProvider.Current = null;
@@ -93,9 +94,9 @@ namespace EasyNet.Tests.Uow
             Assert.Same(unitOfWork1, currentUnitOfWorkProvider.Current);
         }
 
-        private DefaultUnitOfWork GetNullUnitOfWork()
+        private DefaultUnitOfWork GetUnitOfWork()
         {
-            return new DefaultUnitOfWork(new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
+            return new DefaultUnitOfWork(NullEasyNetSession.Instance, new OptionsWrapper<UnitOfWorkDefaultOptions>(new UnitOfWorkDefaultOptions()));
         }
     }
 }

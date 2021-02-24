@@ -1,4 +1,7 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using EasyNet.Dapper.Repositories;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+// ReSharper disable once CheckNamespace
 namespace EasyNet.Extensions.DependencyInjection
 {
     /// <summary>
@@ -14,6 +17,11 @@ namespace EasyNet.Extensions.DependencyInjection
         public static EasyNetRepositoryBuilder UseDapper(this EasyNetOptions options)
         {
             Check.NotNull(options, nameof(options));
+
+            options.AddRegisterServicesAction(services =>
+            {
+                services.TryAddSingleton<IQueryFilterExecuter, QueryFilterExecuter>();
+            });
 
             return new EasyNetRepositoryBuilder(options);
         }

@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.Data;
-using EasyNet.EventBus;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.Options;

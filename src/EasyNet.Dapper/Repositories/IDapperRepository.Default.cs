@@ -7,7 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using EasyDapperExtensions;
+using EasyNet.Dapper.Repositories;
 using EasyNet.Data;
+using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 
 // ReSharper disable once CheckNamespace
 namespace EasyNet.Dapper.Data
@@ -15,8 +18,7 @@ namespace EasyNet.Dapper.Data
     public class DapperRepositoryBase<TEntity> : DapperRepositoryBase<TEntity, int>, IDapperRepository<TEntity>
         where TEntity : class, IEntity<int>
     {
-        public DapperRepositoryBase(ICurrentDbConnectorProvider currentDbConnectorProvider)
-            : base(currentDbConnectorProvider)
+        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IQueryFilterExecuter queryFilterExecuter) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, queryFilterExecuter)
         {
         }
     }
@@ -29,38 +31,48 @@ namespace EasyNet.Dapper.Data
     public class DapperRepositoryBase<TEntity, TPrimaryKey> : IDapperRepository<TEntity, TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>
     {
-        protected IDbConnector DbConnector { get; }
+        protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
+        protected readonly IEasyNetSession EasyNetSession;
+        protected readonly IDbConnector DbConnector;
+
+        // ReSharper disable once IdentifierTypo
+        protected readonly IQueryFilterExecuter QueryFilterExecuter;
+
+        // ReSharper disable once IdentifierTypo
+        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IQueryFilterExecuter queryFilterExecuter)
+        {
+            EasyNetSession = session;
+            CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
+            DbConnector = currentDbConnectorProvider.GetOrCreate();
+            QueryFilterExecuter = queryFilterExecuter;
+        }
 
         protected IDbConnection Connection => DbConnector.Connection;
 
         protected IDbTransaction Transaction => DbConnector.Transaction;
 
-        public DapperRepositoryBase(ICurrentDbConnectorProvider currentDbConnectorProvider)
-        {
-            DbConnector = currentDbConnectorProvider.GetOrCreate();
-        }
 
         #region Select/Get/Query
 
         public virtual List<TEntity> GetAllList()
         {
-            throw new NotImplementedException();
+            return GetAllList(null);
         }
 
         public virtual Task<List<TEntity>> GetAllListAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return GetAllListAsync(null, cancellationToken);
         }
 
         public virtual List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
-            var enumerable = Connection.GetAll(predicate, Transaction);
+            var enumerable = Connection.GetAll(ExecuteFilter(predicate), Transaction);
             return enumerable.ToList();
         }
 
         public virtual async Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            var enumerable = await Connection.GetAllAsync(predicate, Transaction);
+            var enumerable = await Connection.GetAllAsync(ExecuteFilter(predicate), Transaction);
             return enumerable.ToList();
         }
 
@@ -77,108 +89,110 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity Get(TPrimaryKey id)
         {
-            throw new NotImplementedException();
+            return Single(CreateEqualityExpressionForId(id));
         }
 
         public virtual Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return SingleAsync(CreateEqualityExpressionForId(id), cancellationToken);
         }
 
         public virtual TEntity Single(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Connection.GetSingle(ExecuteFilter(predicate), Transaction);
         }
 
         public virtual Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Connection.GetSingleAsync(ExecuteFilter(predicate), Transaction);
         }
 
-        public TEntity Single(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public TEntity GetSingle(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QuerySingle<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
-        public Task<TEntity> SingleAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public Task<TEntity> GetSingleAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QuerySingleAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public TEntity First()
         {
-            throw new NotImplementedException();
+            return First(null);
         }
 
         public Task<TEntity> FirstAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return FirstAsync(null, cancellationToken);
         }
 
         public virtual TEntity First(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Connection.GetFirst(ExecuteFilter(predicate), Transaction);
         }
 
         public virtual Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Connection.GetFirstAsync(ExecuteFilter(predicate), Transaction);
         }
 
-        public TEntity First(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public TEntity GetFirst(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QueryFirst<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
-        public Task<TEntity> FirstAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public Task<TEntity> GetFirstAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QueryFirstAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public virtual TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Connection.GetSingleOrDefault(ExecuteFilter(predicate), Transaction);
         }
 
         public virtual Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Connection.GetSingleOrDefaultAsync(ExecuteFilter(predicate), Transaction);
         }
-        public TEntity SingleOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+
+        public TEntity GetSingleOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QuerySingleOrDefault<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
-        public Task<TEntity> SingleOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public Task<TEntity> GetSingleOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QuerySingleOrDefaultAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public virtual TEntity FirstOrDefault()
         {
-            throw new NotImplementedException();
+            return FirstOrDefault(null);
         }
 
         public virtual Task<TEntity> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return FirstOrDefaultAsync(null, cancellationToken);
         }
 
         public virtual TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Connection.GetFirstOrDefault(ExecuteFilter(predicate), Transaction);
         }
 
         public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Connection.GetFirstOrDefaultAsync(ExecuteFilter(predicate), Transaction);
         }
-        public TEntity FirstOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+
+        public TEntity GetFirstOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QueryFirstOrDefault<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
-        public Task<TEntity> FirstOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        public Task<TEntity> GetFirstOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             return Connection.QueryFirstOrDefaultAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
@@ -233,7 +247,9 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            Connection.Update(entity);
+
+            return entity;
         }
 
         public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -340,5 +356,26 @@ namespace EasyNet.Dapper.Data
         }
 
         #endregion
+
+        protected virtual Expression<Func<TEntity, bool>> ExecuteFilter(Expression<Func<TEntity, bool>> predicate)
+        {
+            return QueryFilterExecuter.ExecuteFilter<TEntity, TPrimaryKey>(CurrentUnitOfWorkProvider, EasyNetSession, predicate);
+        }
+
+        protected virtual Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
+        {
+            var lambdaParam = Expression.Parameter(typeof(TEntity));
+
+            var leftExpression = Expression.PropertyOrField(lambdaParam, "Id");
+
+            var idValue = Convert.ChangeType(id, typeof(TPrimaryKey));
+
+            Expression<Func<object>> closure = () => idValue;
+            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
+
+            var lambdaBody = Expression.Equal(leftExpression, rightExpression);
+
+            return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
+        }
     }
 }
