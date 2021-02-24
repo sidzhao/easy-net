@@ -2,7 +2,7 @@ using System;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using EasyNet.Data.Tests.Core.Data.Entities;
+using EasyNet.CommonTests.Common.Entities;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
@@ -1696,12 +1696,12 @@ namespace EasyNet.Data.Tests.Base
             return ServiceProvider.GetService<IUnitOfWorkManager>().Begin(ServiceProvider);
         }
 
-        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity<int>
-        {
+        public virtual IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity<int>
+        { 
             return ServiceProvider.GetService<IRepository<TEntity>>();
         }
 
-        public IRepository<TEntity, TPrimaryKey> GetRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
+        public virtual IRepository<TEntity, TPrimaryKey> GetRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
         {
             return ServiceProvider.GetService<IRepository<TEntity, TPrimaryKey>>();
         }
@@ -1710,15 +1710,5 @@ namespace EasyNet.Data.Tests.Base
         {
             return ServiceProvider.GetRequiredService<ICurrentDbConnectorProvider>();
         }
-    }
-
-    public class TestSession : EasyNetSessionBase
-    {
-        public override string UserId => "1";
-        public override string TenantId => "1";
-        public override string UserName => "Test";
-        public override string Role => "Admin";
-        public override string ImpersonatorUserId => string.Empty;
-        public override string ImpersonatorTenantId => string.Empty;
     }
 }

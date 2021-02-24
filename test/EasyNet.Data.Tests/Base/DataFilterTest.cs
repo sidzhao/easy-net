@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 using System.Threading.Tasks;
-using EasyNet.Data.Tests.Core.Data.Entities;
+using EasyNet.CommonTests.Common.Entities;
 using EasyNet.Uow;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,4 @@
 ﻿using System;
-using EasyNet.Extensions;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using Moq;

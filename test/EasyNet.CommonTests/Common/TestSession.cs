@@ -1,6 +1,6 @@
 ﻿using EasyNet.Runtime.Session;
 
-namespace EasyNet.Tests.Session
+namespace EasyNet.CommonTests.Common
 {
     public class TestSession : EasyNetSessionBase
     {

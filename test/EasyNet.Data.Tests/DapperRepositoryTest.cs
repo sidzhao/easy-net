@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyNet.CommonTests.Common;
+using EasyNet.CommonTests.Common.Entities;
 using EasyNet.Dapper.Data;
 using EasyNet.Data.Tests.Base;
-using EasyNet.Data.Tests.Core.Data;
-using EasyNet.Data.Tests.Core.Data.Entities;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -278,6 +278,11 @@ namespace EasyNet.Data.Tests
         }
 
         #endregion
+
+        public override IRepository<TEntity, TPrimaryKey> GetRepository<TEntity, TPrimaryKey>()
+        {
+            return GetDapperRepository<TEntity, TPrimaryKey>();
+        }
 
         protected IDapperRepository<TEntity> GetDapperRepository<TEntity>() where TEntity : class, IEntity<int>
         {

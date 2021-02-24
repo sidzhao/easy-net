@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using EasyDapperExtensions;
 using EasyNet.Data;
 
 // ReSharper disable once CheckNamespace
@@ -73,7 +74,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity Get(TPrimaryKey id)
         {
-            throw new NotImplementedException();
+            return Connection.Get<TEntity>(id);
         }
 
         public virtual Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)

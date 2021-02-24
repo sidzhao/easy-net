@@ -1,6 +1,6 @@
 ﻿using EasyNet.Data;
 
-namespace EasyNet.CommonTests.Core.Entities
+namespace EasyNet.CommonTests.Common.Entities
 {
     public class TestCreationAudited : CreationAuditedEntity
     {

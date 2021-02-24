@@ -1,4 +1,4 @@
-﻿using EasyNet.Data.Tests.Core.Data.Entities;
+﻿using EasyNet.CommonTests.Common.Entities;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace EasyNet.Data.Tests.Core.Data
+namespace EasyNet.CommonTests.Common
 {
     public class EfCoreContext : EasyNetDbContext
     {

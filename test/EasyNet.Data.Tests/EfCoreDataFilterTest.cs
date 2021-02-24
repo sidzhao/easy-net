@@ -1,5 +1,5 @@
-﻿using EasyNet.Data.Tests.Base;
-using EasyNet.Data.Tests.Core.Data;
+﻿using EasyNet.CommonTests.Common;
+using EasyNet.Data.Tests.Base;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ namespace EasyNet.Data.Tests
                     x.UseEfCore<EfCoreContext>(options =>
                     {
                         options.UseSqlite(CreateInMemoryDatabase());
-                    });
+                    }).AsDefault<EfCoreContext>();
                 })
                 .AddSession<TestSession>()
                 .AddCurrentDbConnectorProvider<TestCurrentDbConnectorProvider>();

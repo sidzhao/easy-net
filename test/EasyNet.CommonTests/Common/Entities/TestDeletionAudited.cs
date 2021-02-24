@@ -1,4 +1,6 @@
-﻿namespace EasyNet.Data.Tests.Core.Data.Entities
+﻿using EasyNet.Data;
+
+namespace EasyNet.CommonTests.Common.Entities
 {
     public class TestDeletionAudited : FullAuditedEntity<int, long>
     {

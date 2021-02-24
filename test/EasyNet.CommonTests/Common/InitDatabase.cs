@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace EasyNet.Data.Tests.Core.Data
+namespace EasyNet.CommonTests.Common
 {
     public static class DatabaseHelper
     {

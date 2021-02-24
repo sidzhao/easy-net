@@ -1,6 +1,7 @@
-﻿using EasyNet.Uow;
+﻿using EasyNet.Data;
+using EasyNet.Uow;
 
-namespace EasyNet.Data.Tests.Core.Data
+namespace EasyNet.CommonTests.Common
 {
     public class TestCurrentDbConnectorProvider : AsyncLocalCurrentDbConnectorProvider
     {

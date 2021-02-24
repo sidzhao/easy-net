@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using EasyNet.CommonTests;
-using EasyNet.CommonTests.Core.Entities;
+using EasyNet.CommonTests.Common;
 using EasyNet.Data;
 using EasyNet.EntityFrameworkCore.Data;
-using EasyNet.EntityFrameworkCore.Tests.DbContext;
 using EasyNet.EntityFrameworkCore.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;
@@ -15,10 +14,10 @@ using Xunit;
 
 namespace EasyNet.EntityFrameworkCore.Tests
 {
-    public class ServiceCollectionExtensionsTest : DependencyInjectionTest
+    public class EasyNetOptionsExtensionsTest : DependencyInjectionTest
     {
         [Fact]
-        public void TestAddEfCoreAsMainOrmTechnology()
+        public void TestAddServices()
         {
             // Arrange
             var services = new ServiceCollection();
@@ -45,12 +44,6 @@ namespace EasyNet.EntityFrameworkCore.Tests
 
             Assert.NotNull(sqlServerOptions);
             Assert.Equal("TestConnectionString", ((RelationalOptionsExtension)sqlServerOptions).ConnectionString);
-            AssertSpecifiedServiceTypeAndImplementationType<IRepository<User, long>, EfCoreRepositoryBase<EfCoreContext, User, long>>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IRepository<Role, int>, EfCoreRepositoryBase<EfCoreContext, Role, int>>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IRepository<Role>, EfCoreRepositoryBase<EfCoreContext, Role>>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IRepository<User, long>, EfCoreRepositoryBase<EfCoreContext, User, long>>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IRepository<Role, int>, EfCoreRepositoryBase<EfCoreContext, Role, int>>(services, ServiceLifetime.Transient);
-            AssertSpecifiedServiceTypeAndImplementationType<IRepository<Role>, EfCoreRepositoryBase<EfCoreContext, Role>>(services, ServiceLifetime.Transient);
         }
     }
 }

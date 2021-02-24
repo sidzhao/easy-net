@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data.Common;
 using System.Threading.Tasks;
+using EasyNet.CommonTests.Common;
 using EasyNet.Data;
 using EasyNet.DependencyInjection;
-using EasyNet.EntityFrameworkCore.Tests.DbContext;
-using EasyNet.EntityFrameworkCore.Uow;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;
 using Microsoft.Data.Sqlite;

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Transactions;
 using EasyNet.CommonTests;
-using EasyNet.CommonTests.Core;
+using EasyNet.CommonTests.Common;
 using EasyNet.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Mvc;

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using EasyNet.Dapper.Data;
+﻿using EasyNet.CommonTests.Common;
 using EasyNet.Data.Tests.Base;
-using EasyNet.Data.Tests.Core.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;

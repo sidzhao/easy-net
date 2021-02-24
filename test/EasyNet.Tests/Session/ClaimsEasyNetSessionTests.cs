@@ -1,7 +1,5 @@
 ﻿using System.Security.Claims;
 using System.Threading;
-using EasyNet.DependencyInjection;
-using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Security;
 using EasyNet.Runtime.Session;
 using Microsoft.Extensions.DependencyInjection;

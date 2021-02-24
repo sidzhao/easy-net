@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using EasyNet.Data;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.EntityFrameworkCore.Data;
@@ -24,7 +23,7 @@ namespace EasyNet.Extensions.DependencyInjection
         /// <param name="options">The <see cref="EasyNetOptions"/>.</param>
         /// <param name="setupAction">An <see cref="Action{DbContextOptionsBuilder}"/> to configure the provided <see cref="DbContextOptionsBuilder"/>.</param>
         /// <returns></returns>
-        public static void UseEfCore<TDbContext>(this EasyNetOptions options, Action<DbContextOptionsBuilder> setupAction)
+        public static EasyNetRepositoryBuilder UseEfCore<TDbContext>(this EasyNetOptions options, Action<DbContextOptionsBuilder> setupAction)
             where TDbContext : EasyNetDbContext
         {
             Check.NotNull(options, nameof(options));
@@ -40,54 +39,9 @@ namespace EasyNet.Extensions.DependencyInjection
 
                 // Uow
                 services.TryAddTransient<IUnitOfWork, EfCoreUnitOfWork>();
-
-                // Repository
-                RegisterRepositories<TDbContext>(services);
-
             });
-        }
 
-        /// <summary>
-        /// Add all repositories service to the <see cref="IServiceCollection"/>.
-        /// </summary>
-        /// <typeparam name="TDbContext">The context associated with the application.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        private static void RegisterRepositories<TDbContext>(IServiceCollection services) where TDbContext : EasyNetDbContext
-        {
-            var dbContextType = typeof(TDbContext);
-            var properties = dbContextType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-
-            foreach (var property in properties)
-            {
-                // Try to get DbSet<> type collection
-                if (property.PropertyType.IsGenericType &&
-                    string.Equals(property.PropertyType.Name, typeof(DbSet<>).Name, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    // Try to get entity type
-                    if (property.PropertyType.GenericTypeArguments.Length == 1)
-                    {
-                        var entityType = property.PropertyType.GenericTypeArguments[0];
-
-                        // Try to get id property
-                        var idProperty = entityType.GetProperty("Id");
-                        if (idProperty != null)
-                        {
-                            // Add short service IRepository<TEntity> if the id property type is int.
-                            if (idProperty.PropertyType == typeof(int))
-                            {
-                                services.TryAddTransient(
-                                    typeof(IRepository<>).MakeGenericType(entityType),
-                                    typeof(EfCoreRepositoryBase<,>).MakeGenericType(dbContextType, entityType));
-                            }
-
-                            // Add service IRepository<TEntity,TPrimaryKey>
-                            services.TryAddTransient(
-                                typeof(IRepository<,>).MakeGenericType(entityType, idProperty.PropertyType),
-                                typeof(EfCoreRepositoryBase<,,>).MakeGenericType(dbContextType, entityType, idProperty.PropertyType));
-                        }
-                    }
-                }
-            }
+            return new EasyNetRepositoryBuilder(options);
         }
     }
 }

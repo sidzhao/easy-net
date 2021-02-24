@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\src\EasyNet.Dapper\EasyNet.Dapper.csproj" />
     <ProjectReference Include="..\..\src\EasyNet.EntityFrameworkCore\EasyNet.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\EasyNet.SqlLite\EasyNet.SqlLite.csproj" />
+    <ProjectReference Include="..\EasyNet.CommonTests\EasyNet.CommonTests.csproj" />
   </ItemGroup>
 
 </Project>
