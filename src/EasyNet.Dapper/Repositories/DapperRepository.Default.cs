@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +44,8 @@ namespace EasyNet.Dapper.Data
 
         public virtual List<TEntity> GetAllList()
         {
-            throw new NotImplementedException();
+            var enumerable = Connection.GetAll(transaction: Transaction);
+            return enumerable.ToList();
         }
 
         public virtual Task<List<TEntity>> GetAllListAsync(CancellationToken cancellationToken = default)
@@ -53,12 +55,14 @@ namespace EasyNet.Dapper.Data
 
         public virtual List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            var enumerable = Connection.GetAll(predicate, Transaction);
+            return enumerable.ToList();
         }
 
-        public virtual Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        public virtual async Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var enumerable = await Connection.GetAllAsync(predicate, Transaction);
+            return enumerable.ToList();
         }
 
         public IEnumerable<TEntity> GetAllList(string sql, object param = null, bool buffered = true, int? commandTimeout = null,
@@ -74,7 +78,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity Get(TPrimaryKey id)
         {
-            return Connection.Get<TEntity>(id);
+            throw new NotImplementedException();
         }
 
         public virtual Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
