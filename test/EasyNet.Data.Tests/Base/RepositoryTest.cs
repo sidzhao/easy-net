@@ -30,10 +30,19 @@ namespace EasyNet.Data.Tests.Base
                 var roleRepo = GetRepository<Role>();
 
                 // Act
-                var role = roleRepo.Get(2);
-
+                var role2 = roleRepo.Get(2);
+                
                 // Assert
-                Assert.Equal("Admin1", role.Name);
+                Assert.Equal("Admin1", role2.Name);
+
+                if (useUow)
+                {
+                    Assert.Throws<EasyNetNotFoundEntityException<Role, int>>(() => roleRepo.Get(3));
+                }
+                else
+                {
+                    Assert.NotNull(roleRepo.Get(3));
+                }
             }
 
             if (useUow)

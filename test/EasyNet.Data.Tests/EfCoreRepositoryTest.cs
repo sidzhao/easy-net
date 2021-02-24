@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyNet.Data.Tests
 {
-    public class EfCoreRepositoryTest : DataFilterTest
+    public class EfCoreRepositoryTest : RepositoryTest
     {
         public EfCoreRepositoryTest()
         {

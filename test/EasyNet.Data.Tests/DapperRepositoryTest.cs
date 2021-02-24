@@ -23,7 +23,7 @@ namespace EasyNet.Data.Tests
                 {
                     x.Assemblies = new[] { this.GetType().Assembly };
                     x.UseSqlLite("Filename=:memory:");
-                    x.UseDapper();
+                    x.UseDapper().AsDefault(typeof(User).Assembly);
                 })
                 .AddSession<TestSession>()
                 .AddCurrentDbConnectorProvider<TestCurrentDbConnectorProvider>();
@@ -278,12 +278,7 @@ namespace EasyNet.Data.Tests
         }
 
         #endregion
-
-        public override IRepository<TEntity, TPrimaryKey> GetRepository<TEntity, TPrimaryKey>()
-        {
-            return GetDapperRepository<TEntity, TPrimaryKey>();
-        }
-
+        
         protected IDapperRepository<TEntity> GetDapperRepository<TEntity>() where TEntity : class, IEntity<int>
         {
             return ServiceProvider.GetService<IDapperRepository<TEntity>>();
