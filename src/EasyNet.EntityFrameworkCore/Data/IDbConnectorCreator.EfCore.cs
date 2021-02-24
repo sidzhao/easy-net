@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Data;
 using EasyNet.Data;
-using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

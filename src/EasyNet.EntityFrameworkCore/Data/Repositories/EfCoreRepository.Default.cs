@@ -51,7 +51,7 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         #region Select/Get/Query
 
-        public virtual IEnumerable<TEntity> GetAllList()
+        public virtual List<TEntity> GetAllList()
         {
             return GetAll().ToList();
         }

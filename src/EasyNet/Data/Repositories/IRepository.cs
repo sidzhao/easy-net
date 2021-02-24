@@ -35,7 +35,7 @@ namespace EasyNet.Data
 		/// Used to get all entities.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<TEntity> GetAllList();
+        List<TEntity> GetAllList();
 
 		/// <summary>
 		/// Used to get all entities.

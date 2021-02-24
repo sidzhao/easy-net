@@ -44,8 +44,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual List<TEntity> GetAllList()
         {
-            var enumerable = Connection.GetAll(transaction: Transaction);
-            return enumerable.ToList();
+            throw new NotImplementedException();
         }
 
         public virtual Task<List<TEntity>> GetAllListAsync(CancellationToken cancellationToken = default)
