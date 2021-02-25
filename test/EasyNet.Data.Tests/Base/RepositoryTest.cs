@@ -161,9 +161,11 @@ namespace EasyNet.Data.Tests.Base
 
                 // Act
                 var users = userRepo.GetAllList(p => p.Status == Status.Active);
+                var users1 = userRepo.GetAllList(p => p.Status == Status.Active || p.RoleId == 1);
 
                 // Assert
                 Assert.Equal(useUow ? 1 : 4, users.Count);
+                Assert.Equal(useUow ? 2 : 5, users1.Count);
                 if (useUow)
                 {
                     Assert.Equal("User1", users[0].Name);
@@ -203,7 +205,14 @@ namespace EasyNet.Data.Tests.Base
 
                 // Assert
                 Assert.Equal(useUow ? 2 : 6, users.Count);
-                Assert.Equal("User2", users[1].Name);
+                if (useUow)
+                {
+                    Assert.Equal("User1", users[0].Name);
+                }
+                else
+                {
+                    Assert.Equal("User3", users[1].Name);
+                }
             }
 
             if (useUow)
@@ -233,9 +242,11 @@ namespace EasyNet.Data.Tests.Base
 
                 // Act
                 var users = await userRepo.GetAllListAsync(p => p.Status == Status.Active);
+                var users1 = await userRepo.GetAllListAsync(p => p.Status == Status.Active || p.RoleId == 1);
 
                 // Assert
                 Assert.Equal(useUow ? 1 : 4, users.Count);
+                Assert.Equal(useUow ? 2 : 5, users1.Count);
                 if (useUow)
                 {
                     Assert.Equal("User1", users[0].Name);
