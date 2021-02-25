@@ -307,7 +307,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual int Count()
         {
-            throw new NotImplementedException();
+            return Count(null);
         }
 
         public virtual Task<int> CountAsync(CancellationToken cancellationToken = default)
@@ -317,7 +317,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual int Count(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Connection.Count<TEntity, int>(predicate, Transaction);
         }
 
         public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
@@ -327,7 +327,7 @@ namespace EasyNet.Dapper.Data
 
         public virtual long LongCount()
         {
-            throw new NotImplementedException();
+            return Connection.Count<TEntity, long>(predicate:, Transaction);
         }
 
         public virtual Task<long> LongCountAsync(CancellationToken cancellationToken = default)

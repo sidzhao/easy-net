@@ -42,7 +42,6 @@ namespace EasyNet.Extensions.DependencyInjection
         /// <param name="repository">The <see cref="IRepository{TEntity}"/>.</param>
         /// <param name="sql">The SQL to execute for the query.</param>
         /// <param name="param">The parameters to pass, if any.</param>
-        /// <param name="buffered">Whether to buffer results in memory.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <param name="commandType">The type of command to execute.</param>
         /// <returns></returns>
@@ -50,14 +49,13 @@ namespace EasyNet.Extensions.DependencyInjection
             this IRepository<TEntity, TPrimaryKey> repository,
             string sql,
             object param = null,
-            bool buffered = true,
             int? commandTimeout = null,
             CommandType? commandType = null)
             where TEntity : class, IEntity<TPrimaryKey>
         {
             if (repository is DapperRepositoryBase<TEntity, TPrimaryKey> dapperRepository)
             {
-                return dapperRepository.GetAllListAsync(sql, param, buffered, commandTimeout, commandType);
+                return dapperRepository.GetAllListAsync(sql, param, commandTimeout, commandType);
             }
 
             throw new EasyNetException($"The interface {typeof(IRepository<,>).AssemblyQualifiedName} is not implemented with class {typeof(DapperRepositoryBase<,>)}.");
