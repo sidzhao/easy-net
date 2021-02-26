@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.CommonTests.Common.Entities;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -205,14 +204,7 @@ namespace EasyNet.Data.Tests.Base
 
                 // Assert
                 Assert.Equal(useUow ? 2 : 6, users.Count);
-                if (useUow)
-                {
-                    Assert.Equal("User1", users[0].Name);
-                }
-                else
-                {
-                    Assert.Equal("User3", users[1].Name);
-                }
+                Assert.Equal("User2", users[1].Name);
             }
 
             if (useUow)

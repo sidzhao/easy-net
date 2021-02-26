@@ -347,12 +347,12 @@ namespace EasyNet.Dapper.Data
 
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Connection.Any(predicate);
         }
 
         public virtual Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Connection.AnyAsync(predicate);
         }
 
         #endregion
