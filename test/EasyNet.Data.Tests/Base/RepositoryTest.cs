@@ -1110,6 +1110,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestUpdate(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             void Do(IActiveUnitOfWork uow)
             {
                 // Arrange
@@ -1128,12 +1130,13 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited1.Name = "TestUpdate1";
                 modificationAuditedRepo.Update(modificationAudited1);
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
-                Assert.Equal("TestUser1", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user1.Id).Name);
+                Assert.Equal("TestUser1", userRepo.Single(p => p.Id == user1.Id).Name);
 
-                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited1.Id).LastModifierUserId);
+                Assert.Equal(1, modificationAuditedRepo.Single(p => p.Id == modificationAudited1.Id).LastModifierUserId);
 
                 #endregion
 
@@ -1165,12 +1168,13 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited2.Name = "TestUpdate2";
                 modificationAuditedRepo.Update(modificationAudited2);
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
-                Assert.Equal("TestUser2", userRepo.GetAll().AsNoTracking().Single(p => p.Id == user2.Id).Name);
+                Assert.Equal("TestUser2", userRepo.Single(p => p.Id == user2.Id).Name);
                 Assert.Equal(useUow ? 1 : 4, roleRepo.Count());
-                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == modificationAudited2.Id).LastModifierUserId);
+                Assert.Equal(1, modificationAuditedRepo.Single(p => p.Id == modificationAudited2.Id).LastModifierUserId);
                 if (useUow)
                 {
                     using (uow.DisableFilter(EasyNetDataFilters.MayHaveTenant))
@@ -1190,12 +1194,13 @@ namespace EasyNet.Data.Tests.Base
 
                     modificationAuditedRepo.Update(3, user => { user.Name = "TestUpdate3"; });
 
-                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                    if (isEfCoreTest)
+                        GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                     // Assert
-                    Assert.Equal("TestUser3", userRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).Name);
+                    Assert.Equal("TestUser3", userRepo.Single(p => p.Id == 3).Name);
                     Assert.Equal(1,
-                        modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 3).LastModifierUserId);
+                        modificationAuditedRepo.Single(p => p.Id == 3).LastModifierUserId);
 
                 }
 
@@ -1221,6 +1226,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestUpdateAsync(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             async Task DoAsync(IActiveUnitOfWork uow)
             {
                 // Arrange
@@ -1239,12 +1246,13 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited1.Name = "TestUpdate1";
                 await modificationAuditedRepo.UpdateAsync(modificationAudited1);
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
-                Assert.Equal("TestUser1", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user1.Id)).Name);
+                Assert.Equal("TestUser1", (await userRepo.SingleAsync(p => p.Id == user1.Id)).Name);
 
-                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited1.Id)).LastModifierUserId);
+                Assert.Equal(1, (await modificationAuditedRepo.SingleAsync(p => p.Id == modificationAudited1.Id)).LastModifierUserId);
 
                 #endregion
 
@@ -1276,12 +1284,13 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited2.Name = "TestUpdate2";
                 await modificationAuditedRepo.UpdateAsync(modificationAudited2);
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
-                Assert.Equal("TestUser2", (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == user2.Id)).Name);
+                Assert.Equal("TestUser2", (await userRepo.SingleAsync(p => p.Id == user2.Id)).Name);
                 Assert.Equal(useUow ? 1 : 4, await roleRepo.CountAsync());
-                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == modificationAudited2.Id)).LastModifierUserId);
+                Assert.Equal(1, (await modificationAuditedRepo.SingleAsync(p => p.Id == modificationAudited2.Id)).LastModifierUserId);
                 if (useUow)
                 {
                     using (uow.DisableFilter(EasyNetDataFilters.MayHaveTenant))
@@ -1310,14 +1319,15 @@ namespace EasyNet.Data.Tests.Base
                         return Task.CompletedTask;
                     });
 
-                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                    if (isEfCoreTest)
+                        await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                     // Assert
                     Assert.Equal("TestUser3",
-                        (await userRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).Name);
+                        (await userRepo.SingleAsync(p => p.Id == 3)).Name);
 
                     Assert.Equal(1,
-                        (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 3)).LastModifierUserId);
+                        (await modificationAuditedRepo.SingleAsync(p => p.Id == 3)).LastModifierUserId);
                 }
 
 
@@ -1577,6 +1587,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestSoftDelete(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             void Do()
             {
                 // Arrange
@@ -1587,12 +1599,13 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 deletionAuditedRepo.Delete(1);
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
-                Assert.Equal(1, deletionAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).DeleterUserId);
-                Assert.Equal(2, deletionAuditedRepo.GetAll().AsNoTracking().Count(p => p.IsDeleted));
-                Assert.Equal(6, deletionAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(1, deletionAuditedRepo.Single(p => p.Id == 1).DeleterUserId);
+                Assert.Equal(2, deletionAuditedRepo.Count(p => p.IsDeleted));
+                Assert.Equal(6, deletionAuditedRepo.Count());
 
                 #endregion
 
@@ -1601,12 +1614,13 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 deletionAuditedRepo.Delete(deletionAuditedRepo.Get(2));
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
-                Assert.Equal(1, deletionAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 2).DeleterUserId);
-                Assert.Equal(3, deletionAuditedRepo.GetAll().AsNoTracking().Count(p => p.IsDeleted));
-                Assert.Equal(6, deletionAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(1, deletionAuditedRepo.Single(p => p.Id == 2).DeleterUserId);
+                Assert.Equal(3, deletionAuditedRepo.Count(p => p.IsDeleted));
+                Assert.Equal(6, deletionAuditedRepo.Count());
 
                 #endregion
 
@@ -1615,12 +1629,13 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 deletionAuditedRepo.Delete(p => p.IsActive == false);
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(3,
-                    deletionAuditedRepo.GetAll().AsNoTracking().Count(p => p.IsActive == false && p.IsDeleted));
-                Assert.Equal(6, deletionAuditedRepo.GetAll().AsNoTracking().Count());
+                    deletionAuditedRepo.Count(p => p.IsActive == false && p.IsDeleted));
+                Assert.Equal(6, deletionAuditedRepo.Count());
 
                 #endregion
             }
@@ -1647,6 +1662,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestSoftDeleteAsync(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             async Task DoAsync()
             {
                 // Arrange
@@ -1657,13 +1674,14 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await deletionAuditedRepo.DeleteAsync(1);
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(1,
-                    (await deletionAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).DeleterUserId);
-                Assert.Equal(2, await deletionAuditedRepo.GetAll().AsNoTracking().CountAsync(p => p.IsDeleted));
-                Assert.Equal(6, await deletionAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                    (await deletionAuditedRepo.SingleAsync(p => p.Id == 1)).DeleterUserId);
+                Assert.Equal(2, await deletionAuditedRepo.CountAsync(p => p.IsDeleted));
+                Assert.Equal(6, await deletionAuditedRepo.CountAsync());
 
                 #endregion
 
@@ -1672,13 +1690,14 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await deletionAuditedRepo.DeleteAsync(await deletionAuditedRepo.GetAsync(2));
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(1,
-                    (await deletionAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 2)).DeleterUserId);
-                Assert.Equal(3, await deletionAuditedRepo.GetAll().AsNoTracking().CountAsync(p => p.IsDeleted));
-                Assert.Equal(6, await deletionAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                    (await deletionAuditedRepo.SingleAsync(p => p.Id == 2)).DeleterUserId);
+                Assert.Equal(3, await deletionAuditedRepo.CountAsync(p => p.IsDeleted));
+                Assert.Equal(6, await deletionAuditedRepo.CountAsync());
 
                 #endregion
 
@@ -1687,13 +1706,13 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await deletionAuditedRepo.DeleteAsync(p => p.IsActive == false);
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(3,
-                    await deletionAuditedRepo.GetAll().AsNoTracking()
-                        .CountAsync(p => p.IsActive == false && p.IsDeleted));
-                Assert.Equal(6, await deletionAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                    await deletionAuditedRepo.CountAsync(p => p.IsActive == false && p.IsDeleted));
+                Assert.Equal(6, await deletionAuditedRepo.CountAsync());
 
                 #endregion
             }

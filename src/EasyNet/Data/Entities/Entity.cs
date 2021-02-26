@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EasyNet.Data
 {
@@ -22,6 +23,7 @@ namespace EasyNet.Data
         /// <summary>
         /// Unique identifier for this entity.
         /// </summary>
+        [Key]
         public virtual TPrimaryKey Id { get; set; }
 
         public override string ToString()

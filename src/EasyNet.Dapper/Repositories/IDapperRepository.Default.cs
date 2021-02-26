@@ -9,7 +9,9 @@ using Dapper;
 using EasyDapperExtensions;
 using EasyNet.Dapper.Repositories;
 using EasyNet.Data;
+using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
+using EasyNet.Timing;
 using EasyNet.Uow;
 
 // ReSharper disable once CheckNamespace
@@ -247,24 +249,40 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity Update(TEntity entity)
         {
-            Connection.Update(entity);
+            ApplyConceptsForModifiedEntity(entity);
+
+            Connection.Update(entity, transaction: Transaction);
 
             return entity;
         }
 
-        public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ApplyConceptsForModifiedEntity(entity);
+
+            await Connection.UpdateAsync(entity, transaction: Transaction);
+
+            return entity;
         }
 
         public virtual TEntity Update(TPrimaryKey id, Action<TEntity> updateAction)
         {
-            throw new NotImplementedException();
+            var entity = Get(id);
+
+            updateAction(entity);
+
+            return Update(entity);
         }
 
-        public virtual Task<TEntity> UpdateAsync(TPrimaryKey id, Func<TEntity, Task> updateAction, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> UpdateAsync(TPrimaryKey id, Func<TEntity, Task> updateAction, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var entity = await GetAsync(id, cancellationToken);
+
+            await updateAction(entity);
+
+            await UpdateAsync(entity, cancellationToken);
+
+            return entity;
         }
 
         #endregion
@@ -273,32 +291,92 @@ namespace EasyNet.Dapper.Data
 
         public virtual void Delete(TEntity entity)
         {
-            throw new NotImplementedException();
+            if (entity is ISoftDelete)
+            {
+                ApplyConceptsForDeletedEntity(entity);
+
+                Connection.Update(entity, transaction: Transaction);
+            }
+            else
+            {
+
+            }
         }
 
-        public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (entity is ISoftDelete)
+            {
+                ApplyConceptsForDeletedEntity(entity);
+
+                await Connection.UpdateAsync(entity, transaction: Transaction);
+            }
+            else
+            {
+
+            }
         }
 
         public virtual void Delete(TPrimaryKey id)
         {
-            throw new NotImplementedException();
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                var entity = Get(id);
+
+                Delete(entity);
+            }
+            else
+            {
+
+            }
         }
 
-        public virtual Task DeleteAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                var entity = await GetAsync(id, cancellationToken);
+
+                await DeleteAsync(entity, cancellationToken);
+            }
+            else
+            {
+
+            }
         }
 
         public virtual void Delete(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                var entities = GetAllList(predicate);
+
+                foreach (var entity in entities)
+                {
+                    Delete(entity);
+                }
+            }
+            else
+            {
+
+            }
         }
 
-        public virtual Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                var entities = await GetAllListAsync(predicate, cancellationToken);
+
+                foreach (var entity in entities)
+                {
+                    await DeleteAsync(entity, cancellationToken);
+                }
+            }
+            else
+            {
+
+            }
         }
 
         #endregion
@@ -376,6 +454,48 @@ namespace EasyNet.Dapper.Data
             var lambdaBody = Expression.Equal(leftExpression, rightExpression);
 
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
+        }
+
+
+        protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)
+        {
+            if (entity is IHasModificationTime hasModificationTime)
+            {
+                hasModificationTime.LastModificationTime = Clock.Now;
+            }
+
+            var entityType = entity.GetType();
+
+            var modificationGeneric = entityType.GetImplementedRawGeneric(typeof(IModificationAudited<>));
+            if (modificationGeneric != null)
+            {
+                var userIdProperty = entityType.GetProperty("LastModifierUserId");
+                if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {entityType.AssemblyQualifiedName}.");
+                userIdProperty.SetValueAndAutoFit(entity, EasyNetSession.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
+            }
+        }
+
+        protected virtual void ApplyConceptsForDeletedEntity(TEntity entity)
+        {
+            var entityType = entity.GetType();
+
+            if (entity is ISoftDelete iSoftDelete)
+            {
+                iSoftDelete.IsDeleted = true;
+
+                if (entity is IHasDeletionTime hasDeletionTime)
+                {
+                    hasDeletionTime.DeletionTime = Clock.Now;
+                }
+
+                var deletionGeneric = entityType.GetImplementedRawGeneric(typeof(IDeletionAudited<>));
+                if (deletionGeneric != null)
+                {
+                    var userIdProperty = entityType.GetProperty("DeleterUserId");
+                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {entityType.AssemblyQualifiedName}.");
+                    userIdProperty.SetValueAndAutoFit(entity, EasyNetSession.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
+                }
+            }
         }
     }
 }
