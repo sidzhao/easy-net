@@ -299,7 +299,7 @@ namespace EasyNet.Dapper.Data
             }
             else
             {
-
+                Connection.Delete(CreateEqualityExpressionForId(entity.Id));
             }
         }
 
@@ -313,7 +313,7 @@ namespace EasyNet.Dapper.Data
             }
             else
             {
-
+                await Connection.DeleteAsync(CreateEqualityExpressionForId(entity.Id));
             }
         }
 
@@ -327,7 +327,7 @@ namespace EasyNet.Dapper.Data
             }
             else
             {
-
+                Connection.Delete(CreateEqualityExpressionForId(id));
             }
         }
 
@@ -341,7 +341,7 @@ namespace EasyNet.Dapper.Data
             }
             else
             {
-
+                await Connection.DeleteAsync(CreateEqualityExpressionForId(id));
             }
         }
 
@@ -358,7 +358,7 @@ namespace EasyNet.Dapper.Data
             }
             else
             {
-
+                Connection.Delete(predicate);
             }
         }
 
@@ -375,7 +375,7 @@ namespace EasyNet.Dapper.Data
             }
             else
             {
-
+                await Connection.DeleteAsync(predicate);
             }
         }
 
