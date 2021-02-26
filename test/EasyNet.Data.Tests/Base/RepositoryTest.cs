@@ -878,12 +878,12 @@ namespace EasyNet.Data.Tests.Base
 
                 // Assert
                 Assert.Equal(7, user.Id);
-                Assert.NotNull(userRepo.SingleOrDefault(p => p.Id == 7));
-                Assert.Equal(useUow ? 3 : 7, userRepo.Count());
+                Assert.Equal(useUow ? true : false, userRepo.SingleOrDefault(p => p.Id == 7) == null);
+                Assert.Equal(useUow ? 2 : 7, userRepo.Count());
 
                 Assert.Equal(5, role.Id);
-                Assert.NotNull(roleRepo.SingleOrDefault(p => p.Id == 5));
-                Assert.Equal(useUow ? 3 : 5, roleRepo.Count());
+                Assert.Equal(useUow ? true : false, roleRepo.SingleOrDefault(p => p.Id == 5) == null);
+                Assert.Equal(useUow ? 2 : 5, roleRepo.Count());
 
                 Assert.Equal(4, creationAudited1.Id);
                 Assert.Equal(1, creationAuditedRepo.SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
@@ -911,6 +911,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestInsertAsync(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             async Task DoAsync()
             {
                 // Arrange
@@ -941,34 +943,38 @@ namespace EasyNet.Data.Tests.Base
                 await creationAuditedRepo.InsertAsync(creationAudited1);
 
                 // Assert
-                Assert.Equal(0, user.Id);
-                Assert.Equal(useUow ? 2 : 6, await userRepo.GetAll().AsNoTracking().CountAsync());
+                if (isEfCoreTest)
+                {
+                    Assert.Equal(0, user.Id);
+                    Assert.Equal(useUow ? 2 : 6, await userRepo.CountAsync());
 
-                Assert.Equal(0, role.Id);
-                Assert.Equal(useUow ? 2 : 4, await roleRepo.GetAll().AsNoTracking().CountAsync());
+                    Assert.Equal(0, role.Id);
+                    Assert.Equal(useUow ? 2 : 4, await roleRepo.CountAsync());
 
-                Assert.Equal(0, creationAudited1.Id);
-                Assert.Equal(3, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                    Assert.Equal(0, creationAudited1.Id);
+                    Assert.Equal(3, await creationAuditedRepo.CountAsync());
+                }
 
                 #endregion
 
                 #region SaveChanges
 
                 // Act
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(7, user.Id);
-                Assert.Equal(useUow ? 3 : 7, await userRepo.GetAll().AsNoTracking().CountAsync());
-                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 7));
+                Assert.Equal(useUow ? 2 : 7, await userRepo.CountAsync());
+                Assert.Equal(useUow ? true : false, (await userRepo.SingleOrDefaultAsync(p => p.Id == 7)) == null);
 
                 Assert.Equal(5, role.Id);
-                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
-                Assert.Equal(useUow ? 3 : 5, await roleRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(useUow ? true : false, (await roleRepo.SingleOrDefaultAsync(p => p.Id == 5)) == null);
+                Assert.Equal(useUow ? 2 : 5, await roleRepo.CountAsync());
 
                 Assert.Equal(4, creationAudited1.Id);
-                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 4))?.CreatorUserId);
-                Assert.Equal(4, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(1, (await creationAuditedRepo.SingleOrDefaultAsync(p => p.Id == 4)).CreatorUserId);
+                Assert.Equal(4, await creationAuditedRepo.CountAsync());
 
                 #endregion
             }
@@ -1021,16 +1027,16 @@ namespace EasyNet.Data.Tests.Base
 
                 // Assert
                 Assert.Equal(5, role.Id);
-                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
-                Assert.Equal(useUow ? 3 : 5, roleRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(useUow ? true : false, roleRepo.SingleOrDefault(p => p.Id == 5) == null);
+                Assert.Equal(useUow ? 2 : 5, roleRepo.Count());
 
                 Assert.Equal(7, user.Id);
-                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 7));
-                Assert.Equal(useUow ? 3 : 7, userRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(useUow ? true : false, userRepo.SingleOrDefault(p => p.Id == 7) == null);
+                Assert.Equal(useUow ? 2 : 7, userRepo.Count());
 
                 Assert.Equal(4, creationAudited1.Id);
-                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
-                Assert.Equal(4, creationAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(1, creationAuditedRepo.SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
+                Assert.Equal(4, creationAuditedRepo.Count());
             }
 
             if (useUow)
@@ -1080,17 +1086,17 @@ namespace EasyNet.Data.Tests.Base
                 await creationAuditedRepo.InsertAndGetIdAsync(creationAudited1);
 
                 // Assert
-                Assert.Equal(5, role.Id);
-                Assert.NotNull(await roleRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 5));
-                Assert.Equal(useUow ? 3 : 5, await roleRepo.GetAll().AsNoTracking().CountAsync());
-
                 Assert.Equal(7, user.Id);
-                Assert.Equal(useUow ? 3 : 7, await userRepo.GetAll().AsNoTracking().CountAsync());
-                Assert.NotNull(await userRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 7));
+                Assert.Equal(useUow ? 2 : 7, await userRepo.CountAsync());
+                Assert.Equal(useUow ? true : false, (await userRepo.SingleOrDefaultAsync(p => p.Id == 7)) == null);
+
+                Assert.Equal(5, role.Id);
+                Assert.Equal(useUow ? true : false, (await roleRepo.SingleOrDefaultAsync(p => p.Id == 5)) == null);
+                Assert.Equal(useUow ? 2 : 5, await roleRepo.CountAsync());
 
                 Assert.Equal(4, creationAudited1.Id);
-                Assert.Equal(1, (await creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(p => p.Id == 4))?.CreatorUserId);
-                Assert.Equal(4, await creationAuditedRepo.GetAll().AsNoTracking().CountAsync());
+                Assert.Equal(1, (await creationAuditedRepo.SingleOrDefaultAsync(p => p.Id == 4))?.CreatorUserId);
+                Assert.Equal(4, await creationAuditedRepo.CountAsync());
             }
 
             if (useUow)
@@ -1363,6 +1369,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestInsertOrUpdate(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             void Do()
             {
                 // Arrange
@@ -1382,14 +1390,15 @@ namespace EasyNet.Data.Tests.Base
                 };
                 modificationAuditedRepo.InsertOrUpdate(modificationAudited4);
 
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(4, modificationAuditedRepo.Count());
-                Assert.Equal("TestUpdate1", modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).Name);
-                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 1).LastModifierUserId);
-                Assert.Equal("TestUpdate4", modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 4).Name);
-                Assert.Equal(1, modificationAuditedRepo.GetAll().AsNoTracking().Single(p => p.Id == 4).CreatorUserId);
+                Assert.Equal("TestUpdate1", modificationAuditedRepo.Single(p => p.Id == 1).Name);
+                Assert.Equal(1, modificationAuditedRepo.Single(p => p.Id == 1).LastModifierUserId);
+                Assert.Equal("TestUpdate4", modificationAuditedRepo.Single(p => p.Id == 4).Name);
+                Assert.Equal(1, modificationAuditedRepo.Single(p => p.Id == 4).CreatorUserId);
             }
 
             if (useUow)
@@ -1411,6 +1420,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestInsertOrUpdateAsync(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             async Task DoAsync()
             {
                 // Arrange
@@ -1430,14 +1441,15 @@ namespace EasyNet.Data.Tests.Base
                 };
                 await modificationAuditedRepo.InsertOrUpdateAsync(modificationAudited4);
 
-                await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
+                if (isEfCoreTest)
+                    await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(4, await modificationAuditedRepo.CountAsync());
-                Assert.Equal("TestUpdate1", (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).Name);
-                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 1)).LastModifierUserId);
-                Assert.Equal("TestUpdate4", (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 4)).Name);
-                Assert.Equal(1, (await modificationAuditedRepo.GetAll().AsNoTracking().SingleAsync(p => p.Id == 4)).CreatorUserId);
+                Assert.Equal("TestUpdate1", (await modificationAuditedRepo.SingleAsync(p => p.Id == 1)).Name);
+                Assert.Equal(1, (await modificationAuditedRepo.SingleAsync(p => p.Id == 1)).LastModifierUserId);
+                Assert.Equal("TestUpdate4", (await modificationAuditedRepo.SingleAsync(p => p.Id == 4)).Name);
+                Assert.Equal(1, (await modificationAuditedRepo.SingleAsync(p => p.Id == 4)).CreatorUserId);
             }
 
             if (useUow)

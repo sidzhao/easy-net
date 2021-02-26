@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq.Expressions;
-using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Linq;
 using EasyNet.Runtime.Session;
+using EasyNet.Timing;
 using EasyNet.Uow;
 
-namespace EasyNet.Dapper.Repositories
+namespace EasyNet.Data
 {
-    // ReSharper disable once IdentifierTypo
-    public class QueryFilterExecuter : IQueryFilterExecuter
+    public class RepositoryHelper : IRepositoryHelper
     {
+        #region ExecuteFilter
+
         public Expression<Func<TEntity, bool>> ExecuteFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, Expression<Func<TEntity, bool>> predicate) where TEntity : IEntity<TPrimaryKey>
         {
             var tenantFilter = CreateTenantFilter<TEntity, TPrimaryKey>(currentUnitOfWorkProvider, session);
@@ -28,7 +29,7 @@ namespace EasyNet.Dapper.Repositories
             return predicate;
         }
 
-        protected Expression<Func<TEntity, bool>> CreateTenantFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session) where TEntity : IEntity<TPrimaryKey>
+        protected virtual Expression<Func<TEntity, bool>> CreateTenantFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session) where TEntity : IEntity<TPrimaryKey>
         {
             var entityType = typeof(TEntity);
 
@@ -79,7 +80,7 @@ namespace EasyNet.Dapper.Repositories
             return null;
         }
 
-        protected Expression<Func<TEntity, bool>> CreateSoftDeleteFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session) where TEntity : IEntity<TPrimaryKey>
+        protected virtual Expression<Func<TEntity, bool>> CreateSoftDeleteFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session) where TEntity : IEntity<TPrimaryKey>
         {
             var entityType = typeof(TEntity);
 
@@ -118,6 +119,111 @@ namespace EasyNet.Dapper.Repositories
         protected virtual bool IsMayHaveTenantFilterEnabled(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider)
         {
             return currentUnitOfWorkProvider.Current?.IsFilterEnabled(EasyNetDataFilters.MayHaveTenant) == true;
+        }
+
+        #endregion
+
+        public virtual bool MayHaveTemporaryKey<TEntity, TPrimaryKey>(TEntity entity) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            if (typeof(TPrimaryKey) == typeof(byte))
+            {
+                return true;
+            }
+
+            if (typeof(TPrimaryKey) == typeof(int))
+            {
+                return Convert.ToInt32(entity.Id) <= 0;
+            }
+
+            if (typeof(TPrimaryKey) == typeof(long))
+            {
+                return Convert.ToInt64(entity.Id) <= 0;
+            }
+
+            if (typeof(TPrimaryKey) == typeof(Guid))
+            {
+                return Guid.Parse(entity.Id.ToString()) == Guid.Empty;
+            }
+
+            return false;
+        }
+
+        public Expression<Func<TEntity, bool>> CreateEqualityExpressionForId<TEntity, TPrimaryKey>(TPrimaryKey id) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var lambdaParam = Expression.Parameter(typeof(TEntity));
+
+            var leftExpression = Expression.PropertyOrField(lambdaParam, "Id");
+
+            var idValue = Convert.ChangeType(id, typeof(TPrimaryKey));
+
+            Expression<Func<object>> closure = () => idValue;
+            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
+
+            var lambdaBody = Expression.Equal(leftExpression, rightExpression);
+
+            return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
+        }
+
+        public void ApplyConceptsForAddedEntity<TEntity>(TEntity entity, IEasyNetSession session)
+        {
+            var entityType = entity.GetType();
+
+            if (entity is IHasCreationTime hasCreationTimeEntity)
+            {
+                if (hasCreationTimeEntity.CreationTime == default)
+                {
+                    hasCreationTimeEntity.CreationTime = Clock.Now;
+                }
+            }
+
+            var creationGeneric = entityType.GetImplementedRawGeneric(typeof(ICreationAudited<>));
+            if (creationGeneric != null)
+            {
+                var userIdProperty = entityType.GetProperty("CreatorUserId");
+                if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {entityType.AssemblyQualifiedName}.");
+                userIdProperty.SetValueAndAutoFit(entity, session.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
+            }
+        }
+
+        public void ApplyConceptsForModifiedEntity<TEntity>(TEntity entity, IEasyNetSession session)
+        {
+            if (entity is IHasModificationTime hasModificationTime)
+            {
+                hasModificationTime.LastModificationTime = Clock.Now;
+            }
+
+            var entityType = entity.GetType();
+
+            var modificationGeneric = entityType.GetImplementedRawGeneric(typeof(IModificationAudited<>));
+            if (modificationGeneric != null)
+            {
+                var userIdProperty = entityType.GetProperty("LastModifierUserId");
+                if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {entityType.AssemblyQualifiedName}.");
+                userIdProperty.SetValueAndAutoFit(entity, session.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
+            }
+        }
+
+        public void ApplyConceptsForDeletedEntity<TEntity>(TEntity entity, IEasyNetSession session)
+        {
+            var entityType = entity.GetType();
+
+            if (entity is ISoftDelete iSoftDelete)
+            {
+                iSoftDelete.IsDeleted = true;
+
+                if (entity is IHasDeletionTime hasDeletionTime)
+                {
+                    hasDeletionTime.DeletionTime = Clock.Now;
+                }
+
+                var deletionGeneric = entityType.GetImplementedRawGeneric(typeof(IDeletionAudited<>));
+                if (deletionGeneric != null)
+                {
+                    var userIdProperty = entityType.GetProperty("DeleterUserId");
+                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {entityType.AssemblyQualifiedName}.");
+                    userIdProperty.SetValueAndAutoFit(entity, session.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
+                }
+            }
         }
 
         protected virtual string GetTenantId(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session)

@@ -7,11 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using EasyDapperExtensions;
-using EasyNet.Dapper.Repositories;
 using EasyNet.Data;
-using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
-using EasyNet.Timing;
 using EasyNet.Uow;
 
 // ReSharper disable once CheckNamespace
@@ -20,7 +17,7 @@ namespace EasyNet.Dapper.Data
     public class DapperRepositoryBase<TEntity> : DapperRepositoryBase<TEntity, int>, IDapperRepository<TEntity>
         where TEntity : class, IEntity<int>
     {
-        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IQueryFilterExecuter queryFilterExecuter) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, queryFilterExecuter)
+        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper)
         {
         }
     }
@@ -34,19 +31,17 @@ namespace EasyNet.Dapper.Data
         where TEntity : class, IEntity<TPrimaryKey>
     {
         protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
-        protected readonly IEasyNetSession EasyNetSession;
+        protected readonly IEasyNetSession CurrentSession;
         protected readonly IDbConnector DbConnector;
+        protected readonly IRepositoryHelper RepositoryHelper;
 
         // ReSharper disable once IdentifierTypo
-        protected readonly IQueryFilterExecuter QueryFilterExecuter;
-
-        // ReSharper disable once IdentifierTypo
-        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IQueryFilterExecuter queryFilterExecuter)
+        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper)
         {
-            EasyNetSession = session;
+            CurrentSession = session;
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
             DbConnector = currentDbConnectorProvider.GetOrCreate();
-            QueryFilterExecuter = queryFilterExecuter;
+            RepositoryHelper = repositoryHelper;
         }
 
         protected IDbConnection Connection => DbConnector.Connection;
@@ -234,22 +229,26 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity InsertOrUpdate(TEntity entity)
         {
-            throw new NotImplementedException();
+            return MayHaveTemporaryKey(entity) ? Insert(entity) : Update(entity);
         }
 
         public Task<TEntity> InsertOrUpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return MayHaveTemporaryKey(entity) ? InsertAsync(entity, cancellationToken) : UpdateAsync(entity, cancellationToken);
         }
 
         public TPrimaryKey InsertOrUpdateAndGetId(TEntity entity)
         {
-            throw new NotImplementedException();
+            entity = MayHaveTemporaryKey(entity) ? Insert(entity) : Update(entity);
+
+            return entity.Id;
         }
 
-        public Task<TPrimaryKey> InsertOrUpdateAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public async Task<TPrimaryKey> InsertOrUpdateAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            entity = MayHaveTemporaryKey(entity) ? await InsertAsync(entity, cancellationToken) : await UpdateAsync(entity, cancellationToken);
+
+            return entity.Id;
         }
 
         #endregion
@@ -446,85 +445,32 @@ namespace EasyNet.Dapper.Data
 
         protected virtual Expression<Func<TEntity, bool>> ExecuteFilter(Expression<Func<TEntity, bool>> predicate)
         {
-            return QueryFilterExecuter.ExecuteFilter<TEntity, TPrimaryKey>(CurrentUnitOfWorkProvider, EasyNetSession, predicate);
+            return RepositoryHelper.ExecuteFilter<TEntity, TPrimaryKey>(CurrentUnitOfWorkProvider, CurrentSession, predicate);
         }
 
         protected virtual Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
         {
-            var lambdaParam = Expression.Parameter(typeof(TEntity));
+            return RepositoryHelper.CreateEqualityExpressionForId<TEntity, TPrimaryKey>(id);
+        }
 
-            var leftExpression = Expression.PropertyOrField(lambdaParam, "Id");
-
-            var idValue = Convert.ChangeType(id, typeof(TPrimaryKey));
-
-            Expression<Func<object>> closure = () => idValue;
-            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
-
-            var lambdaBody = Expression.Equal(leftExpression, rightExpression);
-
-            return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
+        protected virtual bool MayHaveTemporaryKey(TEntity entity)
+        {
+            return RepositoryHelper.MayHaveTemporaryKey<TEntity, TPrimaryKey>(entity);
         }
 
         protected virtual void ApplyConceptsForAddedEntity(TEntity entity)
         {
-            var entityType = entity.GetType();
-
-            if (entity is IHasCreationTime hasCreationTimeEntity)
-            {
-                if (hasCreationTimeEntity.CreationTime == default)
-                {
-                    hasCreationTimeEntity.CreationTime = Clock.Now;
-                }
-            }
-
-            var creationGeneric = entityType.GetImplementedRawGeneric(typeof(ICreationAudited<>));
-            if (creationGeneric != null)
-            {
-                var userIdProperty = entityType.GetProperty("CreatorUserId");
-                if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValueAndAutoFit(entity, EasyNetSession.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
-            }
+            RepositoryHelper.ApplyConceptsForAddedEntity(entity, CurrentSession);
         }
 
         protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)
         {
-            if (entity is IHasModificationTime hasModificationTime)
-            {
-                hasModificationTime.LastModificationTime = Clock.Now;
-            }
-
-            var entityType = entity.GetType();
-
-            var modificationGeneric = entityType.GetImplementedRawGeneric(typeof(IModificationAudited<>));
-            if (modificationGeneric != null)
-            {
-                var userIdProperty = entityType.GetProperty("LastModifierUserId");
-                if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValueAndAutoFit(entity, EasyNetSession.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
-            }
+            RepositoryHelper.ApplyConceptsForModifiedEntity(entity, CurrentSession);
         }
 
         protected virtual void ApplyConceptsForDeletedEntity(TEntity entity)
         {
-            var entityType = entity.GetType();
-
-            if (entity is ISoftDelete iSoftDelete)
-            {
-                iSoftDelete.IsDeleted = true;
-
-                if (entity is IHasDeletionTime hasDeletionTime)
-                {
-                    hasDeletionTime.DeletionTime = Clock.Now;
-                }
-
-                var deletionGeneric = entityType.GetImplementedRawGeneric(typeof(IDeletionAudited<>));
-                if (deletionGeneric != null)
-                {
-                    var userIdProperty = entityType.GetProperty("DeleterUserId");
-                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {entityType.AssemblyQualifiedName}.");
-                    userIdProperty.SetValueAndAutoFit(entity, EasyNetSession.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
-                }
-            }
+            RepositoryHelper.ApplyConceptsForDeletedEntity(entity, CurrentSession);
         }
     }
 }

@@ -33,8 +33,8 @@ namespace EasyNet
         /// <summary>
         /// Gets current session information.
         /// </summary>
-        protected IEasyNetSession EasyNetSession => _asyNetSession ?? (_asyNetSession = ServiceProvider.GetRequiredService<IEasyNetSession>());
-        private IEasyNetSession _asyNetSession;
+        protected IEasyNetSession CurrentSession => _currentSession ?? (_currentSession = ServiceProvider.GetRequiredService<IEasyNetSession>());
+        private IEasyNetSession _currentSession;
 
         /// <summary>
         /// Reference to the object to object mapper.

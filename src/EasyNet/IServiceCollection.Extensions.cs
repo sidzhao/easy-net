@@ -88,6 +88,7 @@ namespace EasyNet
 
             // Data
             services.TryAddScoped<ICurrentDbConnectorProvider, AsyncLocalCurrentDbConnectorProvider>();
+            services.TryAddSingleton<IRepositoryHelper, RepositoryHelper>();
 
             return new EasyNetBuilder(services);
         }

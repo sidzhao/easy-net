@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
+using EasyNet.Runtime.Session;
+using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable once CheckNamespace
@@ -15,8 +17,7 @@ namespace EasyNet.EntityFrameworkCore.Data
         where TEntity : class, IEntity<int>
         where TDbContext : EasyNetDbContext
     {
-        public EfCoreRepositoryBase(ICurrentDbConnectorProvider currentDbConnectorProvider)
-            : base(currentDbConnectorProvider)
+        public EfCoreRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper)
         {
         }
     }
@@ -32,10 +33,16 @@ namespace EasyNet.EntityFrameworkCore.Data
         where TDbContext : EasyNetDbContext
     {
         protected readonly TDbContext DbContext;
+        protected readonly IRepositoryHelper RepositoryHelper;
+        protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
+        protected readonly IEasyNetSession CurrentSession;
 
-        public EfCoreRepositoryBase(ICurrentDbConnectorProvider currentDbConnectorProvider)
+        public EfCoreRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper)
         {
             DbContext = (TDbContext)currentDbConnectorProvider.GetOrCreate().GetDbContext();
+            RepositoryHelper = repositoryHelper;
+            CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
+            CurrentSession = session;
         }
         protected virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
 
@@ -46,7 +53,8 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         public IQueryable<TEntity> GetAll()
         {
-            return Table.AsQueryable();
+            var predicate = ExecuteFilter(null);
+            return predicate == null ? Table.AsQueryable() : Table.Where(predicate);
         }
 
         #region Select/Get/Query
@@ -155,12 +163,14 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         public virtual TEntity Insert(TEntity entity)
         {
+            ApplyConceptsForAddedEntity(entity);
             Table.Add(entity);
             return entity;
         }
 
         public virtual async Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
+            ApplyConceptsForAddedEntity(entity);
             await Table.AddAsync(entity, cancellationToken);
             return entity;
         }
@@ -247,6 +257,7 @@ namespace EasyNet.EntityFrameworkCore.Data
 
         public virtual TEntity Update(TEntity entity)
         {
+            ApplyConceptsForModifiedEntity(entity);
             AttachIfNot(entity);
             DbContext.Entry(entity).State = EntityState.Modified;
             return entity;
@@ -262,6 +273,7 @@ namespace EasyNet.EntityFrameworkCore.Data
         {
             var entity = Get(id);
             updateAction(entity);
+            ApplyConceptsForModifiedEntity(entity);
 
             if (DbContext.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.NoTracking)
             {
@@ -276,6 +288,7 @@ namespace EasyNet.EntityFrameworkCore.Data
         {
             var entity = await GetAsync(id, cancellationToken);
             await updateAction(entity);
+            ApplyConceptsForModifiedEntity(entity);
 
             if (DbContext.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.NoTracking)
             {
@@ -293,7 +306,16 @@ namespace EasyNet.EntityFrameworkCore.Data
         public virtual void Delete(TEntity entity)
         {
             AttachIfNot(entity);
-            Table.Remove(entity);
+
+            if (entity is ISoftDelete)
+            {
+                ApplyConceptsForDeletedEntity(entity);
+                DbContext.Entry(entity).State = EntityState.Modified;
+            }
+            else
+            {
+                Table.Remove(entity);
+            }
         }
 
         public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -344,7 +366,7 @@ namespace EasyNet.EntityFrameworkCore.Data
 
             foreach (var entity in entities)
             {
-                Table.Remove(entity);
+                Delete(entity);
             }
         }
 
@@ -354,7 +376,7 @@ namespace EasyNet.EntityFrameworkCore.Data
 
             foreach (var entity in entities)
             {
-                Table.Remove(entity);
+                await DeleteAsync(entity, cancellationToken);
             }
         }
 
@@ -437,40 +459,34 @@ namespace EasyNet.EntityFrameworkCore.Data
             return entry?.Entity as TEntity;
         }
 
+        protected virtual Expression<Func<TEntity, bool>> ExecuteFilter(Expression<Func<TEntity, bool>> predicate)
+        {
+            return RepositoryHelper.ExecuteFilter<TEntity, TPrimaryKey>(CurrentUnitOfWorkProvider, CurrentSession, predicate);
+        }
+
         protected virtual Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
         {
-            var lambdaParam = Expression.Parameter(typeof(TEntity));
+            return RepositoryHelper.CreateEqualityExpressionForId<TEntity, TPrimaryKey>(id);
+        }
 
-            var leftExpression = Expression.PropertyOrField(lambdaParam, "Id");
+        protected virtual void ApplyConceptsForAddedEntity(TEntity entity)
+        {
+            RepositoryHelper.ApplyConceptsForAddedEntity(entity, CurrentSession);
+        }
 
-            var idValue = Convert.ChangeType(id, typeof(TPrimaryKey));
+        protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)
+        {
+            RepositoryHelper.ApplyConceptsForModifiedEntity(entity, CurrentSession);
+        }
 
-            Expression<Func<object>> closure = () => idValue;
-            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
-
-            var lambdaBody = Expression.Equal(leftExpression, rightExpression);
-
-            return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
+        protected virtual void ApplyConceptsForDeletedEntity(TEntity entity)
+        {
+            RepositoryHelper.ApplyConceptsForDeletedEntity(entity, CurrentSession);
         }
 
         protected virtual bool MayHaveTemporaryKey(TEntity entity)
         {
-            if (typeof(TPrimaryKey) == typeof(byte))
-            {
-                return true;
-            }
-
-            if (typeof(TPrimaryKey) == typeof(int))
-            {
-                return Convert.ToInt32(entity.Id) <= 0;
-            }
-
-            if (typeof(TPrimaryKey) == typeof(long))
-            {
-                return Convert.ToInt64(entity.Id) <= 0;
-            }
-
-            return false;
+            return RepositoryHelper.MayHaveTemporaryKey<TEntity, TPrimaryKey>(entity);
         }
     }
 }
