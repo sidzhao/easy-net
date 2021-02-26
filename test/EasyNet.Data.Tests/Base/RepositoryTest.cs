@@ -824,6 +824,8 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestInsert(bool useUow)
         {
+            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
+
             void Do()
             {
                 // Arrange
@@ -854,34 +856,38 @@ namespace EasyNet.Data.Tests.Base
                 creationAuditedRepo.Insert(creationAudited1);
 
                 // Assert
-                Assert.Equal(0, user.Id);
-                Assert.Equal(useUow ? 2 : 6, userRepo.GetAll().AsNoTracking().Count());
+                if (isEfCoreTest)
+                {
+                    Assert.Equal(0, user.Id);
+                    Assert.Equal(useUow ? 2 : 6, userRepo.Count());
 
-                Assert.Equal(0, role.Id);
-                Assert.Equal(useUow ? 2 : 4, roleRepo.GetAll().AsNoTracking().Count());
+                    Assert.Equal(0, role.Id);
+                    Assert.Equal(useUow ? 2 : 4, roleRepo.Count());
 
-                Assert.Equal(0, creationAudited1.Id);
-                Assert.Equal(3, creationAuditedRepo.GetAll().AsNoTracking().Count());
+                    Assert.Equal(0, creationAudited1.Id);
+                    Assert.Equal(3, creationAuditedRepo.Count());
+                }
 
                 #endregion
 
                 #region SaveChanges
 
                 // Act
-                GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
+                if (isEfCoreTest)
+                    GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(7, user.Id);
-                Assert.NotNull(userRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 7));
-                Assert.Equal(useUow ? 3 : 7, userRepo.GetAll().AsNoTracking().Count());
+                Assert.NotNull(userRepo.SingleOrDefault(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, userRepo.Count());
 
                 Assert.Equal(5, role.Id);
-                Assert.NotNull(roleRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 5));
-                Assert.Equal(useUow ? 3 : 5, roleRepo.GetAll().AsNoTracking().Count());
+                Assert.NotNull(roleRepo.SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, roleRepo.Count());
 
                 Assert.Equal(4, creationAudited1.Id);
-                Assert.Equal(1, creationAuditedRepo.GetAll().AsNoTracking().SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
-                Assert.Equal(4, creationAuditedRepo.GetAll().AsNoTracking().Count());
+                Assert.Equal(1, creationAuditedRepo.SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
+                Assert.Equal(4, creationAuditedRepo.Count());
 
                 #endregion
             }

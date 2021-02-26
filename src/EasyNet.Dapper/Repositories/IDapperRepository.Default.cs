@@ -205,22 +205,31 @@ namespace EasyNet.Dapper.Data
 
         public virtual TEntity Insert(TEntity entity)
         {
-            throw new NotImplementedException();
+            ApplyConceptsForAddedEntity(entity);
+
+            entity.Id = Connection.Insert<TEntity, TPrimaryKey>(entity, Transaction);
+
+            return entity;
         }
 
-        public virtual Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ApplyConceptsForAddedEntity(entity);
+
+            entity.Id = await Connection.InsertAsync<TEntity, TPrimaryKey>(entity, Transaction);
+
+            return entity;
         }
 
         public virtual TPrimaryKey InsertAndGetId(TEntity entity)
         {
-            throw new NotImplementedException();
+            return Insert(entity).Id;
         }
 
-        public virtual Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await InsertAsync(entity, cancellationToken);
+            return entity.Id;
         }
 
         public virtual TEntity InsertOrUpdate(TEntity entity)
@@ -456,6 +465,26 @@ namespace EasyNet.Dapper.Data
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
 
+        protected virtual void ApplyConceptsForAddedEntity(TEntity entity)
+        {
+            var entityType = entity.GetType();
+
+            if (entity is IHasCreationTime hasCreationTimeEntity)
+            {
+                if (hasCreationTimeEntity.CreationTime == default)
+                {
+                    hasCreationTimeEntity.CreationTime = Clock.Now;
+                }
+            }
+
+            var creationGeneric = entityType.GetImplementedRawGeneric(typeof(ICreationAudited<>));
+            if (creationGeneric != null)
+            {
+                var userIdProperty = entityType.GetProperty("CreatorUserId");
+                if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {entityType.AssemblyQualifiedName}.");
+                userIdProperty.SetValueAndAutoFit(entity, EasyNetSession.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
+            }
+        }
 
         protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)
         {
