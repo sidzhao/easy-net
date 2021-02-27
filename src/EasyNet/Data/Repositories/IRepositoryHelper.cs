@@ -22,10 +22,10 @@ namespace EasyNet.Data.Repositories
 
         void ApplyConceptsForDeletedEntity<TEntity>(TEntity entity, IEasyNetSession session);
 
-        void CheckAndSetIsActive<TEntity>(TEntity entity, EasyNetOptions options);
+        bool CheckAndSetIsActive<TEntity>(TEntity entity, EasyNetOptions options);
 
-        void CheckAndSetMustHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options);
+        bool CheckAndSetMustHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options);
 
-        void CheckAndSetMayHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options);
+        bool CheckAndSetMayHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options);
     }
 }

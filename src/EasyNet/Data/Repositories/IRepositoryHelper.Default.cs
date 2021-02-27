@@ -229,24 +229,28 @@ namespace EasyNet.Data.Repositories
             }
         }
 
-        public virtual void CheckAndSetIsActive<TEntity>(TEntity entity, EasyNetOptions options)
+        public virtual bool CheckAndSetIsActive<TEntity>(TEntity entity, EasyNetOptions options)
         {
             if (options.SuppressAutoSetIsActive)
             {
-                return;
+                return false;
             }
 
             if (entity is IPassivable passivable)
             {
                 passivable.IsActive = true;
+
+                return true;
             }
+
+            return false;
         }
 
-        public virtual void CheckAndSetMustHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options)
+        public virtual bool CheckAndSetMustHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options)
         {
             if (options.SuppressAutoSetTenantId)
             {
-                return;
+                return false;
             }
 
             var entityType = entity.GetType();
@@ -255,7 +259,7 @@ namespace EasyNet.Data.Repositories
             var tenantGeneric = entityType.GetImplementedRawGeneric(typeof(IMustHaveTenant<>));
             if (tenantGeneric == null)
             {
-                return;
+                return false;
             }
 
             if (string.IsNullOrEmpty(GetCurrentTenantId(currentUnitOfWorkProvider, session)))
@@ -300,15 +304,17 @@ namespace EasyNet.Data.Repositories
 
             if (!alreadySetTenantId)
             {
-                tenantIdProperty.SetValueAndAutoFit(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantGeneric.GenericTypeArguments[0]);
+                tenantIdProperty.SetValue(entity, Convert.ChangeType(GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantIdType));
             }
+
+            return true;
         }
 
-        public virtual void CheckAndSetMayHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options)
+        public virtual bool CheckAndSetMayHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options)
         {
             if (options.SuppressAutoSetTenantId)
             {
-                return;
+                return false;
             }
 
             var entityType = entity.GetType();
@@ -317,7 +323,7 @@ namespace EasyNet.Data.Repositories
             var tenantGeneric = entityType.GetImplementedRawGeneric(typeof(IMayHaveTenant<>));
             if (tenantGeneric == null)
             {
-                return;
+                return false;
             }
 
             // Don't set if it's already set
@@ -329,6 +335,8 @@ namespace EasyNet.Data.Repositories
                 tenantIdProperty.SetValueAndAutoFit(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session),
                     tenantGeneric.GenericTypeArguments[0]);
             }
+
+            return true;
         }
 
         protected virtual string GetCurrentTenantId(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session)

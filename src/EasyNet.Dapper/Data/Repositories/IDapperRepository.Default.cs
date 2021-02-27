@@ -471,8 +471,10 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             RepositoryHelper.ApplyConceptsForAddedEntity(entity, CurrentSession);
             RepositoryHelper.CheckAndSetIsActive(entity, Options);
-            RepositoryHelper.CheckAndSetMustHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
-            RepositoryHelper.CheckAndSetMayHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
+            if (!RepositoryHelper.CheckAndSetMustHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options))
+            {
+                RepositoryHelper.CheckAndSetMayHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
+            }
         }
 
         protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)
