@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EasyNet.Application
+namespace EasyNet.Application.Services
 {
     public interface IEasyNetPassivableAppService : IEasyNetPassivableAppService<int>
     {

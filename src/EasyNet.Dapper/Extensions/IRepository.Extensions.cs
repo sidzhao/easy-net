@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using EasyNet.Dapper.Data;
-using EasyNet.Data;
+using EasyNet.Dapper.Data.Repositories;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 
 // ReSharper disable once CheckNamespace
 namespace EasyNet.Extensions.DependencyInjection
@@ -12,7 +13,7 @@ namespace EasyNet.Extensions.DependencyInjection
         /// <summary>
         /// Used to get all entities with sql.
         /// </summary>
-        /// <param name="repository">The <see cref="IRepository{TEntity}"/>.</param>
+        /// <param name="repository">The <see cref="IRepository"/>.</param>
         /// <param name="sql">The SQL to execute for the query.</param>
         /// <param name="param">The parameters to pass, if any.</param>
         /// <param name="buffered">Whether to buffer results in memory.</param>

@@ -1,4 +1,4 @@
-﻿namespace EasyNet.Data
+﻿namespace EasyNet.Data.Entities.Auditing
 {
     /// <summary>
     /// This interface is implemented by entities which wanted to store deletion information (who and when deleted).

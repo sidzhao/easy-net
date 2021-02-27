@@ -1,4 +1,4 @@
-﻿namespace EasyNet.Data
+﻿namespace EasyNet.Data.Entities
 {
     /// <summary>
     /// A shortcut of <see cref="IEntity{TPrimaryKey}"/> for most used primary key type (<see cref="int"/>).

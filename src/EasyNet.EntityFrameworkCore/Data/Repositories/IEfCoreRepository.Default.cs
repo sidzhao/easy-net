@@ -5,14 +5,15 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNet.Data;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable once CheckNamespace
-namespace EasyNet.EntityFrameworkCore.Data
+namespace EasyNet.EntityFrameworkCore.Data.Repositories
 {
     public class EfCoreRepositoryBase<TDbContext, TEntity> : EfCoreRepositoryBase<TDbContext, TEntity, int>, IEfCoreRepository<TEntity>
         where TEntity : class, IEntity<int>

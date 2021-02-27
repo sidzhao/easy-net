@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using EasyNet.Application.Dto;
 
-namespace EasyNet.Application
+namespace EasyNet.Application.Services
 {
     public interface IEasyNetCrudAppService<TEntityDto> : IEasyNetCrudAppService<TEntityDto, int, TEntityDto, TEntityDto>
         where TEntityDto : IEntityDto<int>

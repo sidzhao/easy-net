@@ -1,7 +1,8 @@
 ﻿using System;
-using EasyNet.Data;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 
-namespace EasyNet.Application
+namespace EasyNet.Application.Services
 {
     /// <summary>
     /// This class can be used as a base class for application services.

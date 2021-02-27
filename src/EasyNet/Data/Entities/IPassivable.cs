@@ -1,4 +1,4 @@
-﻿namespace EasyNet.Data
+﻿namespace EasyNet.Data.Entities
 {
     /// <summary>
     /// This interface is used to make an entity active/passive.

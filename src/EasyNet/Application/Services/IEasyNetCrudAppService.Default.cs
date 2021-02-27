@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EasyNet.Data;
+using EasyNet.Application.Dto;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 
-namespace EasyNet.Application
+namespace EasyNet.Application.Services
 {
     public abstract class EasyNetCrudAppService<TEntity, TEntityDto, TGetAllInput> : EasyNetCrudAppService<TEntity, TEntityDto, int, TGetAllInput, TEntityDto, TEntityDto>, IEasyNetCrudAppService<TEntityDto>
         where TEntity : class, IEntity<int>

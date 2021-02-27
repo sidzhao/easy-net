@@ -1,8 +1,8 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.CommonTests.Common;
 using EasyNet.CommonTests.Common.Entities;
-using EasyNet.Data;
-using EasyNet.EntityFrameworkCore.Data;
+using EasyNet.Data.Repositories;
+using EasyNet.EntityFrameworkCore.Data.Repositories;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

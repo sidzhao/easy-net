@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-// ReSharper disable once CheckNamespace
-namespace EasyNet.Extensions.DependencyInjection
+namespace EasyNet.Mvc.Extensions
 {
 	internal static class ActionDescriptorExtensions
 	{

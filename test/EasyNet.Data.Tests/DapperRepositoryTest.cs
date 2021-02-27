@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.CommonTests.Common;
 using EasyNet.CommonTests.Common.Entities;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 using EasyNet.Data.Tests.Base;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;

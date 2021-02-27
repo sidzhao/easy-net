@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using EasyNet.Data;
+using EasyNet.Data.Entities;
 
 namespace EasyNet.CommonTests.Common.Entities
 {

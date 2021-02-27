@@ -1,5 +1,6 @@
 ﻿using System;
-using EasyNet.Data;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 
 namespace EasyNet.Domain
 {

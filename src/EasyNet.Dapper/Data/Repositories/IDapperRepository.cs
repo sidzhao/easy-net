@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using EasyNet.Data;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 
-// ReSharper disable once CheckNamespace
-namespace EasyNet.Dapper.Data
+namespace EasyNet.Dapper.Data.Repositories
 {
     public interface IDapperRepository<TEntity> : IDapperRepository<TEntity, int>, IRepository<TEntity>
         where TEntity : class, IEntity<int>

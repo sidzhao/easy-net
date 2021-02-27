@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyNet.Data
+namespace EasyNet.Data.Entities.Auditing
 {
 	/// <summary>
 	/// This class can be used to simplify implementing <see cref="ICreationAudited"/>.

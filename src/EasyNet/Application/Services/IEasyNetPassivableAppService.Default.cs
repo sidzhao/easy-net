@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EasyNet.Data;
+using EasyNet.Application.Dto;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 
-namespace EasyNet.Application
+namespace EasyNet.Application.Services
 {
     public abstract class EasyNetPassivableAppService<TEntity, TEntityDto, TGetAllInput> : EasyNetPassivableAppService<TEntity, TEntityDto, int, TGetAllInput, TEntityDto, TEntityDto>, IEasyNetPassivableAppService
         where TEntity : class, IEntity<int>, IPassivable

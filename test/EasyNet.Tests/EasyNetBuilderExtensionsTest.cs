@@ -7,7 +7,6 @@ using EasyNet.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Session;
-using EasyNet.Tests.Session;
 using EasyNet.Uow;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

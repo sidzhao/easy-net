@@ -1,4 +1,4 @@
-﻿namespace EasyNet.Data
+﻿namespace EasyNet.Data.Entities
 {
     /// <summary>
     /// Used to standardize soft deleting entities.

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EasyNet.Data;
+using EasyNet.Data.Entities;
 
 namespace EasyNet.Domain
 {

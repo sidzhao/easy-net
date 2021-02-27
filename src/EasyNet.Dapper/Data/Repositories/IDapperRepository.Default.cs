@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using Dapper;
 using EasyDapperExtensions;
 using EasyNet.Data;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable once CheckNamespace
-namespace EasyNet.Dapper.Data
+namespace EasyNet.Dapper.Data.Repositories
 {
     public class DapperRepositoryBase<TEntity> : DapperRepositoryBase<TEntity, int>, IDapperRepository<TEntity>
         where TEntity : class, IEntity<int>

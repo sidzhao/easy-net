@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using EasyNet.Data;
-using EasyNet.EntityFrameworkCore.Data;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
+using EasyNet.EntityFrameworkCore.Data.Repositories;
 
 // ReSharper disable once CheckNamespace
 namespace EasyNet.Extensions.DependencyInjection

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using EasyNet.Data.Entities;
 
-namespace EasyNet.Data
+namespace EasyNet.Data.Repositories
 {
     /// <summary>
     /// This interface must be implemented by all repositories to identify them by convention.

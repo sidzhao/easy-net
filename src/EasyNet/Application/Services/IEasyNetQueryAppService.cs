@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EasyNet.Application.Dto;
 
-namespace EasyNet.Application
+namespace EasyNet.Application.Services
 {
     public interface IEasyNetQueryAppService<TEntityDto, in TGetAllInput> : IEasyNetQueryAppService<TEntityDto, int, TGetAllInput>
         where TEntityDto : IEntityDto<int>

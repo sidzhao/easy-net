@@ -2,6 +2,8 @@
 using System.Data.Common;
 using System.Threading.Tasks;
 using EasyNet.CommonTests.Common.Entities;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 using EasyNet.Uow;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;

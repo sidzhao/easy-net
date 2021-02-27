@@ -1,5 +1,5 @@
 ﻿using System;
-using EasyNet.Data;
+using EasyNet.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace EasyNet.Identity.EntityFrameworkCore.Domain.Entities

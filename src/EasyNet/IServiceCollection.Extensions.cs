@@ -1,5 +1,6 @@
 ﻿using System;
 using EasyNet.Data;
+using EasyNet.Data.Repositories;
 using EasyNet.Mvc;
 using EasyNet.Runtime.Initialization;
 using EasyNet.Runtime.Session;

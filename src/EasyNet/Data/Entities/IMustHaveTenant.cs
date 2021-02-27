@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyNet.Data
+namespace EasyNet.Data.Entities
 {
     /// <summary>
     /// Implement this interface for an entity which must have TenantId.

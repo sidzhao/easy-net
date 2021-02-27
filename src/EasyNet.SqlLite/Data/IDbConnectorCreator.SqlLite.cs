@@ -3,7 +3,6 @@ using EasyNet.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable once CheckNamespace
 namespace EasyNet.SqlLite.Data
 {
     public class SqlLiteConnectorCreator : IDbConnectorCreator

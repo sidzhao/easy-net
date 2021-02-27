@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using EasyNet.Dapper.Data;
-using EasyNet.Data;
+using EasyNet.Dapper.Data.Repositories;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

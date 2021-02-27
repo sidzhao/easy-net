@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
+using EasyNet.Data.Entities;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 
-namespace EasyNet.Data
+namespace EasyNet.Data.Repositories
 {
     public interface IRepositoryHelper
     {

@@ -1,7 +1,7 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.CommonTests.Common.Entities;
-using EasyNet.Dapper.Data;
-using EasyNet.Data;
+using EasyNet.Dapper.Data.Repositories;
+using EasyNet.Data.Repositories;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

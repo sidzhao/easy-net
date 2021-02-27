@@ -1,13 +1,14 @@
 ﻿using System;
-using System.CodeDom;
 using System.Linq.Expressions;
+using EasyNet.Data.Entities;
+using EasyNet.Data.Entities.Auditing;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Linq;
 using EasyNet.Runtime.Session;
 using EasyNet.Timing;
 using EasyNet.Uow;
 
-namespace EasyNet.Data
+namespace EasyNet.Data.Repositories
 {
     public class RepositoryHelper : IRepositoryHelper
     {

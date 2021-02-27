@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using EasyNet.Data;
+using EasyNet.Data.Repositories;
 using EasyNet.EntityFrameworkCore;
-using EasyNet.EntityFrameworkCore.Data;
+using EasyNet.EntityFrameworkCore.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -1,4 +1,4 @@
-﻿namespace EasyNet.Application
+﻿namespace EasyNet.Application.Dto
 {
     public interface IEntityDto : IEntityDto<int>
     {
