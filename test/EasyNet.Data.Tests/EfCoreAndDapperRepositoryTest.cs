@@ -1,5 +1,6 @@
 ﻿using EasyNet.CommonTests.Common;
-using EasyNet.Data.Tests.Base;
+using EasyNet.CommonTests.Common.Entities;
+using EasyNet.Dapper.Data;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +21,18 @@ namespace EasyNet.Data.Tests
                     x.UseEfCore<EfCoreContext>(options =>
                     {
                         options.UseSqlite(CreateInMemoryDatabase());
-                    });
-                    x.UseDapper();
+                    }).AsDefault<EfCoreContext>();
+                    x.UseDapper().AsIDapperRepository(typeof(User).Assembly);
                 })
                 .AddSession<TestSession>()
                 .AddCurrentDbConnectorProvider<TestCurrentDbConnectorProvider>();
 
             ServiceProvider = services.BuildServiceProvider();
+        }
+
+        public override IRepository<TEntity, TPrimaryKey> GetDapperRepository<TEntity, TPrimaryKey>()
+        {
+            return ServiceProvider.GetService<IDapperRepository<TEntity, TPrimaryKey>>();
         }
     }
 }

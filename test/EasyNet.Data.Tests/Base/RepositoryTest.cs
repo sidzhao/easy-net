@@ -1773,6 +1773,11 @@ namespace EasyNet.Data.Tests.Base
             return connection;
         }
 
+        protected virtual bool UseEfCoreSaveChanges()
+        {
+            return GetType().Name == "EfCoreRepositoryTest";
+        }
+
         public IUnitOfWorkCompleteHandle BeginUow()
         {
             return ServiceProvider.GetService<IUnitOfWorkManager>().Begin(ServiceProvider);

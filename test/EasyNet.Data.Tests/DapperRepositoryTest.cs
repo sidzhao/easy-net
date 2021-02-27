@@ -36,7 +36,7 @@ namespace EasyNet.Data.Tests
         public void TestGetAllWithSql()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var users = userRepo.GetAllList("SELECT * FROM Users WHERE Status=@Status", new
@@ -53,7 +53,7 @@ namespace EasyNet.Data.Tests
         public async Task TestGetAllWithSqlAsync()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var users = (await userRepo.GetAllListAsync("SELECT * FROM Users WHERE Status=@Status", new
@@ -74,7 +74,7 @@ namespace EasyNet.Data.Tests
         public void TestSingleWithSql()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user2 = userRepo.GetSingle("SELECT * FROM Users WHERE Name=@Name", new
@@ -96,7 +96,7 @@ namespace EasyNet.Data.Tests
         public async Task TestSingleWithSqlAsync()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user2 = await userRepo.GetSingleAsync("SELECT * FROM Users WHERE Name=@Name", new
@@ -122,7 +122,7 @@ namespace EasyNet.Data.Tests
         public void TestSingleOrDefaultWithSql()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user2 = userRepo.GetSingleOrDefault("SELECT * FROM Users WHERE Name=@Name", new
@@ -148,7 +148,7 @@ namespace EasyNet.Data.Tests
         public async Task TestSingleOrDefaultWithSqlAsync()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user2 = await userRepo.GetSingleOrDefaultAsync("SELECT * FROM Users WHERE Name=@Name", new
@@ -178,7 +178,7 @@ namespace EasyNet.Data.Tests
         public void TestFirstWithSql()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user = userRepo.GetFirst("SELECT * FROM Users");
@@ -202,7 +202,7 @@ namespace EasyNet.Data.Tests
         public async Task TestFirstWithSqlAsync()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user = await userRepo.GetFirstAsync("SELECT * FROM Users");
@@ -230,7 +230,7 @@ namespace EasyNet.Data.Tests
         public void TestFirstOrDefaultWithSql()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user = userRepo.GetFirstOrDefault("SELECT * FROM Users");
@@ -255,7 +255,7 @@ namespace EasyNet.Data.Tests
         public async Task TestFirstOrDefaultWithSqlAsync()
         {
             // Arrange
-            var userRepo = GetRepository<User, long>();
+            var userRepo = GetDapperRepository<User, long>();
 
             // Act
             var user = await userRepo.GetFirstOrDefaultAsync("SELECT * FROM Users");
@@ -277,5 +277,10 @@ namespace EasyNet.Data.Tests
         }
 
         #endregion
+
+        public virtual IRepository<TEntity, TPrimaryKey> GetDapperRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
+        {
+            return GetRepository<TEntity, TPrimaryKey>();
+        }
     }
 }
