@@ -9,6 +9,7 @@ using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
 namespace EasyNet.EntityFrameworkCore.Data
@@ -17,7 +18,7 @@ namespace EasyNet.EntityFrameworkCore.Data
         where TEntity : class, IEntity<int>
         where TDbContext : EasyNetDbContext
     {
-        public EfCoreRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper)
+        public EfCoreRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper, IOptions<EasyNetOptions> options) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper, options)
         {
         }
     }
@@ -36,13 +37,20 @@ namespace EasyNet.EntityFrameworkCore.Data
         protected readonly IRepositoryHelper RepositoryHelper;
         protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
         protected readonly IEasyNetSession CurrentSession;
+        protected readonly EasyNetOptions Options;
 
-        public EfCoreRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper)
+        public EfCoreRepositoryBase(
+            ICurrentUnitOfWorkProvider currentUnitOfWorkProvider,
+            IEasyNetSession session,
+            ICurrentDbConnectorProvider currentDbConnectorProvider,
+            IRepositoryHelper repositoryHelper,
+            IOptions<EasyNetOptions> options)
         {
             DbContext = (TDbContext)currentDbConnectorProvider.GetOrCreate().GetDbContext();
             RepositoryHelper = repositoryHelper;
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
             CurrentSession = session;
+            Options = options.Value;
         }
         protected virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
 
@@ -472,6 +480,9 @@ namespace EasyNet.EntityFrameworkCore.Data
         protected virtual void ApplyConceptsForAddedEntity(TEntity entity)
         {
             RepositoryHelper.ApplyConceptsForAddedEntity(entity, CurrentSession);
+            RepositoryHelper.CheckAndSetIsActive(entity, Options);
+            RepositoryHelper.CheckAndSetMustHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
+            RepositoryHelper.CheckAndSetMayHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
         }
 
         protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)

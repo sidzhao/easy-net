@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Linq.Expressions;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Linq;
@@ -32,7 +33,7 @@ namespace EasyNet.Data
         protected virtual Expression<Func<TEntity, bool>> CreateTenantFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session) where TEntity : IEntity<TPrimaryKey>
         {
             var entityType = typeof(TEntity);
-
+            var currentTenantId = GetCurrentTenantId(currentUnitOfWorkProvider, session);
 
             var mustHaveTenantRawGeneric = entityType.GetImplementedRawGeneric(typeof(IMustHaveTenant<>));
 
@@ -40,11 +41,12 @@ namespace EasyNet.Data
             {
                 var tenantIdType = mustHaveTenantRawGeneric.GenericTypeArguments[0];
 
+                var idValue = string.IsNullOrEmpty(currentTenantId) ? null : Convert.ChangeType(currentTenantId, tenantIdType);
+                if (idValue == null) return p => 1 == 2; // Always set false if the entity is IMustHaveTenant<> and current tenant id is null
+
                 var lambdaParam = Expression.Parameter(entityType);
 
                 var leftExpression = Expression.PropertyOrField(lambdaParam, "TenantId");
-
-                var idValue = Convert.ChangeType(GetTenantId(currentUnitOfWorkProvider, session), tenantIdType);
 
                 Expression<Func<object>> closure = () => idValue;
                 var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
@@ -65,8 +67,8 @@ namespace EasyNet.Data
 
                     var leftExpression = Expression.PropertyOrField(lambdaParam, "TenantId");
 
-                    var tenantId = GetTenantId(currentUnitOfWorkProvider, session);
-                    var idValue = string.IsNullOrEmpty(tenantId) ? null : Convert.ChangeType(GetTenantId(currentUnitOfWorkProvider, session), tenantIdType);
+                    var tenantId = GetCurrentTenantId(currentUnitOfWorkProvider, session);
+                    var idValue = string.IsNullOrEmpty(tenantId) ? null : Convert.ChangeType(GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantIdType);
 
                     Expression<Func<object>> closure = () => idValue;
                     var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
@@ -226,7 +228,109 @@ namespace EasyNet.Data
             }
         }
 
-        protected virtual string GetTenantId(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session)
+        public virtual void CheckAndSetIsActive<TEntity>(TEntity entity, EasyNetOptions options)
+        {
+            if (options.SuppressAutoSetIsActive)
+            {
+                return;
+            }
+
+            if (entity is IPassivable passivable)
+            {
+                passivable.IsActive = true;
+            }
+        }
+
+        public virtual void CheckAndSetMustHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options)
+        {
+            if (options.SuppressAutoSetTenantId)
+            {
+                return;
+            }
+
+            var entityType = entity.GetType();
+
+            // Only set IMustHaveTenant entities
+            var tenantGeneric = entityType.GetImplementedRawGeneric(typeof(IMustHaveTenant<>));
+            if (tenantGeneric == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(GetCurrentTenantId(currentUnitOfWorkProvider, session)))
+            {
+                throw new EasyNetException("Can not set TenantId to empty for IMustHaveTenant entities!");
+            }
+
+            // Don't set if it's already set
+            var tenantIdProperty = entityType.GetProperty("TenantId");
+            if (tenantIdProperty == null) throw new EasyNetException($"Cannot found property TenantId in entity {entityType.AssemblyQualifiedName}.");
+
+            bool alreadySetTenantId;
+            var tenantIdType = tenantGeneric.GenericTypeArguments[0];
+            if (tenantIdType == typeof(string))
+            {
+                alreadySetTenantId = !string.IsNullOrEmpty(tenantIdProperty.GetValue(entity).ToString());
+            }
+            else if (tenantIdType == typeof(short))
+            {
+                alreadySetTenantId = Convert.ToInt16(tenantIdProperty.GetValue(entity)) != 0;
+            }
+            else if (tenantIdType == typeof(int))
+            {
+                alreadySetTenantId = Convert.ToInt32(tenantIdProperty.GetValue(entity)) != 0;
+            }
+            else if (tenantIdType == typeof(long))
+            {
+                alreadySetTenantId = Convert.ToInt64(tenantIdProperty.GetValue(entity)) != 0;
+            }
+            else if (tenantIdType == typeof(decimal))
+            {
+                alreadySetTenantId = Convert.ToDecimal(tenantIdProperty.GetValue(entity)) != 0;
+            }
+            else if (tenantIdType == typeof(Guid))
+            {
+                alreadySetTenantId = Guid.Parse(tenantIdProperty.GetValue(entity).ToString()) != Guid.Empty;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Not support {tenantIdType.AssemblyQualifiedName} in {typeof(IMustHaveTenant<>)}.");
+            }
+
+            if (!alreadySetTenantId)
+            {
+                tenantIdProperty.SetValueAndAutoFit(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantGeneric.GenericTypeArguments[0]);
+            }
+        }
+
+        public virtual void CheckAndSetMayHaveTenantIdProperty<TEntity>(TEntity entity, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, EasyNetOptions options)
+        {
+            if (options.SuppressAutoSetTenantId)
+            {
+                return;
+            }
+
+            var entityType = entity.GetType();
+
+            // Only set IMayHaveTenant entities
+            var tenantGeneric = entityType.GetImplementedRawGeneric(typeof(IMayHaveTenant<>));
+            if (tenantGeneric == null)
+            {
+                return;
+            }
+
+            // Don't set if it's already set
+            var tenantIdProperty = entityType.GetProperty("TenantId");
+            if (tenantIdProperty == null) throw new EasyNetException($"Cannot found property TenantId in entity {entityType.AssemblyQualifiedName}.");
+
+            if (tenantIdProperty.GetValue(entity) == null)
+            {
+                tenantIdProperty.SetValueAndAutoFit(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session),
+                    tenantGeneric.GenericTypeArguments[0]);
+            }
+        }
+
+        protected virtual string GetCurrentTenantId(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session)
         {
             if (currentUnitOfWorkProvider.Current != null)
             {

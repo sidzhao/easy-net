@@ -30,6 +30,11 @@ namespace EasyNet.Data.Tests
             ServiceProvider = services.BuildServiceProvider();
         }
 
+        protected override bool UseEfCoreSaveChanges()
+        {
+            return true;
+        }
+
         public override IRepository<TEntity, TPrimaryKey> GetDapperRepository<TEntity, TPrimaryKey>()
         {
             return ServiceProvider.GetService<IDapperRepository<TEntity, TPrimaryKey>>();

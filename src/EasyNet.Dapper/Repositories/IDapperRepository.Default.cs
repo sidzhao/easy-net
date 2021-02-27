@@ -10,6 +10,7 @@ using EasyDapperExtensions;
 using EasyNet.Data;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
 namespace EasyNet.Dapper.Data
@@ -17,7 +18,7 @@ namespace EasyNet.Dapper.Data
     public class DapperRepositoryBase<TEntity> : DapperRepositoryBase<TEntity, int>, IDapperRepository<TEntity>
         where TEntity : class, IEntity<int>
     {
-        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper)
+        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper, IOptions<EasyNetOptions> options) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper, options)
         {
         }
     }
@@ -34,14 +35,21 @@ namespace EasyNet.Dapper.Data
         protected readonly IEasyNetSession CurrentSession;
         protected readonly IDbConnector DbConnector;
         protected readonly IRepositoryHelper RepositoryHelper;
+        protected readonly EasyNetOptions Options;
 
         // ReSharper disable once IdentifierTypo
-        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper)
+        public DapperRepositoryBase(
+            ICurrentUnitOfWorkProvider currentUnitOfWorkProvider,
+            IEasyNetSession session, 
+            ICurrentDbConnectorProvider currentDbConnectorProvider,
+            IRepositoryHelper repositoryHelper, 
+            IOptions<EasyNetOptions> options)
         {
             CurrentSession = session;
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
             DbConnector = currentDbConnectorProvider.GetOrCreate();
             RepositoryHelper = repositoryHelper;
+            Options = options.Value;
         }
 
         protected IDbConnection Connection => DbConnector.Connection;
@@ -461,6 +469,9 @@ namespace EasyNet.Dapper.Data
         protected virtual void ApplyConceptsForAddedEntity(TEntity entity)
         {
             RepositoryHelper.ApplyConceptsForAddedEntity(entity, CurrentSession);
+            RepositoryHelper.CheckAndSetIsActive(entity, Options);
+            RepositoryHelper.CheckAndSetMustHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
+            RepositoryHelper.CheckAndSetMayHaveTenantIdProperty(entity, CurrentUnitOfWorkProvider, CurrentSession, Options);
         }
 
         protected virtual void ApplyConceptsForModifiedEntity(TEntity entity)

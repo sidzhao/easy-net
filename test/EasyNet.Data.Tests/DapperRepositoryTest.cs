@@ -278,6 +278,11 @@ namespace EasyNet.Data.Tests
 
         #endregion
 
+        protected override bool UseEfCoreSaveChanges()
+        {
+            return false;
+        }
+
         public virtual IRepository<TEntity, TPrimaryKey> GetDapperRepository<TEntity, TPrimaryKey>() where TEntity : class, IEntity<TPrimaryKey>
         {
             return GetRepository<TEntity, TPrimaryKey>();

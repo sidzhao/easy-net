@@ -824,8 +824,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestInsert(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             void Do()
             {
                 // Arrange
@@ -856,7 +854,7 @@ namespace EasyNet.Data.Tests.Base
                 creationAuditedRepo.Insert(creationAudited1);
 
                 // Assert
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                 {
                     Assert.Equal(0, user.Id);
                     Assert.Equal(useUow ? 2 : 6, userRepo.Count());
@@ -873,17 +871,17 @@ namespace EasyNet.Data.Tests.Base
                 #region SaveChanges
 
                 // Act
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
                 Assert.Equal(7, user.Id);
-                Assert.Equal(useUow ? true : false, userRepo.SingleOrDefault(p => p.Id == 7) == null);
-                Assert.Equal(useUow ? 2 : 7, userRepo.Count());
+                Assert.NotNull(userRepo.SingleOrDefault(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, userRepo.Count());
 
                 Assert.Equal(5, role.Id);
-                Assert.Equal(useUow ? true : false, roleRepo.SingleOrDefault(p => p.Id == 5) == null);
-                Assert.Equal(useUow ? 2 : 5, roleRepo.Count());
+                Assert.NotNull(roleRepo.SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, roleRepo.Count());
 
                 Assert.Equal(4, creationAudited1.Id);
                 Assert.Equal(1, creationAuditedRepo.SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
@@ -911,8 +909,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestInsertAsync(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             async Task DoAsync()
             {
                 // Arrange
@@ -943,7 +939,7 @@ namespace EasyNet.Data.Tests.Base
                 await creationAuditedRepo.InsertAsync(creationAudited1);
 
                 // Assert
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                 {
                     Assert.Equal(0, user.Id);
                     Assert.Equal(useUow ? 2 : 6, await userRepo.CountAsync());
@@ -960,17 +956,17 @@ namespace EasyNet.Data.Tests.Base
                 #region SaveChanges
 
                 // Act
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
                 Assert.Equal(7, user.Id);
-                Assert.Equal(useUow ? 2 : 7, await userRepo.CountAsync());
-                Assert.Equal(useUow ? true : false, (await userRepo.SingleOrDefaultAsync(p => p.Id == 7)) == null);
+                Assert.NotNull(await userRepo.SingleOrDefaultAsync(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, await userRepo.CountAsync());
 
                 Assert.Equal(5, role.Id);
-                Assert.Equal(useUow ? true : false, (await roleRepo.SingleOrDefaultAsync(p => p.Id == 5)) == null);
-                Assert.Equal(useUow ? 2 : 5, await roleRepo.CountAsync());
+                Assert.NotNull(await roleRepo.SingleOrDefaultAsync(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, await roleRepo.CountAsync());
 
                 Assert.Equal(4, creationAudited1.Id);
                 Assert.Equal(1, (await creationAuditedRepo.SingleOrDefaultAsync(p => p.Id == 4)).CreatorUserId);
@@ -1026,13 +1022,13 @@ namespace EasyNet.Data.Tests.Base
                 creationAuditedRepo.InsertAndGetId(creationAudited1);
 
                 // Assert
-                Assert.Equal(5, role.Id);
-                Assert.Equal(useUow ? true : false, roleRepo.SingleOrDefault(p => p.Id == 5) == null);
-                Assert.Equal(useUow ? 2 : 5, roleRepo.Count());
-
                 Assert.Equal(7, user.Id);
-                Assert.Equal(useUow ? true : false, userRepo.SingleOrDefault(p => p.Id == 7) == null);
-                Assert.Equal(useUow ? 2 : 7, userRepo.Count());
+                Assert.NotNull(userRepo.SingleOrDefault(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, userRepo.Count());
+
+                Assert.Equal(5, role.Id);
+                Assert.NotNull(roleRepo.SingleOrDefault(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, roleRepo.Count());
 
                 Assert.Equal(4, creationAudited1.Id);
                 Assert.Equal(1, creationAuditedRepo.SingleOrDefault(p => p.Id == 4)?.CreatorUserId);
@@ -1087,12 +1083,12 @@ namespace EasyNet.Data.Tests.Base
 
                 // Assert
                 Assert.Equal(7, user.Id);
-                Assert.Equal(useUow ? 2 : 7, await userRepo.CountAsync());
-                Assert.Equal(useUow ? true : false, (await userRepo.SingleOrDefaultAsync(p => p.Id == 7)) == null);
+                Assert.NotNull(await userRepo.SingleOrDefaultAsync(p => p.Id == 7));
+                Assert.Equal(useUow ? 3 : 7, await userRepo.CountAsync());
 
                 Assert.Equal(5, role.Id);
-                Assert.Equal(useUow ? true : false, (await roleRepo.SingleOrDefaultAsync(p => p.Id == 5)) == null);
-                Assert.Equal(useUow ? 2 : 5, await roleRepo.CountAsync());
+                Assert.NotNull(await roleRepo.SingleOrDefaultAsync(p => p.Id == 5));
+                Assert.Equal(useUow ? 3 : 5, await roleRepo.CountAsync());
 
                 Assert.Equal(4, creationAudited1.Id);
                 Assert.Equal(1, (await creationAuditedRepo.SingleOrDefaultAsync(p => p.Id == 4))?.CreatorUserId);
@@ -1122,8 +1118,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestUpdate(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             void Do(IActiveUnitOfWork uow)
             {
                 // Arrange
@@ -1142,7 +1136,7 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited1.Name = "TestUpdate1";
                 modificationAuditedRepo.Update(modificationAudited1);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1180,7 +1174,7 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited2.Name = "TestUpdate2";
                 modificationAuditedRepo.Update(modificationAudited2);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1206,7 +1200,7 @@ namespace EasyNet.Data.Tests.Base
 
                     modificationAuditedRepo.Update(3, user => { user.Name = "TestUpdate3"; });
 
-                    if (isEfCoreTest)
+                    if (UseEfCoreSaveChanges())
                         GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                     // Assert
@@ -1238,8 +1232,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestUpdateAsync(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             async Task DoAsync(IActiveUnitOfWork uow)
             {
                 // Arrange
@@ -1258,7 +1250,7 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited1.Name = "TestUpdate1";
                 await modificationAuditedRepo.UpdateAsync(modificationAudited1);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1296,7 +1288,7 @@ namespace EasyNet.Data.Tests.Base
                 modificationAudited2.Name = "TestUpdate2";
                 await modificationAuditedRepo.UpdateAsync(modificationAudited2);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1331,7 +1323,7 @@ namespace EasyNet.Data.Tests.Base
                         return Task.CompletedTask;
                     });
 
-                    if (isEfCoreTest)
+                    if (UseEfCoreSaveChanges())
                         await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                     // Assert
@@ -1369,8 +1361,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestInsertOrUpdate(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             void Do()
             {
                 // Arrange
@@ -1390,7 +1380,7 @@ namespace EasyNet.Data.Tests.Base
                 };
                 modificationAuditedRepo.InsertOrUpdate(modificationAudited4);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1420,8 +1410,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestInsertOrUpdateAsync(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             async Task DoAsync()
             {
                 // Arrange
@@ -1441,7 +1429,7 @@ namespace EasyNet.Data.Tests.Base
                 };
                 await modificationAuditedRepo.InsertOrUpdateAsync(modificationAudited4);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1475,8 +1463,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestHardDelete(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             void Do()
             {
                 // Arrange
@@ -1487,7 +1473,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 userRepo.Delete(1);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1501,7 +1487,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 userRepo.Delete(userRepo.Get(2));
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1515,7 +1501,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 userRepo.Delete(p => p.RoleId == 2);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1543,8 +1529,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestHardDeleteAsync(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             async Task DoAsync()
             {
                 // Arrange
@@ -1555,7 +1539,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await userRepo.DeleteAsync(1);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1569,7 +1553,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await userRepo.DeleteAsync(await userRepo.GetAsync(2));
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1583,7 +1567,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await userRepo.DeleteAsync(p => p.RoleId == 2);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1615,8 +1599,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public void TestSoftDelete(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             void Do()
             {
                 // Arrange
@@ -1627,7 +1609,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 deletionAuditedRepo.Delete(1);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1642,7 +1624,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 deletionAuditedRepo.Delete(deletionAuditedRepo.Get(2));
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1657,7 +1639,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 deletionAuditedRepo.Delete(p => p.IsActive == false);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChanges();
 
                 // Assert
@@ -1690,8 +1672,6 @@ namespace EasyNet.Data.Tests.Base
         [InlineData(true)]
         public async Task TestSoftDeleteAsync(bool useUow)
         {
-            var isEfCoreTest = GetType().Name == "EfCoreRepositoryTest";
-
             async Task DoAsync()
             {
                 // Arrange
@@ -1702,7 +1682,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await deletionAuditedRepo.DeleteAsync(1);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1718,7 +1698,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await deletionAuditedRepo.DeleteAsync(await deletionAuditedRepo.GetAsync(2));
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1734,7 +1714,7 @@ namespace EasyNet.Data.Tests.Base
                 // Act
                 await deletionAuditedRepo.DeleteAsync(p => p.IsActive == false);
 
-                if (isEfCoreTest)
+                if (UseEfCoreSaveChanges())
                     await GetCurrentDbConnectorProvider().Current.GetDbContext().SaveChangesAsync();
 
                 // Assert
@@ -1775,7 +1755,7 @@ namespace EasyNet.Data.Tests.Base
 
         protected virtual bool UseEfCoreSaveChanges()
         {
-            return GetType().Name == "EfCoreRepositoryTest";
+            return true;
         }
 
         public IUnitOfWorkCompleteHandle BeginUow()
