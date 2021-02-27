@@ -2,8 +2,6 @@
 using System.Linq;
 using EasyNet.EntityFrameworkCore;
 using EasyNet.Identity.EntityFrameworkCore.Domain.Entities;
-using EasyNet.Runtime.Session;
-using EasyNet.Uow;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -15,15 +13,15 @@ namespace EasyNet.Identity.EntityFrameworkCore.DbContext
 {
 	public class EasyNetIdentityUserContext : EasyNetIdentityUserContext<EasyNetUser<int>, EasyNetUserClaim<int>, EasyNetUserLogin<int>, EasyNetUserToken<int>, int>
 	{
-        public EasyNetIdentityUserContext(DbContextOptions options, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, IOptions<EasyNetOptions> easyNetOptions) : base(options, currentUnitOfWorkProvider, session, easyNetOptions)
+		public EasyNetIdentityUserContext(DbContextOptions options) : base(options)
         {
         }
-    }
+	}
 
 	public class EasyNetIdentityUserContext<TUser> : EasyNetIdentityUserContext<TUser, EasyNetUserClaim<int>, EasyNetUserLogin<int>, EasyNetUserToken<int>, int>
 	 where TUser : EasyNetUser<int>
 	{
-        public EasyNetIdentityUserContext(DbContextOptions options, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, IOptions<EasyNetOptions> easyNetOptions) : base(options, currentUnitOfWorkProvider, session, easyNetOptions)
+        public EasyNetIdentityUserContext(DbContextOptions options) : base(options)
         {
         }
     }
@@ -32,10 +30,10 @@ namespace EasyNet.Identity.EntityFrameworkCore.DbContext
 		where TUser : EasyNetUser<TPrimaryKey>
 		where TPrimaryKey : IEquatable<TPrimaryKey>
 	{
-        public EasyNetIdentityUserContext(DbContextOptions options, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, IOptions<EasyNetOptions> easyNetOptions) : base(options, currentUnitOfWorkProvider, session, easyNetOptions)
+		public EasyNetIdentityUserContext(DbContextOptions options) : base(options)
         {
         }
-    }
+	}
 
 	public class EasyNetIdentityUserContext<TUser, TUserClaim, TUserLogin, TUserToken, TPrimaryKey> : EasyNetDbContext
 		where TUser : EasyNetUser<TPrimaryKey>
@@ -66,7 +64,7 @@ namespace EasyNet.Identity.EntityFrameworkCore.DbContext
 			{ }
 		}
 
-        public EasyNetIdentityUserContext(DbContextOptions options, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, IOptions<EasyNetOptions> easyNetOptions) : base(options, currentUnitOfWorkProvider, session, easyNetOptions)
+        public EasyNetIdentityUserContext(DbContextOptions options) : base(options)
         {
         }
 

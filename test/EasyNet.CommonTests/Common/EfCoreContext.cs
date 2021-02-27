@@ -10,7 +10,7 @@ namespace EasyNet.CommonTests.Common
 {
     public class EfCoreContext : EasyNetDbContext
     {
-        public EfCoreContext(DbContextOptions options, ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, IOptions<EasyNetOptions> easyNetOptions) : base(options, currentUnitOfWorkProvider, session, easyNetOptions)
+        public EfCoreContext(DbContextOptions options) : base(options)
         {
         }
 
