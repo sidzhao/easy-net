@@ -53,12 +53,18 @@ namespace EasyNet.Data.Tests.Base
 
                 var users = userRepo.GetAllList();
                 var roles = roleRepo.GetAllList();
-                var userAndRoles = (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToList();
 
                 // Assert
                 Assert.Equal(4, users.Count);
                 Assert.Equal(2, roles.Count);
-                Assert.Empty(userAndRoles);
+
+                if (UseEfCoreSaveChanges())
+                {
+                    var userAndRoles = (from u in userRepo.GetAll()
+                                        join r in roleRepo.GetAll() on u.RoleId equals r.Id
+                                        select u).ToList();
+                    Assert.Empty(userAndRoles);
+                }
             }
 
             #endregion
@@ -80,12 +86,17 @@ namespace EasyNet.Data.Tests.Base
 
                 var users = userRepo.GetAllList();
                 var roles = roleRepo.GetAllList();
-                var userAndRoles = (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToList();
+             
 
                 // Assert
                 Assert.Equal(2, users.Count);
                 Assert.Equal(2, roles.Count);
-                Assert.Single(userAndRoles);
+            
+                if (UseEfCoreSaveChanges())
+                {
+                    var userAndRoles = (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToList();
+                    Assert.Single(userAndRoles);
+                }
             }
 
             #endregion
@@ -155,12 +166,17 @@ namespace EasyNet.Data.Tests.Base
 
                 var users = await userRepo.GetAllListAsync();
                 var roles = await roleRepo.GetAllListAsync();
-                var userAndRoles = await (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToListAsync();
+              
 
                 // Assert
                 Assert.Equal(4, users.Count);
                 Assert.Equal(2, roles.Count);
-                Assert.Empty(userAndRoles);
+                
+                if (UseEfCoreSaveChanges())
+                {
+                    var userAndRoles = await (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToListAsync();
+                    Assert.Empty(userAndRoles);
+                }
             }
 
             #endregion
@@ -182,12 +198,16 @@ namespace EasyNet.Data.Tests.Base
 
                 var users = await userRepo.GetAllListAsync();
                 var roles = await roleRepo.GetAllListAsync();
-                var userAndRoles = await (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToListAsync();
-
+               
                 // Assert
                 Assert.Equal(2, users.Count);
                 Assert.Equal(2, roles.Count);
-                Assert.Single(userAndRoles);
+                
+                if (UseEfCoreSaveChanges())
+                {
+                    var userAndRoles = await (from u in userRepo.GetAll() join r in roleRepo.GetAll() on u.RoleId equals r.Id select u).ToListAsync();
+                    Assert.Single(userAndRoles);
+                }
             }
 
             #endregion
@@ -227,6 +247,11 @@ namespace EasyNet.Data.Tests.Base
             connection.Open();
 
             return connection;
+        }
+
+        protected virtual bool UseEfCoreSaveChanges()
+        {
+            return true;
         }
 
         protected IUnitOfWorkCompleteHandle BeginUow(UnitOfWorkOptions options = null)

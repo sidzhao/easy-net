@@ -1,12 +1,10 @@
 using System;
 using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.CommonTests.Common.Entities;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Uow;
 using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
