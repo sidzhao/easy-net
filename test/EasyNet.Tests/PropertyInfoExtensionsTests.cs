@@ -17,48 +17,48 @@ namespace EasyNet.Tests
 
             #region short
 
-            type.GetProperty("Short")?.SetValueAndAutoFit<short>(test, 1);
+            type.GetProperty("Short")?.SetValueAndChangeType<short>(test, 1);
             Assert.Equal(1, test.Short);
 
-            type.GetProperty("Short")?.SetValueAndAutoFit<short>(test, null);
+            type.GetProperty("Short")?.SetValueAndChangeType<short>(test, null);
             Assert.Equal(0, test.Short);
 
-            type.GetProperty("ShortOrNull")?.SetValueAndAutoFit<short?>(test, 2);
+            type.GetProperty("ShortOrNull")?.SetValueAndChangeType<short?>(test, 2);
             Assert.Equal(2, test.ShortOrNull.Value);
 
-            type.GetProperty("ShortOrNull")?.SetValueAndAutoFit<short?>(test, null);
+            type.GetProperty("ShortOrNull")?.SetValueAndChangeType<short?>(test, null);
             Assert.Null(test.ShortOrNull);
 
             #endregion
 
             #region int
 
-            type.GetProperty("Int")?.SetValueAndAutoFit<int>(test, 1);
+            type.GetProperty("Int")?.SetValueAndChangeType<int>(test, 1);
             Assert.Equal(1, test.Int);
 
-            type.GetProperty("Int")?.SetValueAndAutoFit<int>(test, null);
+            type.GetProperty("Int")?.SetValueAndChangeType<int>(test, null);
             Assert.Equal(0, test.Int);
 
-            type.GetProperty("IntOrNull")?.SetValueAndAutoFit<int?>(test, 2);
+            type.GetProperty("IntOrNull")?.SetValueAndChangeType<int?>(test, 2);
             Assert.Equal(2, test.IntOrNull.Value);
 
-            type.GetProperty("IntOrNull")?.SetValueAndAutoFit<int?>(test, null);
+            type.GetProperty("IntOrNull")?.SetValueAndChangeType<int?>(test, null);
             Assert.Null(test.IntOrNull);
 
             #endregion
 
             #region long
 
-            type.GetProperty("Long")?.SetValueAndAutoFit<long>(test, 1);
+            type.GetProperty("Long")?.SetValueAndChangeType<long>(test, 1);
             Assert.Equal(1, test.Long);
 
-            type.GetProperty("Long")?.SetValueAndAutoFit<long>(test, null);
+            type.GetProperty("Long")?.SetValueAndChangeType<long>(test, null);
             Assert.Equal(0, test.Long);
 
-            type.GetProperty("LongOrNull")?.SetValueAndAutoFit<long?>(test, 2);
+            type.GetProperty("LongOrNull")?.SetValueAndChangeType<long?>(test, 2);
             Assert.Equal(2, test.LongOrNull.Value);
 
-            type.GetProperty("LongOrNull")?.SetValueAndAutoFit<long?>(test, null);
+            type.GetProperty("LongOrNull")?.SetValueAndChangeType<long?>(test, null);
             Assert.Null(test.LongOrNull);
 
             #endregion
@@ -67,112 +67,112 @@ namespace EasyNet.Tests
 
             var now = DateTime.Now;
 
-            type.GetProperty("DateTime")?.SetValueAndAutoFit<DateTime>(test, now);
+            type.GetProperty("DateTime")?.SetValueAndChangeType<DateTime>(test, now);
             Assert.Equal(now, test.DateTime);
 
-            type.GetProperty("DateTime")?.SetValueAndAutoFit<DateTime>(test, null);
+            type.GetProperty("DateTime")?.SetValueAndChangeType<DateTime>(test, null);
             Assert.Equal(default(DateTime), test.DateTime);
 
-            type.GetProperty("DateTimeOrNull")?.SetValueAndAutoFit<DateTime?>(test, now);
+            type.GetProperty("DateTimeOrNull")?.SetValueAndChangeType<DateTime?>(test, now);
             Assert.Equal(now, test.DateTimeOrNull.Value);
 
-            type.GetProperty("DateTimeOrNull")?.SetValueAndAutoFit<DateTime?>(test, null);
+            type.GetProperty("DateTimeOrNull")?.SetValueAndChangeType<DateTime?>(test, null);
             Assert.Null(test.DateTimeOrNull);
 
             #endregion
 
             #region float
 
-            type.GetProperty("Float")?.SetValueAndAutoFit<float>(test, 1);
+            type.GetProperty("Float")?.SetValueAndChangeType<float>(test, 1);
             Assert.Equal(1, test.Float);
 
-            type.GetProperty("Float")?.SetValueAndAutoFit<float>(test, null);
+            type.GetProperty("Float")?.SetValueAndChangeType<float>(test, null);
             Assert.Equal(0, test.Float);
 
-            type.GetProperty("FloatOrNull")?.SetValueAndAutoFit<float?>(test, 2);
+            type.GetProperty("FloatOrNull")?.SetValueAndChangeType<float?>(test, 2);
             Assert.Equal(2, test.FloatOrNull.Value);
 
-            type.GetProperty("FloatOrNull")?.SetValueAndAutoFit<float?>(test, null);
+            type.GetProperty("FloatOrNull")?.SetValueAndChangeType<float?>(test, null);
             Assert.Null(test.FloatOrNull);
 
             #endregion
 
             #region double
 
-            type.GetProperty("Double")?.SetValueAndAutoFit<double>(test, 1);
+            type.GetProperty("Double")?.SetValueAndChangeType<double>(test, 1);
             Assert.Equal(1, test.Double);
 
-            type.GetProperty("Double")?.SetValueAndAutoFit<double>(test, null);
+            type.GetProperty("Double")?.SetValueAndChangeType<double>(test, null);
             Assert.Equal(0, test.Double);
 
-            type.GetProperty("DoubleOrNull")?.SetValueAndAutoFit<double?>(test, 2);
+            type.GetProperty("DoubleOrNull")?.SetValueAndChangeType<double?>(test, 2);
             Assert.Equal(2, test.DoubleOrNull.Value);
 
-            type.GetProperty("DoubleOrNull")?.SetValueAndAutoFit<double?>(test, null);
+            type.GetProperty("DoubleOrNull")?.SetValueAndChangeType<double?>(test, null);
             Assert.Null(test.DoubleOrNull);
 
             #endregion
 
             #region decimal
 
-            type.GetProperty("Decimal")?.SetValueAndAutoFit<decimal>(test, 1);
+            type.GetProperty("Decimal")?.SetValueAndChangeType<decimal>(test, 1);
             Assert.Equal(1, test.Decimal);
 
-            type.GetProperty("Decimal")?.SetValueAndAutoFit<decimal>(test, null);
+            type.GetProperty("Decimal")?.SetValueAndChangeType<decimal>(test, null);
             Assert.Equal(0, test.Decimal);
 
-            type.GetProperty("DecimalOrNull")?.SetValueAndAutoFit<decimal?>(test, 2);
+            type.GetProperty("DecimalOrNull")?.SetValueAndChangeType<decimal?>(test, 2);
             Assert.Equal(2, test.DecimalOrNull.Value);
 
-            type.GetProperty("DecimalOrNull")?.SetValueAndAutoFit<decimal?>(test, null);
+            type.GetProperty("DecimalOrNull")?.SetValueAndChangeType<decimal?>(test, null);
             Assert.Null(test.DecimalOrNull);
 
             #endregion
 
             #region byte
 
-            type.GetProperty("Byte")?.SetValueAndAutoFit<byte>(test, 1);
+            type.GetProperty("Byte")?.SetValueAndChangeType<byte>(test, 1);
             Assert.Equal(1, test.Byte);
 
-            type.GetProperty("Byte")?.SetValueAndAutoFit<byte>(test, null);
+            type.GetProperty("Byte")?.SetValueAndChangeType<byte>(test, null);
             Assert.Equal(default(byte), test.Byte);
 
-            type.GetProperty("ByteOrNull")?.SetValueAndAutoFit<byte?>(test, 2);
+            type.GetProperty("ByteOrNull")?.SetValueAndChangeType<byte?>(test, 2);
             Assert.Equal(2, test.ByteOrNull.Value);
 
-            type.GetProperty("ByteOrNull")?.SetValueAndAutoFit<byte?>(test, null);
+            type.GetProperty("ByteOrNull")?.SetValueAndChangeType<byte?>(test, null);
             Assert.Null(test.ByteOrNull);
 
             #endregion
 
             #region char
 
-            type.GetProperty("Char")?.SetValueAndAutoFit<char>(test, '1');
+            type.GetProperty("Char")?.SetValueAndChangeType<char>(test, '1');
             Assert.Equal('1', test.Char);
 
-            type.GetProperty("Char")?.SetValueAndAutoFit<char>(test, null);
+            type.GetProperty("Char")?.SetValueAndChangeType<char>(test, null);
             Assert.Equal(default(char), test.Char);
 
-            type.GetProperty("CharOrNull")?.SetValueAndAutoFit<char?>(test, '2');
+            type.GetProperty("CharOrNull")?.SetValueAndChangeType<char?>(test, '2');
             Assert.Equal('2', test.CharOrNull.Value);
 
-            type.GetProperty("CharOrNull")?.SetValueAndAutoFit<char?>(test, null);
+            type.GetProperty("CharOrNull")?.SetValueAndChangeType<char?>(test, null);
             Assert.Null(test.CharOrNull);
 
             #endregion
 
             #region Guid
 
-            type.GetProperty("Guid")?.SetValueAndAutoFit<Guid>(test, "E82EFFB7-9577-4856-7FF8-F7839BF6D140");
+            type.GetProperty("Guid")?.SetValueAndChangeType<Guid>(test, "E82EFFB7-9577-4856-7FF8-F7839BF6D140");
             Assert.Equal(Guid.Parse("E82EFFB7-9577-4856-7FF8-F7839BF6D140"), test.Guid);
 
-            type.GetProperty("Guid")?.SetValueAndAutoFit<Guid>(test, null);
+            type.GetProperty("Guid")?.SetValueAndChangeType<Guid>(test, null);
             Assert.Equal(default(Guid), test.Guid);
 
-            type.GetProperty("GuidOrNull")?.SetValueAndAutoFit<Guid?>(test, "960888E9-E921-3BFA-75ED-5BC6D954F328");
+            type.GetProperty("GuidOrNull")?.SetValueAndChangeType<Guid?>(test, "960888E9-E921-3BFA-75ED-5BC6D954F328");
             Assert.Equal(Guid.Parse("960888E9-E921-3BFA-75ED-5BC6D954F328"), test.GuidOrNull.Value);
 
-            type.GetProperty("GuidOrNull")?.SetValueAndAutoFit<Guid?>(test, null);
+            type.GetProperty("GuidOrNull")?.SetValueAndChangeType<Guid?>(test, null);
             Assert.Null(test.GuidOrNull);
 
             #endregion

@@ -184,7 +184,7 @@ namespace EasyNet.Data.Repositories
             {
                 var userIdProperty = entityType.GetProperty("CreatorUserId");
                 if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValueAndAutoFit(entity, session.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
+                userIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
             }
         }
 
@@ -202,7 +202,7 @@ namespace EasyNet.Data.Repositories
             {
                 var userIdProperty = entityType.GetProperty("LastModifierUserId");
                 if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValueAndAutoFit(entity, session.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
+                userIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
             }
         }
 
@@ -224,7 +224,7 @@ namespace EasyNet.Data.Repositories
                 {
                     var userIdProperty = entityType.GetProperty("DeleterUserId");
                     if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {entityType.AssemblyQualifiedName}.");
-                    userIdProperty.SetValueAndAutoFit(entity, session.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
+                    userIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
                 }
             }
         }
@@ -304,7 +304,7 @@ namespace EasyNet.Data.Repositories
 
             if (!alreadySetTenantId)
             {
-                tenantIdProperty.SetValue(entity, Convert.ChangeType(GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantIdType));
+                tenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantIdType);
             }
 
             return true;
@@ -332,7 +332,7 @@ namespace EasyNet.Data.Repositories
 
             if (tenantIdProperty.GetValue(entity) == null)
             {
-                tenantIdProperty.SetValueAndAutoFit(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session),
+                tenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session),
                     tenantGeneric.GenericTypeArguments[0]);
             }
 
@@ -341,12 +341,11 @@ namespace EasyNet.Data.Repositories
 
         protected virtual string GetCurrentTenantId(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session)
         {
-            if (currentUnitOfWorkProvider.Current != null)
-            {
-                return currentUnitOfWorkProvider.Current.GetTenantId();
-            }
+            var tenantId = currentUnitOfWorkProvider.Current != null ?
+                currentUnitOfWorkProvider.Current.GetTenantId() :
+                session.CurrentUsingTenantId;
 
-            return session.CurrentUsingTenantId;
+            return string.IsNullOrEmpty(tenantId) ? null : tenantId;
         }
     }
 }
