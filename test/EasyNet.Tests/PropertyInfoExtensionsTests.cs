@@ -7,7 +7,7 @@ namespace EasyNet.Tests
     public class PropertyInfoExtensionsTests
     {
         [Fact]
-        public void TestSetValueAndAutoFit()
+        public void TestSetValueAndChangeType()
         {
             // Arrange
             var test = new TestClass();
@@ -23,7 +23,7 @@ namespace EasyNet.Tests
             type.GetProperty("Short")?.SetValueAndChangeType<short>(test, null);
             Assert.Equal(0, test.Short);
 
-            type.GetProperty("ShortOrNull")?.SetValueAndChangeType<short?>(test, 2);
+            type.GetProperty("ShortOrNull")?.SetValueAndChangeType<short>(test, 2);
             Assert.Equal(2, test.ShortOrNull.Value);
 
             type.GetProperty("ShortOrNull")?.SetValueAndChangeType<short?>(test, null);
@@ -39,10 +39,10 @@ namespace EasyNet.Tests
             type.GetProperty("Int")?.SetValueAndChangeType<int>(test, null);
             Assert.Equal(0, test.Int);
 
-            type.GetProperty("IntOrNull")?.SetValueAndChangeType<int?>(test, 2);
+            type.GetProperty("IntOrNull")?.SetValueAndChangeType<int>(test, 2);
             Assert.Equal(2, test.IntOrNull.Value);
 
-            type.GetProperty("IntOrNull")?.SetValueAndChangeType<int?>(test, null);
+            type.GetProperty("IntOrNull")?.SetValueAndChangeType<int>(test, null);
             Assert.Null(test.IntOrNull);
 
             #endregion
@@ -55,10 +55,10 @@ namespace EasyNet.Tests
             type.GetProperty("Long")?.SetValueAndChangeType<long>(test, null);
             Assert.Equal(0, test.Long);
 
-            type.GetProperty("LongOrNull")?.SetValueAndChangeType<long?>(test, 2);
+            type.GetProperty("LongOrNull")?.SetValueAndChangeType<long>(test, 2);
             Assert.Equal(2, test.LongOrNull.Value);
 
-            type.GetProperty("LongOrNull")?.SetValueAndChangeType<long?>(test, null);
+            type.GetProperty("LongOrNull")?.SetValueAndChangeType<long>(test, null);
             Assert.Null(test.LongOrNull);
 
             #endregion
@@ -73,10 +73,10 @@ namespace EasyNet.Tests
             type.GetProperty("DateTime")?.SetValueAndChangeType<DateTime>(test, null);
             Assert.Equal(default(DateTime), test.DateTime);
 
-            type.GetProperty("DateTimeOrNull")?.SetValueAndChangeType<DateTime?>(test, now);
+            type.GetProperty("DateTimeOrNull")?.SetValueAndChangeType<DateTime>(test, now);
             Assert.Equal(now, test.DateTimeOrNull.Value);
 
-            type.GetProperty("DateTimeOrNull")?.SetValueAndChangeType<DateTime?>(test, null);
+            type.GetProperty("DateTimeOrNull")?.SetValueAndChangeType<DateTime>(test, null);
             Assert.Null(test.DateTimeOrNull);
 
             #endregion
@@ -89,10 +89,10 @@ namespace EasyNet.Tests
             type.GetProperty("Float")?.SetValueAndChangeType<float>(test, null);
             Assert.Equal(0, test.Float);
 
-            type.GetProperty("FloatOrNull")?.SetValueAndChangeType<float?>(test, 2);
+            type.GetProperty("FloatOrNull")?.SetValueAndChangeType<float>(test, 2);
             Assert.Equal(2, test.FloatOrNull.Value);
 
-            type.GetProperty("FloatOrNull")?.SetValueAndChangeType<float?>(test, null);
+            type.GetProperty("FloatOrNull")?.SetValueAndChangeType<float>(test, null);
             Assert.Null(test.FloatOrNull);
 
             #endregion
@@ -105,10 +105,10 @@ namespace EasyNet.Tests
             type.GetProperty("Double")?.SetValueAndChangeType<double>(test, null);
             Assert.Equal(0, test.Double);
 
-            type.GetProperty("DoubleOrNull")?.SetValueAndChangeType<double?>(test, 2);
+            type.GetProperty("DoubleOrNull")?.SetValueAndChangeType<double>(test, 2);
             Assert.Equal(2, test.DoubleOrNull.Value);
 
-            type.GetProperty("DoubleOrNull")?.SetValueAndChangeType<double?>(test, null);
+            type.GetProperty("DoubleOrNull")?.SetValueAndChangeType<double>(test, null);
             Assert.Null(test.DoubleOrNull);
 
             #endregion
@@ -121,10 +121,10 @@ namespace EasyNet.Tests
             type.GetProperty("Decimal")?.SetValueAndChangeType<decimal>(test, null);
             Assert.Equal(0, test.Decimal);
 
-            type.GetProperty("DecimalOrNull")?.SetValueAndChangeType<decimal?>(test, 2);
+            type.GetProperty("DecimalOrNull")?.SetValueAndChangeType<decimal>(test, 2);
             Assert.Equal(2, test.DecimalOrNull.Value);
 
-            type.GetProperty("DecimalOrNull")?.SetValueAndChangeType<decimal?>(test, null);
+            type.GetProperty("DecimalOrNull")?.SetValueAndChangeType<decimal>(test, null);
             Assert.Null(test.DecimalOrNull);
 
             #endregion
@@ -137,10 +137,10 @@ namespace EasyNet.Tests
             type.GetProperty("Byte")?.SetValueAndChangeType<byte>(test, null);
             Assert.Equal(default(byte), test.Byte);
 
-            type.GetProperty("ByteOrNull")?.SetValueAndChangeType<byte?>(test, 2);
+            type.GetProperty("ByteOrNull")?.SetValueAndChangeType<byte>(test, 2);
             Assert.Equal(2, test.ByteOrNull.Value);
 
-            type.GetProperty("ByteOrNull")?.SetValueAndChangeType<byte?>(test, null);
+            type.GetProperty("ByteOrNull")?.SetValueAndChangeType<byte>(test, null);
             Assert.Null(test.ByteOrNull);
 
             #endregion
@@ -153,26 +153,26 @@ namespace EasyNet.Tests
             type.GetProperty("Char")?.SetValueAndChangeType<char>(test, null);
             Assert.Equal(default(char), test.Char);
 
-            type.GetProperty("CharOrNull")?.SetValueAndChangeType<char?>(test, '2');
+            type.GetProperty("CharOrNull")?.SetValueAndChangeType<char>(test, '2');
             Assert.Equal('2', test.CharOrNull.Value);
 
-            type.GetProperty("CharOrNull")?.SetValueAndChangeType<char?>(test, null);
+            type.GetProperty("CharOrNull")?.SetValueAndChangeType<char>(test, null);
             Assert.Null(test.CharOrNull);
 
             #endregion
 
             #region Guid
 
-            type.GetProperty("Guid")?.SetValueAndChangeType<Guid>(test, "E82EFFB7-9577-4856-7FF8-F7839BF6D140");
+            type.GetProperty("Guid")?.SetValueAndChangeType<Guid>(test, Guid.Parse("E82EFFB7-9577-4856-7FF8-F7839BF6D140"));
             Assert.Equal(Guid.Parse("E82EFFB7-9577-4856-7FF8-F7839BF6D140"), test.Guid);
 
             type.GetProperty("Guid")?.SetValueAndChangeType<Guid>(test, null);
             Assert.Equal(default(Guid), test.Guid);
 
-            type.GetProperty("GuidOrNull")?.SetValueAndChangeType<Guid?>(test, "960888E9-E921-3BFA-75ED-5BC6D954F328");
+            type.GetProperty("GuidOrNull")?.SetValueAndChangeType<Guid>(test, Guid.Parse("960888E9-E921-3BFA-75ED-5BC6D954F328"));
             Assert.Equal(Guid.Parse("960888E9-E921-3BFA-75ED-5BC6D954F328"), test.GuidOrNull.Value);
 
-            type.GetProperty("GuidOrNull")?.SetValueAndChangeType<Guid?>(test, null);
+            type.GetProperty("GuidOrNull")?.SetValueAndChangeType<Guid>(test, null);
             Assert.Null(test.GuidOrNull);
 
             #endregion
