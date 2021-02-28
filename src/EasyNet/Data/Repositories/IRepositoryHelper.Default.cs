@@ -253,10 +253,10 @@ namespace EasyNet.Data.Repositories
             }
 
             var entityType = entity.GetType();
+            var erp = EntityReflectionPropertiesPool.GetOrAdd(entityType);
 
             // Only set IMustHaveTenant entities
-            var tenantGeneric = entityType.GetImplementedRawGeneric(typeof(IMustHaveTenant<>));
-            if (tenantGeneric == null)
+            if (!erp.IsMustHaveTenant)
             {
                 return false;
             }
@@ -267,11 +267,10 @@ namespace EasyNet.Data.Repositories
             }
 
             // Don't set if it's already set
-            var tenantIdProperty = entityType.GetProperty("TenantId");
-            if (tenantIdProperty == null) throw new EasyNetException($"Cannot found property TenantId in entity {entityType.AssemblyQualifiedName}.");
+            var tenantIdProperty = erp.TenantIdProperty;
 
             bool alreadySetTenantId;
-            var tenantIdType = tenantGeneric.GenericTypeArguments[0];
+            var tenantIdType = erp.TenantIdType;
             if (tenantIdType == typeof(string))
             {
                 alreadySetTenantId = !string.IsNullOrEmpty(tenantIdProperty.GetValue(entity).ToString());
@@ -303,7 +302,7 @@ namespace EasyNet.Data.Repositories
 
             if (!alreadySetTenantId)
             {
-                tenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), tenantIdType);
+                erp.TenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), erp.TenantIdType);
             }
 
             return true;
@@ -317,22 +316,18 @@ namespace EasyNet.Data.Repositories
             }
 
             var entityType = entity.GetType();
+            var erp = EntityReflectionPropertiesPool.GetOrAdd(entityType);
 
             // Only set IMayHaveTenant entities
-            var tenantGeneric = entityType.GetImplementedRawGeneric(typeof(IMayHaveTenant<>));
-            if (tenantGeneric == null)
+            if (!erp.IsMayHaveTenant)
             {
                 return false;
             }
 
             // Don't set if it's already set
-            var tenantIdProperty = entityType.GetProperty("TenantId");
-            if (tenantIdProperty == null) throw new EasyNetException($"Cannot found property TenantId in entity {entityType.AssemblyQualifiedName}.");
-
-            if (tenantIdProperty.GetValue(entity) == null)
+            if (erp.TenantIdProperty.GetValue(entity) == null)
             {
-                tenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session),
-                    tenantGeneric.GenericTypeArguments[0]);
+                erp.TenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), erp.TenantIdType);
             }
 
             return true;

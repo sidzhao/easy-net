@@ -46,6 +46,9 @@ namespace EasyNet.Data.Entities.Helper
                 {
                     _isMustHaveTenant = true;
                     TenantIdType = tenantGeneric.GenericTypeArguments[0];
+                    TenantIdProperty = EntityType.GetProperty("TenantId");
+
+                    if (TenantIdProperty == null) throw new EasyNetException($"Cannot found property TenantId in entity {EntityType.AssemblyQualifiedName}.");
                 }
 
                 return _isMustHaveTenant.Value;
@@ -68,6 +71,9 @@ namespace EasyNet.Data.Entities.Helper
                 {
                     _isMayHaveTenant = true;
                     TenantIdType = tenantGeneric.GenericTypeArguments[0];
+                    TenantIdProperty = EntityType.GetProperty("TenantId");
+
+                    if (TenantIdProperty == null) throw new EasyNetException($"Cannot found property TenantId in entity {EntityType.AssemblyQualifiedName}.");
                 }
 
                 return _isMayHaveTenant.Value;
@@ -76,6 +82,8 @@ namespace EasyNet.Data.Entities.Helper
         private bool? _isMayHaveTenant;
 
         public Type TenantIdType { get; private set; }
+
+        public PropertyInfo TenantIdProperty { get; private set; }
 
         #endregion
 
@@ -97,10 +105,9 @@ namespace EasyNet.Data.Entities.Helper
                 {
                     _isCreationAudited = true;
                     CreationUserIdType = creationGeneric.GenericTypeArguments[0];
+                    CreationUserIdProperty = EntityType.GetProperty("CreatorUserId");
 
-                    var userIdProperty = EntityType.GetProperty("CreatorUserId");
-                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {EntityType.AssemblyQualifiedName}.");
-                    CreationUserIdProperty = userIdProperty;
+                    if (CreationUserIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {EntityType.AssemblyQualifiedName}.");
                 }
 
                 return _isCreationAudited.Value;
@@ -132,10 +139,9 @@ namespace EasyNet.Data.Entities.Helper
                 {
                     _isModifiedAudited = true;
                     ModifiedUserIdType = modifiedGeneric.GenericTypeArguments[0];
+                    ModifiedUserIdProperty = EntityType.GetProperty("LastModifierUserId");
 
-                    var userIdProperty = EntityType.GetProperty("LastModifierUserId");
-                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {EntityType.AssemblyQualifiedName}.");
-                    ModifiedUserIdProperty = userIdProperty;
+                    if (ModifiedUserIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {EntityType.AssemblyQualifiedName}.");
                 }
 
                 return _isModifiedAudited.Value;
@@ -167,10 +173,9 @@ namespace EasyNet.Data.Entities.Helper
                 {
                     _isDeletionAudited = true;
                     DeleterUserIdType = deletionGeneric.GenericTypeArguments[0];
+                    DeleterUserIdProperty = EntityType.GetProperty("DeleterUserId");
 
-                    var userIdProperty = EntityType.GetProperty("DeleterUserId");
-                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {EntityType.AssemblyQualifiedName}.");
-                    DeleterUserIdProperty = userIdProperty;
+                    if (DeleterUserIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {EntityType.AssemblyQualifiedName}.");
                 }
 
                 return _isDeletionAudited.Value;
