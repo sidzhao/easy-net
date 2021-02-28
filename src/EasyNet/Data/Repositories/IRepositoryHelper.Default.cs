@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using EasyNet.Data.Entities;
 using EasyNet.Data.Entities.Auditing;
+using EasyNet.Data.Entities.Helper;
 using EasyNet.Extensions.DependencyInjection;
 using EasyNet.Linq;
 using EasyNet.Runtime.Session;
@@ -12,6 +14,8 @@ namespace EasyNet.Data.Repositories
 {
     public class RepositoryHelper : IRepositoryHelper
     {
+
+
         #region ExecuteFilter
 
         public Expression<Func<TEntity, bool>> ExecuteFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, Expression<Func<TEntity, bool>> predicate) where TEntity : IEntity<TPrimaryKey>
@@ -86,8 +90,9 @@ namespace EasyNet.Data.Repositories
         protected virtual Expression<Func<TEntity, bool>> CreateSoftDeleteFilter<TEntity, TPrimaryKey>(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session) where TEntity : IEntity<TPrimaryKey>
         {
             var entityType = typeof(TEntity);
+            var erp = EntityReflectionPropertiesPool.GetOrAdd(entityType);
 
-            if (IsSoftDeleteFilterEnabled(currentUnitOfWorkProvider) && typeof(ISoftDelete).IsAssignableFrom(entityType))
+            if (IsSoftDeleteFilterEnabled(currentUnitOfWorkProvider) && erp.IsSoftDelete)
             {
                 var lambdaParam = Expression.Parameter(entityType);
 
@@ -170,6 +175,7 @@ namespace EasyNet.Data.Repositories
         public void ApplyConceptsForAddedEntity<TEntity>(TEntity entity, IEasyNetSession session)
         {
             var entityType = entity.GetType();
+            var erp = EntityReflectionPropertiesPool.GetOrAdd(entityType);
 
             if (entity is IHasCreationTime hasCreationTimeEntity)
             {
@@ -179,12 +185,9 @@ namespace EasyNet.Data.Repositories
                 }
             }
 
-            var creationGeneric = entityType.GetImplementedRawGeneric(typeof(ICreationAudited<>));
-            if (creationGeneric != null)
+            if (erp.IsCreationAudited)
             {
-                var userIdProperty = entityType.GetProperty("CreatorUserId");
-                if (userIdProperty == null) throw new EasyNetException($"Cannot found property CreatorUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, creationGeneric.GenericTypeArguments[0]);
+                erp.CreationUserIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, erp.CreationUserIdType);
             }
         }
 
@@ -196,19 +199,18 @@ namespace EasyNet.Data.Repositories
             }
 
             var entityType = entity.GetType();
+            var erp = EntityReflectionPropertiesPool.GetOrAdd(entityType);
 
-            var modificationGeneric = entityType.GetImplementedRawGeneric(typeof(IModificationAudited<>));
-            if (modificationGeneric != null)
+            if (erp.IsModifiedAudited)
             {
-                var userIdProperty = entityType.GetProperty("LastModifierUserId");
-                if (userIdProperty == null) throw new EasyNetException($"Cannot found property LastModifierUserId in entity {entityType.AssemblyQualifiedName}.");
-                userIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, modificationGeneric.GenericTypeArguments[0]);
+                erp.ModifiedUserIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, erp.ModifiedUserIdType);
             }
         }
 
         public void ApplyConceptsForDeletedEntity<TEntity>(TEntity entity, IEasyNetSession session)
         {
             var entityType = entity.GetType();
+            var erp = EntityReflectionPropertiesPool.GetOrAdd(entityType);
 
             if (entity is ISoftDelete iSoftDelete)
             {
@@ -219,12 +221,9 @@ namespace EasyNet.Data.Repositories
                     hasDeletionTime.DeletionTime = Clock.Now;
                 }
 
-                var deletionGeneric = entityType.GetImplementedRawGeneric(typeof(IDeletionAudited<>));
-                if (deletionGeneric != null)
+                if (erp.IsDeletionAudited)
                 {
-                    var userIdProperty = entityType.GetProperty("DeleterUserId");
-                    if (userIdProperty == null) throw new EasyNetException($"Cannot found property DeleterUserId in entity {entityType.AssemblyQualifiedName}.");
-                    userIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, deletionGeneric.GenericTypeArguments[0]);
+                    erp.DeleterUserIdProperty.SetValueAndChangeType(entity, session.CurrentUsingUserId, erp.DeleterUserIdType);
                 }
             }
         }
