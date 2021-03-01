@@ -1,6 +1,7 @@
 using System.Data;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.SqlLite.Data;
+using EasyNet.Sqlite;
+using EasyNet.Sqlite.Data;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -13,7 +14,7 @@ namespace EasyNet.SqlLite.Tests
         {
             // Arrange
             var connectionString = "Filename=:memory:";
-            var creator = new SqlLiteConnectorCreator(new OptionsWrapper<SqlLiteOptions>(new SqlLiteOptions
+            var creator = new SqliteConnectorCreator(new OptionsWrapper<SqliteOptions>(new SqliteOptions
             {
                 ConnectionString = "Filename=:memory:"
             }));
@@ -47,7 +48,7 @@ namespace EasyNet.SqlLite.Tests
         {
             // Arrange
             var connectionString = "Filename=:memory:";
-            var creator = new SqlLiteConnectorCreator(new OptionsWrapper<SqlLiteOptions>(new SqlLiteOptions
+            var creator = new SqliteConnectorCreator(new OptionsWrapper<SqliteOptions>(new SqliteOptions
             {
                 ConnectionString = "Filename=:memory:"
             }));

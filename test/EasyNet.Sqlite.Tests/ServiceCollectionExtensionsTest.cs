@@ -1,7 +1,7 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.SqlLite.Data;
+using EasyNet.Sqlite.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -24,7 +24,7 @@ namespace EasyNet.SqlLite.Tests
                 });
 
             // Assert
-            AssertSpecifiedServiceTypeAndImplementationType<IDbConnectorCreator, SqlLiteConnectorCreator>(services, ServiceLifetime.Singleton);
+            AssertSpecifiedServiceTypeAndImplementationType<IDbConnectorCreator, SqliteConnectorCreator>(services, ServiceLifetime.Singleton);
         }
     }
 }

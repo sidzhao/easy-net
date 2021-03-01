@@ -1,7 +1,7 @@
-﻿using EasyNet.SqlLite;
-using System;
+﻿using System;
 using EasyNet.Data;
-using EasyNet.SqlLite.Data;
+using EasyNet.Sqlite;
+using EasyNet.Sqlite.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -31,9 +31,9 @@ namespace EasyNet.Extensions.DependencyInjection
         /// Add specified services to let the system use SqlLite.
         /// </summary>
         /// <param name="options">The <see cref="EasyNetOptions"/>.</param>
-        /// <param name="setupAction">An <see cref="Action{EasyNetSqlLiteOptions}"/> to configure the provided <see cref="SqlLiteOptions"/>.</param>
+        /// <param name="setupAction">An <see cref="Action{EasyNetSqlLiteOptions}"/> to configure the provided <see cref="SqliteOptions"/>.</param>
         /// <returns></returns>
-        public static void UseSqlLite(this EasyNetOptions options, Action<SqlLiteOptions> setupAction)
+        public static void UseSqlLite(this EasyNetOptions options, Action<SqliteOptions> setupAction)
         {
             Check.NotNull(options, nameof(options));
             Check.NotNull(setupAction, nameof(setupAction));
@@ -42,7 +42,7 @@ namespace EasyNet.Extensions.DependencyInjection
             {
                 services.Configure(setupAction);
 
-                services.TryAddSingleton<IDbConnectorCreator, SqlLiteConnectorCreator>();
+                services.TryAddSingleton<IDbConnectorCreator, SqliteConnectorCreator>();
             });
         }
     }

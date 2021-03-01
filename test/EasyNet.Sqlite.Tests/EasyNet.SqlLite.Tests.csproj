@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EasyNet.SqlLite\EasyNet.SqlLite.csproj" />
+    <ProjectReference Include="..\..\src\EasyNet.Sqlite\EasyNet.Sqlite.csproj" />
     <ProjectReference Include="..\EasyNet.CommonTests\EasyNet.CommonTests.csproj" />
   </ItemGroup>
 

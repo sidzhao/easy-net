@@ -3,13 +3,13 @@ using EasyNet.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 
-namespace EasyNet.SqlLite.Data
+namespace EasyNet.Sqlite.Data
 {
-    public class SqlLiteConnectorCreator : IDbConnectorCreator
+    public class SqliteConnectorCreator : IDbConnectorCreator
     {
-        protected readonly SqlLiteOptions Options;
+        protected readonly SqliteOptions Options;
 
-        public SqlLiteConnectorCreator(IOptions<SqlLiteOptions> options)
+        public SqliteConnectorCreator(IOptions<SqliteOptions> options)
         {
             Options = options.Value;
         }

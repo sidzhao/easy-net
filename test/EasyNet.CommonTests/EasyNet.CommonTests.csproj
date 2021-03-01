@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\EasyNet.EntityFrameworkCore\EasyNet.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\EasyNet.Sqlite\EasyNet.Sqlite.csproj" />
   </ItemGroup>
 
 </Project>

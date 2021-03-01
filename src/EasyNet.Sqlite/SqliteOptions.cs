@@ -1,6 +1,6 @@
-﻿namespace EasyNet.SqlLite
+﻿namespace EasyNet.Sqlite
 {
-    public class SqlLiteOptions
+    public class SqliteOptions
     {
         public string ConnectionString { get; set; }
     }
