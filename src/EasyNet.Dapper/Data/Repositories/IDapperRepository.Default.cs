@@ -211,7 +211,7 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             ApplyConceptsForAddedEntity(entity);
 
-            entity.Id = Connection.Insert<TEntity, TPrimaryKey>(entity, Transaction);
+            entity.Id = Connection.InsertAndGetId<TEntity, TPrimaryKey>(entity, Transaction);
 
             return entity;
         }
@@ -220,7 +220,7 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             ApplyConceptsForAddedEntity(entity);
 
-            entity.Id = await Connection.InsertAsync<TEntity, TPrimaryKey>(entity, Transaction);
+            entity.Id = await Connection.InsertAndGetIdAsync<TEntity, TPrimaryKey>(entity, Transaction);
 
             return entity;
         }
