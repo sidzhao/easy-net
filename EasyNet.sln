@@ -29,8 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Dapper.Tests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Data.Tests", "test\EasyNet.Data.Tests\EasyNet.Data.Tests.csproj", "{C784926D-03AB-4180-B62F-B96848F9B76E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDapperExtensions", "..\easy-dapper-extensions\src\EasyDapperExtensions\EasyDapperExtensions.csproj", "{5756F5C8-BCFA-4CEB-BC46-15D8ADBD94F2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Sqlite", "src\EasyNet.Sqlite\EasyNet.Sqlite.csproj", "{0C9CA40A-FF19-4115-A995-D2984343917A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.SqlLite.Tests", "test\EasyNet.Sqlite.Tests\EasyNet.SqlLite.Tests.csproj", "{E9C5B03D-519B-491C-9F1D-8373464A7AB4}"
@@ -85,10 +83,6 @@ Global
 		{C784926D-03AB-4180-B62F-B96848F9B76E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C784926D-03AB-4180-B62F-B96848F9B76E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C784926D-03AB-4180-B62F-B96848F9B76E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5756F5C8-BCFA-4CEB-BC46-15D8ADBD94F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5756F5C8-BCFA-4CEB-BC46-15D8ADBD94F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5756F5C8-BCFA-4CEB-BC46-15D8ADBD94F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5756F5C8-BCFA-4CEB-BC46-15D8ADBD94F2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0C9CA40A-FF19-4115-A995-D2984343917A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C9CA40A-FF19-4115-A995-D2984343917A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C9CA40A-FF19-4115-A995-D2984343917A}.Release|Any CPU.ActiveCfg = Release|Any CPU

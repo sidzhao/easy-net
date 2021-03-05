@@ -6,10 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="EasyDapperExtensions" Version="1.0.0-preview.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\easy-dapper-extensions\src\EasyDapperExtensions\EasyDapperExtensions.csproj" />
     <ProjectReference Include="..\EasyNet\EasyNet.csproj" />
   </ItemGroup>
 
