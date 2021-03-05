@@ -12,6 +12,7 @@ using EasyNet.Data.Entities;
 using EasyNet.Data.Repositories;
 using EasyNet.Runtime.Session;
 using EasyNet.Uow;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace EasyNet.Dapper.Data.Repositories
@@ -19,7 +20,13 @@ namespace EasyNet.Dapper.Data.Repositories
     public class DapperRepositoryBase<TEntity> : DapperRepositoryBase<TEntity, int>, IDapperRepository<TEntity>
         where TEntity : class, IEntity<int>
     {
-        public DapperRepositoryBase(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IEasyNetSession session, ICurrentDbConnectorProvider currentDbConnectorProvider, IRepositoryHelper repositoryHelper, IOptions<EasyNetOptions> options) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper, options)
+        public DapperRepositoryBase(
+            ICurrentUnitOfWorkProvider currentUnitOfWorkProvider,
+            IEasyNetSession session,
+            ICurrentDbConnectorProvider currentDbConnectorProvider,
+            IRepositoryHelper repositoryHelper,
+            IOptions<EasyNetOptions> options,
+            ILogger<DapperRepositoryBase<TEntity>> logger = null) : base(currentUnitOfWorkProvider, session, currentDbConnectorProvider, repositoryHelper, options, logger)
         {
         }
     }
@@ -37,20 +44,23 @@ namespace EasyNet.Dapper.Data.Repositories
         protected readonly IDbConnector DbConnector;
         protected readonly IRepositoryHelper RepositoryHelper;
         protected readonly EasyNetOptions Options;
+        protected readonly ILogger<DapperRepositoryBase<TEntity, TPrimaryKey>> Logger;
 
         // ReSharper disable once IdentifierTypo
         public DapperRepositoryBase(
             ICurrentUnitOfWorkProvider currentUnitOfWorkProvider,
-            IEasyNetSession session, 
+            IEasyNetSession session,
             ICurrentDbConnectorProvider currentDbConnectorProvider,
-            IRepositoryHelper repositoryHelper, 
-            IOptions<EasyNetOptions> options)
+            IRepositoryHelper repositoryHelper,
+            IOptions<EasyNetOptions> options,
+            ILogger<DapperRepositoryBase<TEntity, TPrimaryKey>> logger = null)
         {
             CurrentSession = session;
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
             DbConnector = currentDbConnectorProvider.GetOrCreate();
             RepositoryHelper = repositoryHelper;
             Options = options.Value;
+            Logger = logger;
         }
 
         protected IDbConnection Connection => DbConnector.Connection;
@@ -72,54 +82,62 @@ namespace EasyNet.Dapper.Data.Repositories
 
         public virtual List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
-            var enumerable = Connection.GetAll(ExecuteFilter(predicate), Transaction);
+            var enumerable = Connection.GetAll(ExecuteFilter(predicate), Transaction, logger: Logger);
             return enumerable.ToList();
         }
 
         public virtual async Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            var enumerable = await Connection.GetAllAsync(ExecuteFilter(predicate), Transaction);
+            var enumerable = await Connection.GetAllAsync(ExecuteFilter(predicate), Transaction, logger: Logger);
             return enumerable.ToList();
         }
 
         public IEnumerable<TEntity> GetAllList(string sql, object param = null, bool buffered = true, int? commandTimeout = null,
             CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.Query<TEntity>(sql, param, Transaction, buffered, commandTimeout, commandType);
         }
 
         public Task<IEnumerable<TEntity>> GetAllListAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QueryAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public virtual TEntity Get(TPrimaryKey id)
         {
-            return Single(CreateEqualityExpressionForId(id));
+            return Connection.Get<TEntity>(id, Transaction, logger: Logger);
         }
 
         public virtual Task<TEntity> GetAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
-            return SingleAsync(CreateEqualityExpressionForId(id), cancellationToken);
+            return Connection.GetAsync<TEntity>(id, Transaction, logger: Logger);
         }
 
         public virtual TEntity Single(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.GetSingle(ExecuteFilter(predicate), Transaction);
+            return Connection.GetSingle(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.GetSingleAsync(ExecuteFilter(predicate), Transaction);
+            return Connection.GetSingleAsync(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public TEntity GetSingle(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QuerySingle<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public Task<TEntity> GetSingleAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QuerySingleAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
@@ -135,41 +153,49 @@ namespace EasyNet.Dapper.Data.Repositories
 
         public virtual TEntity First(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.GetFirst(ExecuteFilter(predicate), Transaction);
+            return Connection.GetFirst(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.GetFirstAsync(ExecuteFilter(predicate), Transaction);
+            return Connection.GetFirstAsync(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public TEntity GetFirst(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QueryFirst<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public Task<TEntity> GetFirstAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QueryFirstAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public virtual TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.GetSingleOrDefault(ExecuteFilter(predicate), Transaction);
+            return Connection.GetSingleOrDefault(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.GetSingleOrDefaultAsync(ExecuteFilter(predicate), Transaction);
+            return Connection.GetSingleOrDefaultAsync(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public TEntity GetSingleOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QuerySingleOrDefault<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public Task<TEntity> GetSingleOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QuerySingleOrDefaultAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
@@ -185,21 +211,25 @@ namespace EasyNet.Dapper.Data.Repositories
 
         public virtual TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.GetFirstOrDefault(ExecuteFilter(predicate), Transaction);
+            return Connection.GetFirstOrDefault(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.GetFirstOrDefaultAsync(ExecuteFilter(predicate), Transaction);
+            return Connection.GetFirstOrDefaultAsync(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public TEntity GetFirstOrDefault(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QueryFirstOrDefault<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
         public Task<TEntity> GetFirstOrDefaultAsync(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
+            Logger?.LogInformationDbCommand(sql, param);
+
             return Connection.QueryFirstOrDefaultAsync<TEntity>(sql, param, Transaction, commandTimeout, commandType);
         }
 
@@ -211,7 +241,7 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             ApplyConceptsForAddedEntity(entity);
 
-            entity.Id = Connection.InsertAndGetId<TEntity, TPrimaryKey>(entity, Transaction);
+            entity.Id = Connection.InsertAndGetId<TEntity, TPrimaryKey>(entity, Transaction, logger: Logger);
 
             return entity;
         }
@@ -220,7 +250,7 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             ApplyConceptsForAddedEntity(entity);
 
-            entity.Id = await Connection.InsertAndGetIdAsync<TEntity, TPrimaryKey>(entity, Transaction);
+            entity.Id = await Connection.InsertAndGetIdAsync<TEntity, TPrimaryKey>(entity, Transaction, logger: Logger);
 
             return entity;
         }
@@ -268,7 +298,7 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             ApplyConceptsForModifiedEntity(entity);
 
-            Connection.Update(entity, transaction: Transaction);
+            Connection.Update(entity, Transaction, logger: Logger);
 
             return entity;
         }
@@ -277,7 +307,7 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             ApplyConceptsForModifiedEntity(entity);
 
-            await Connection.UpdateAsync(entity, transaction: Transaction);
+            await Connection.UpdateAsync(entity, Transaction, logger: Logger);
 
             return entity;
         }
@@ -312,11 +342,11 @@ namespace EasyNet.Dapper.Data.Repositories
             {
                 ApplyConceptsForDeletedEntity(entity);
 
-                Connection.Update(entity, transaction: Transaction);
+                Connection.Update(entity, Transaction, logger: Logger);
             }
             else
             {
-                Connection.Delete(CreateEqualityExpressionForId(entity.Id));
+                Connection.Delete<TEntity>(entity.Id, Transaction, logger: Logger);
             }
         }
 
@@ -326,11 +356,11 @@ namespace EasyNet.Dapper.Data.Repositories
             {
                 ApplyConceptsForDeletedEntity(entity);
 
-                await Connection.UpdateAsync(entity, transaction: Transaction);
+                await Connection.UpdateAsync(entity, Transaction, logger: Logger);
             }
             else
             {
-                await Connection.DeleteAsync(CreateEqualityExpressionForId(entity.Id));
+                await Connection.DeleteAsync<TEntity>(entity.Id, Transaction, logger: Logger);
             }
         }
 
@@ -375,7 +405,7 @@ namespace EasyNet.Dapper.Data.Repositories
             }
             else
             {
-                Connection.Delete(predicate);
+                Connection.Delete(predicate, logger: Logger);
             }
         }
 
@@ -392,7 +422,7 @@ namespace EasyNet.Dapper.Data.Repositories
             }
             else
             {
-                await Connection.DeleteAsync(predicate);
+                await Connection.DeleteAsync(predicate, logger: Logger);
             }
         }
 
@@ -412,12 +442,12 @@ namespace EasyNet.Dapper.Data.Repositories
 
         public virtual int Count(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.Count<TEntity, int>(ExecuteFilter(predicate), Transaction);
+            return Connection.Count<TEntity, int>(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.CountAsync<TEntity, int>(ExecuteFilter(predicate), Transaction);
+            return Connection.CountAsync<TEntity, int>(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual long LongCount()
@@ -432,22 +462,22 @@ namespace EasyNet.Dapper.Data.Repositories
 
         public virtual long LongCount(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.Count<TEntity, long>(ExecuteFilter(predicate), Transaction);
+            return Connection.Count<TEntity, long>(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.CountAsync<TEntity, long>(ExecuteFilter(predicate), Transaction);
+            return Connection.CountAsync<TEntity, long>(ExecuteFilter(predicate), Transaction, logger: Logger);
         }
 
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
-            return Connection.Any(predicate);
+            return Connection.Any(predicate, logger: Logger);
         }
 
         public virtual Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return Connection.AnyAsync(predicate);
+            return Connection.AnyAsync(predicate, logger: Logger);
         }
 
         #endregion

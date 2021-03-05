@@ -9,6 +9,9 @@ using EasyNet.Data.Tests.Base;
 using EasyNet.DependencyInjection;
 using EasyNet.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
 using Xunit;
 
 namespace EasyNet.Data.Tests
@@ -28,6 +31,9 @@ namespace EasyNet.Data.Tests
                 })
                 .AddSession<TestSession>()
                 .AddCurrentDbConnectorProvider<TestCurrentDbConnectorProvider>();
+
+            services.TryAddSingleton<ILoggerProvider, DebugLoggerProvider>();
+            services.AddTransient(typeof(ILogger), sp => sp.GetService<ILoggerProvider>().CreateLogger(typeof(IRepository).Name));
 
             ServiceProvider = services.BuildServiceProvider();
         }
