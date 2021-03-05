@@ -24,8 +24,6 @@ namespace EasyNet.Data.Entities
         /// <summary>
         /// Unique identifier for this entity.
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public virtual TPrimaryKey Id { get; set; }
 
         public override string ToString()
