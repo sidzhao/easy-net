@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 using EasyNet.CommonTests.Common.Entities;
 using EasyNet.Data.Entities;
@@ -162,11 +163,18 @@ namespace EasyNet.Data.Tests.Base
                 var users = userRepo.GetAllList(p => p.Status == Status.Active);
                 var users1 = userRepo.GetAllList(p => p.Status == Status.Active || p.RoleId == 1);
                 var users2 = userRepo.GetAllList(p => p.Name.Contains("1"));
+                var users3 = userRepo.GetAllList(p => !p.Name.Contains("1"));
+                var users4 = userRepo.GetAllList(p => new long[] { 1, 4 }.Contains(p.RoleId));
+                var users5 = userRepo.GetAllList(p => !new long[] { 1, 4 }.Contains(p.RoleId));
 
                 // Assert
                 Assert.Equal(useUow ? 1 : 4, users.Count);
                 Assert.Equal(useUow ? 2 : 5, users1.Count);
                 Assert.Single(users2);
+                Assert.Equal(useUow ? 1 : 5, users3.Count);
+                Assert.Equal(useUow ? 2 : 3, users4.Count);
+                Assert.Equal(useUow ? 0 : 3, users5.Count);
+
                 if (useUow)
                 {
                     Assert.Equal("User1", users[0].Name);
@@ -238,11 +246,17 @@ namespace EasyNet.Data.Tests.Base
                 var users = await userRepo.GetAllListAsync(p => p.Status == Status.Active);
                 var users1 = await userRepo.GetAllListAsync(p => p.Status == Status.Active || p.RoleId == 1);
                 var users2 = await userRepo.GetAllListAsync(p => p.Name.Contains("1"));
+                var users3 = await userRepo.GetAllListAsync(p => !p.Name.Contains("1"));
+                var users4 = await userRepo.GetAllListAsync(p => new long[] { 1, 4 }.Contains(p.RoleId));
+                var users5 = await userRepo.GetAllListAsync(p => !new long[] { 1, 4 }.Contains(p.RoleId));
 
                 // Assert
                 Assert.Equal(useUow ? 1 : 4, users.Count);
                 Assert.Equal(useUow ? 2 : 5, users1.Count);
                 Assert.Single(users2);
+                Assert.Equal(useUow ? 1 : 5, users3.Count);
+                Assert.Equal(useUow ? 2 : 3, users4.Count);
+                Assert.Equal(useUow ? 0 : 3, users5.Count);
                 if (useUow)
                 {
                     Assert.Equal("User1", users[0].Name);
