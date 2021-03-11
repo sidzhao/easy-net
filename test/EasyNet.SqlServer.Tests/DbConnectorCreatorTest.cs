@@ -1,10 +1,10 @@
 using System.Data;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Sqlite.Data;
+using EasyNet.SqlServer.Data;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace EasyNet.Sqlite.Tests
+namespace EasyNet.SqlServer.Tests
 {
     public class DbConnectorCreatorTest
     {
@@ -12,10 +12,10 @@ namespace EasyNet.Sqlite.Tests
         public void TestCreateDbConnector()
         {
             // Arrange
-            var connectionString = "Filename=:memory:";
-            var creator = new SqliteConnectorCreator(new OptionsWrapper<SqliteOptions>(new SqliteOptions
+            var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyDapperTest;Integrated Security=True;";
+            var creator = new SqlServerConnectorCreator(new OptionsWrapper<SqlServerOptions>(new SqlServerOptions
             {
-                ConnectionString = "Filename=:memory:"
+                ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyNetTest;Integrated Security=True;"
             }));
 
             #region Create
@@ -46,10 +46,10 @@ namespace EasyNet.Sqlite.Tests
         public void TestCreateDbConnectorWithTransaction()
         {
             // Arrange
-            var connectionString = "Filename=:memory:";
-            var creator = new SqliteConnectorCreator(new OptionsWrapper<SqliteOptions>(new SqliteOptions
+            var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyDapperTest;Integrated Security=True;";
+            var creator = new SqlServerConnectorCreator(new OptionsWrapper<SqlServerOptions>(new SqlServerOptions
             {
-                ConnectionString = "Filename=:memory:"
+                ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyNetTest;Integrated Security=True;"
             }));
 
             #region Create

@@ -17,7 +17,7 @@ namespace EasyNet.Data.Tests
                 .AddEasyNet(x =>
                 {
                     x.Assemblies = new[] { this.GetType().Assembly };
-                    x.UseSqlLite("Filename=:memory:");
+                    x.UseSqlite("Filename=:memory:");
                     x.UseDapper().AsDefault(typeof(User).Assembly);
                 })
                 .AddSession<TestSession>()

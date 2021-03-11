@@ -1,11 +1,11 @@
 ﻿using EasyNet.CommonTests;
 using EasyNet.Data;
 using EasyNet.Extensions.DependencyInjection;
-using EasyNet.Sqlite.Data;
+using EasyNet.SqlServer.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EasyNet.Sqlite.Tests
+namespace EasyNet.SqlServer.Tests
 {
     public class ServiceCollectionExtensionsTest : DependencyInjectionTest
     {
@@ -20,11 +20,11 @@ namespace EasyNet.Sqlite.Tests
             services
                 .AddEasyNet(x =>
                 {
-                    x.UseSqlite("Filename=:memory:");
+                    x.UseSqlServer("ConnectionString");
                 });
 
             // Assert
-            AssertSpecifiedServiceTypeAndImplementationType<IDbConnectorCreator, SqliteConnectorCreator>(services, ServiceLifetime.Singleton);
+            AssertSpecifiedServiceTypeAndImplementationType<IDbConnectorCreator, SqlServerConnectorCreator>(services, ServiceLifetime.Singleton);
         }
     }
 }
