@@ -283,6 +283,144 @@ namespace EasyNet.Data.Tests.Base
 
         #endregion
 
+        #region GetAllList
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestGetPaged(bool useUow)
+        {
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+
+                // Act
+                var pagedUsers = userRepo.GetPagedList(1, 3);
+
+                // Assert
+                Assert.Equal(useUow ? 2 : 6, pagedUsers.TotalCount);
+                Assert.Equal(useUow ? 1 : 3, pagedUsers.Entities.Count);
+                Assert.Equal("User2", pagedUsers.Entities[0].Name);
+
+            }
+
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestGetPagedByPredicate(bool useUow)
+        {
+            void Do()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+
+                // Act
+                var pagedUsers = userRepo.GetPagedList(0, 3, p => p.Status == Status.Inactive || p.RoleId == 2);
+
+                // Assert
+                Assert.Equal(useUow ? 1 : 4, pagedUsers.TotalCount);
+                Assert.Equal(useUow ? 1 : 3, pagedUsers.Entities.Count);
+                Assert.Equal("User2", pagedUsers.Entities[0].Name);
+            }
+
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                Do();
+
+                uow.Complete();
+            }
+            else
+            {
+                Do();
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestGetPagedAsync(bool useUow)
+        {
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+
+                // Act
+                var pagedUsers = await userRepo.GetPagedListAsync(1, 3);
+
+                // Assert
+                Assert.Equal(useUow ? 2 : 6, pagedUsers.TotalCount);
+                Assert.Equal(useUow ? 1 : 3, pagedUsers.Entities.Count);
+                Assert.Equal("User2", pagedUsers.Entities[0].Name);
+            }
+
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestGetPagedByPredicateAsync(bool useUow)
+        {
+
+            async Task DoAsync()
+            {
+                // Arrange
+                var userRepo = GetRepository<User, long>();
+
+                // Act
+                var pagedUsers = await userRepo.GetPagedListAsync(0, 3, p => p.Status == Status.Inactive || p.RoleId == 2);
+
+                // Assert
+                Assert.Equal(useUow ? 1 : 4, pagedUsers.TotalCount);
+                Assert.Equal(useUow ? 1 : 3, pagedUsers.Entities.Count);
+                Assert.Equal("User2", pagedUsers.Entities[0].Name);
+            }
+
+            if (useUow)
+            {
+                using var uow = BeginUow();
+
+                await DoAsync();
+
+                await uow.CompleteAsync();
+            }
+            else
+            {
+                await DoAsync();
+            }
+        }
+
+        #endregion
+
         #region Signle
 
         [Theory]

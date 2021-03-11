@@ -92,6 +92,30 @@ namespace EasyNet.Dapper.Data.Repositories
             return enumerable.ToList();
         }
 
+        public PagedEntities<TEntity> GetPagedList(int skip, int take)
+        {
+            return GetPagedList(skip, take, null);
+        }
+
+        public Task<PagedEntities<TEntity>> GetPagedListAsync(int skip, int take, CancellationToken cancellationToken = default)
+        {
+            return GetPagedListAsync(skip, take, null, cancellationToken);
+        }
+
+        public PagedEntities<TEntity> GetPagedList(int skip, int take, Expression<Func<TEntity, bool>> predicate)
+        {
+            var result = Connection.GetPaged(skip, take, ExecuteFilter(predicate), Transaction, logger: Logger);
+
+            return new PagedEntities<TEntity>(result.TotalCount, result.Result.ToList());
+        }
+
+        public async Task<PagedEntities<TEntity>> GetPagedListAsync(int skip, int take, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            var result = await Connection.GetPagedAsync(skip, take, ExecuteFilter(predicate), Transaction, logger: Logger);
+
+            return new PagedEntities<TEntity>(result.TotalCount, result.Result.ToList());
+        }
+
         public IEnumerable<TEntity> GetAllList(string sql, object param = null, bool buffered = true, int? commandTimeout = null,
             CommandType? commandType = null)
         {

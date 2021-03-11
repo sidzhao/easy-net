@@ -60,6 +60,42 @@ namespace EasyNet.Data.Repositories
 		Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
 		/// <summary>
+		/// Used to get paged entities.
+		/// </summary>
+		/// <param name="skip">How many records to skip.</param>
+		/// <param name="take">How many records to take</param>
+		/// <returns>The <see cref="List{TEntity}"/>.</returns>
+		PagedEntities<TEntity> GetPagedList(int skip, int take);
+
+		/// <summary>
+		/// Used to get paged entities.
+		/// </summary>
+		/// <param name="skip">How many records to skip.</param>
+		/// <param name="take">How many records to take</param>
+		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
+		/// <returns>The <see cref="List{TEntity}"/>.</returns>
+		Task<PagedEntities<TEntity>> GetPagedListAsync(int skip, int take, CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Used to get paged entities based on given <paramref name="predicate"/>.
+		/// </summary>
+		/// <param name="skip">How many records to skip.</param>
+		/// <param name="take">How many records to take</param>
+		/// <param name="predicate">A condition to filter entities.</param>
+		/// <returns>The <see cref="List{TEntity}"/>.</returns>
+		PagedEntities<TEntity> GetPagedList(int skip, int take, Expression<Func<TEntity, bool>> predicate);
+
+		/// <summary>
+		/// Used to get paged entities based on given <paramref name="predicate"/>.
+		/// </summary>
+		/// <param name="skip">How many records to skip.</param>
+		/// <param name="take">How many records to take</param>
+		/// <param name="predicate">A condition to filter entities.</param>
+		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
+		/// <returns>The <see cref="List{TEntity}"/>.</returns>
+		Task<PagedEntities<TEntity>> GetPagedListAsync(int skip, int take, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
+		/// <summary>
 		/// Gets an entity with given primary key.
 		/// </summary>
 		/// <param name="id">Primary key of the entity to get.</param>

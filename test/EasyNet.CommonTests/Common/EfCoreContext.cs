@@ -1,10 +1,7 @@
 ﻿using EasyNet.CommonTests.Common.Entities;
 using EasyNet.EntityFrameworkCore;
-using EasyNet.Runtime.Session;
-using EasyNet.Uow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace EasyNet.CommonTests.Common
 {

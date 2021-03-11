@@ -80,12 +80,52 @@ namespace EasyNet.EntityFrameworkCore.Data.Repositories
 
         public virtual List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
+            Check.NotNull(predicate, nameof(predicate));
+
             return GetAll().Where(predicate).ToList();
         }
 
         public virtual Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
+            Check.NotNull(predicate, nameof(predicate));
+
             return GetAll().Where(predicate).ToListAsync(cancellationToken);
+        }
+
+        public PagedEntities<TEntity> GetPagedList(int skip, int take)
+        {
+            var totalCount = GetAll().Count();
+            var entities = GetAll().Skip(skip).Take(take).ToList();
+
+            return new PagedEntities<TEntity>(totalCount, entities);
+        }
+
+        public async Task<PagedEntities<TEntity>> GetPagedListAsync(int skip, int take, CancellationToken cancellationToken = default)
+        {
+            var totalCount = await GetAll().CountAsync(cancellationToken);
+            var entities = await GetAll().Skip(skip).Take(take).ToListAsync(cancellationToken);
+
+            return new PagedEntities<TEntity>(totalCount, entities);
+        }
+
+        public PagedEntities<TEntity> GetPagedList(int skip, int take, Expression<Func<TEntity, bool>> predicate)
+        {
+            Check.NotNull(predicate, nameof(predicate));
+
+            var totalCount = GetAll().Count(predicate);
+            var entities = GetAll().Where(predicate).Skip(skip).Take(take).ToList();
+
+            return new PagedEntities<TEntity>(totalCount, entities);
+        }
+
+        public async Task<PagedEntities<TEntity>> GetPagedListAsync(int skip, int take, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            Check.NotNull(predicate, nameof(predicate));
+
+            var totalCount = await GetAll().CountAsync(predicate, cancellationToken);
+            var entities = await GetAll().Where(predicate).Skip(skip).Take(take).ToListAsync(cancellationToken);
+
+            return new PagedEntities<TEntity>(totalCount, entities);
         }
 
         public virtual TEntity Get(TPrimaryKey id)
