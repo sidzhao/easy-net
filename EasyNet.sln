@@ -31,11 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Data.Tests", "test\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Sqlite", "src\EasyNet.Sqlite\EasyNet.Sqlite.csproj", "{0C9CA40A-FF19-4115-A995-D2984343917A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNet.SqlServer", "src\EasyNet.SqlServer\EasyNet.SqlServer.csproj", "{E550D976-CE5C-472E-9DC9-32F570E8F0EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.SqlServer", "src\EasyNet.SqlServer\EasyNet.SqlServer.csproj", "{E550D976-CE5C-472E-9DC9-32F570E8F0EB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.Sqlite.Tests", "test\EasyNet.Sqlite.Tests\EasyNet.Sqlite.Tests.csproj", "{ED712551-C9D9-45AE-A859-B01345B12FAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNet.SqlServer.Tests", "test\EasyNet.SqlServer.Tests\EasyNet.SqlServer.Tests.csproj", "{8AF95E0C-F6E6-421F-BBF1-C6E3881E78CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNet.SqlServer.Tests", "test\EasyNet.SqlServer.Tests\EasyNet.SqlServer.Tests.csproj", "{8AF95E0C-F6E6-421F-BBF1-C6E3881E78CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNet.MySql", "src\EasyNet.MySql\EasyNet.MySql.csproj", "{10B66899-0915-4F22-AC05-593616431A4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +105,10 @@ Global
 		{8AF95E0C-F6E6-421F-BBF1-C6E3881E78CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AF95E0C-F6E6-421F-BBF1-C6E3881E78CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AF95E0C-F6E6-421F-BBF1-C6E3881E78CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10B66899-0915-4F22-AC05-593616431A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10B66899-0915-4F22-AC05-593616431A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10B66899-0915-4F22-AC05-593616431A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10B66899-0915-4F22-AC05-593616431A4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +129,7 @@ Global
 		{E550D976-CE5C-472E-9DC9-32F570E8F0EB} = {CE627866-6F21-4C0D-97DF-F84BF6444192}
 		{ED712551-C9D9-45AE-A859-B01345B12FAA} = {C5C9A9DD-A479-43DC-AC88-2888FED9C85E}
 		{8AF95E0C-F6E6-421F-BBF1-C6E3881E78CB} = {C5C9A9DD-A479-43DC-AC88-2888FED9C85E}
+		{10B66899-0915-4F22-AC05-593616431A4B} = {CE627866-6F21-4C0D-97DF-F84BF6444192}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40A59E7E-4882-4AB1-9962-76AC5A32F4B8}
