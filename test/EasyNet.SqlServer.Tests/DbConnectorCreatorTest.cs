@@ -1,5 +1,4 @@
 using System.Data;
-using EasyNet.Extensions.DependencyInjection;
 using EasyNet.SqlServer.Data;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -12,7 +11,7 @@ namespace EasyNet.SqlServer.Tests
         public void TestCreateDbConnector()
         {
             // Arrange
-            var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyDapperTest;Integrated Security=True;";
+            var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyNetTest;Integrated Security=True;";
             var creator = new SqlServerConnectorCreator(new OptionsWrapper<SqlServerOptions>(new SqlServerOptions
             {
                 ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyNetTest;Integrated Security=True;"
@@ -46,7 +45,7 @@ namespace EasyNet.SqlServer.Tests
         public void TestCreateDbConnectorWithTransaction()
         {
             // Arrange
-            var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyDapperTest;Integrated Security=True;";
+            var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyNetTest;Integrated Security=True;";
             var creator = new SqlServerConnectorCreator(new OptionsWrapper<SqlServerOptions>(new SqlServerOptions
             {
                 ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=EasyNetTest;Integrated Security=True;"
@@ -60,9 +59,9 @@ namespace EasyNet.SqlServer.Tests
             // Assert
             Assert.NotNull(dbConnector.Connection);
             Assert.NotNull(dbConnector.Transaction);
+            Assert.NotNull(dbConnector.Transaction.Connection);
             Assert.Same(dbConnector.Connection.ConnectionString, connectionString);
             Assert.Equal(ConnectionState.Open, dbConnector.Connection.State);
-            Assert.False(dbConnector.Transaction.GetPrivateField<bool>("_completed"));
 
             #endregion
 
@@ -72,7 +71,7 @@ namespace EasyNet.SqlServer.Tests
             dbConnector.Dispose();
 
             // Assert
-            Assert.True(dbConnector.Transaction.GetPrivateField<bool>("_completed"));
+            Assert.Null(dbConnector.Transaction.Connection);
             Assert.Equal(ConnectionState.Closed, dbConnector.Connection.State);
 
             #endregion
