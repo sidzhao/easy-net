@@ -35,103 +35,60 @@ namespace EasyNet.EntityFrameworkCore.Tests
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        [Fact]
-        public void TestBegin()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestBegin(bool isTransactional)
         {
-            #region Without DbContext and Transaction
-
             // Arrange
-            var uow1 = GetEfCoreUnitOfWork();
+            var uowManager = _serviceProvider.GetService<IUnitOfWorkManager>();
+            var uow = uowManager.Begin(_serviceProvider, new UnitOfWorkOptions { IsTransactional = isTransactional });
 
             // Act
-            uow1.Begin(new UnitOfWorkOptions());
-            uow1.Complete();
-
-            #endregion
-
-            #region With DbContext but Transaction
-
-            // Arrange
-            var uow2 = GetEfCoreUnitOfWork();
-
-            // Act
-            uow2.Begin(new UnitOfWorkOptions { IsTransactional = false });
             GetCurrentDbConnectorProvider().GetOrCreate();
-            uow2.Complete();
+            uow.Complete();
 
             // Assert
-            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
-
-            #endregion
-
-            #region With DbContext and Transaction
-
-            // Arrange
-            var uow3 = GetEfCoreUnitOfWork();
+            Assert.NotNull(uow.GetPrivateProperty<DbContext>("ActiveDbContext"));
+            Assert.Equal(!isTransactional, uow.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction") == null);
 
             // Act
-            uow3.Begin(new UnitOfWorkOptions { IsTransactional = true });
-            GetCurrentDbConnectorProvider().GetOrCreate();
-            uow3.Complete();
+            uow.Dispose();
 
             // Assert
-            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
-
-            #endregion
+            Assert.True(uow.GetPrivateProperty<DbContext>("ActiveDbContext").GetPrivateField<bool>("_disposed"));
+            if (isTransactional)
+            {
+                Assert.True(uow.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction").GetPrivateField<bool>("_disposed"));
+            }
         }
 
-        [Fact]
-        public async Task TestBeginAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TestBeginAsync(bool isTransactional)
         {
-            #region Without DbContext and Transaction
-
             // Arrange
-            var uow1 = GetEfCoreUnitOfWork();
+            var uowManager = _serviceProvider.GetService<IUnitOfWorkManager>();
+            var uow = uowManager.Begin(_serviceProvider, new UnitOfWorkOptions { IsTransactional = isTransactional });
 
             // Act
-            uow1.Begin(new UnitOfWorkOptions());
-            await uow1.CompleteAsync();
-
-            #endregion
-
-            #region With DbContext but Transaction
-
-            // Arrange
-            var uow2 = GetEfCoreUnitOfWork();
-
-            // Act
-            uow2.Begin(new UnitOfWorkOptions { IsTransactional = false });
             GetCurrentDbConnectorProvider().GetOrCreate();
-            await uow2.CompleteAsync();
+            await uow.CompleteAsync();
 
             // Assert
-            Assert.NotNull(uow2.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.Null(uow2.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
-
-            #endregion
-
-            #region With DbContext and Transaction
-
-            // Arrange
-            var uow3 = GetEfCoreUnitOfWork();
+            Assert.NotNull(uow.GetPrivateProperty<DbContext>("ActiveDbContext"));
+            Assert.Equal(!isTransactional, uow.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction") == null);
 
             // Act
-            uow3.Begin(new UnitOfWorkOptions { IsTransactional = true });
-            GetCurrentDbConnectorProvider().GetOrCreate();
-            await uow3.CompleteAsync();
+            uow.Dispose();
 
             // Assert
-            Assert.NotNull(uow3.GetPrivateProperty<Microsoft.EntityFrameworkCore.DbContext>("ActiveDbContext"));
-            Assert.NotNull(uow3.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction"));
-
-            #endregion
-        }
-
-        private IUnitOfWork GetEfCoreUnitOfWork()
-        {
-            return _serviceProvider.GetRequiredService<IUnitOfWork>();
+            Assert.True(uow.GetPrivateProperty<DbContext>("ActiveDbContext").GetPrivateField<bool>("_disposed"));
+            if (isTransactional)
+            {
+                Assert.True(uow.GetPrivateProperty<IDbContextTransaction>("ActiveTransaction").GetPrivateField<bool>("_disposed"));
+            }
         }
 
         private ICurrentDbConnectorProvider GetCurrentDbConnectorProvider()

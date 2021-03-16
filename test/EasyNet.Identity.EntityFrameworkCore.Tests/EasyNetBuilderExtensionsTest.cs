@@ -30,7 +30,7 @@ namespace EasyNet.Identity.EntityFrameworkCore.Tests
                     x.UseEfCore<IdentityContext>(options =>
                     {
                         options.UseSqlite("TestConnectionString");
-                    });
+                    }).AsDefault<IdentityContext>();
                 })
                 .AddIdentityCore<User, IdentityContext>();
 
