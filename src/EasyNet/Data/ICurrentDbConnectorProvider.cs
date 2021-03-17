@@ -1,9 +1,11 @@
-﻿namespace EasyNet.Data
+﻿using System;
+
+namespace EasyNet.Data
 {
     /// <summary>
     /// Used to get/set current <see cref="IDbConnector"/>. 
     /// </summary>
-    public interface ICurrentDbConnectorProvider
+    public interface ICurrentDbConnectorProvider : IDisposable
     {
         /// <summary>
         /// Gets current <see cref="IDbConnector"/>.

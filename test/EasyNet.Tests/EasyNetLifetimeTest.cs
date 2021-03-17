@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
+using EasyNet.Data;
 using EasyNet.Uow;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Moq;
 using Xunit;
 
 namespace EasyNet.Tests
@@ -87,6 +90,72 @@ namespace EasyNet.Tests
             });
 
             Assert.Equal(rootUow, rootCurrentUnitOfWorkProvider.Current);
+        }
+
+        [Fact]
+        public async Task TestDbConnectorProviderWithoutUow()
+        {
+            var dbConnectorMockList = new List<Mock<DbConnector>>();
+
+            using var host = await new HostBuilder()
+              .ConfigureWebHost(webBuilder =>
+              {
+                  webBuilder
+                      .UseTestServer()
+                      .ConfigureServices(services =>
+                      {
+                          services.AddEasyNet();
+
+                          services.AddScoped(provider =>
+                          {
+                              var dbConnectorCreatorMock = new Mock<IDbConnectorCreator>();
+                              var dbConnectorMock = new Mock<DbConnector>();
+
+                              dbConnectorCreatorMock
+                                  .Setup(p => p.Create(false, null))
+                                  .Returns(dbConnectorMock.Object);
+
+                              dbConnectorMockList.Add(dbConnectorMock);
+
+                              return dbConnectorCreatorMock.Object;
+                          });
+                      })
+                      .Configure(app =>
+                      {
+                          app.Run(async context =>
+                          {
+                              var currentDbConnectorProvider =
+                                  context.RequestServices.GetService<ICurrentDbConnectorProvider>();
+
+                              var dbConnector = currentDbConnectorProvider.GetOrCreate();
+                              Assert.Equal(dbConnector, currentDbConnectorProvider.Current);
+
+                              var dbConnector1 = currentDbConnectorProvider.GetOrCreate();
+                              Assert.Equal(dbConnector, dbConnector1);
+                              Assert.Equal(dbConnector1, currentDbConnectorProvider.Current);
+
+                              await Task.CompletedTask;
+                          });
+                      });
+              })
+              .StartAsync();
+
+            async Task RequestAsync(IHost paramHost)
+            {
+                await paramHost.GetTestClient().GetAsync("/");
+            };
+
+            await Task.WhenAll(new List<Task>
+            {
+                RequestAsync(host),
+                RequestAsync(host),
+                RequestAsync(host)
+            });
+
+            foreach (var dbConnectorMock in dbConnectorMockList)
+            {
+                dbConnectorMock.Verify(p => p.Dispose(), Times.Once);
+            }
         }
     }
 }

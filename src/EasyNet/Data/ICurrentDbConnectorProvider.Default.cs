@@ -12,10 +12,7 @@ namespace EasyNet.Data
         protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
         protected readonly IDbConnectorCreator DbConnectorCreator;
 
-        /// <summary>
-        /// AsyncLocal must be used instead of ThreadLocal, otherwise the value is not maintained in the asynchronous context.
-        /// </summary>
-        private static readonly AsyncLocal<IDbConnector> AsyncLocalDbConnector = new AsyncLocal<IDbConnector>();
+        protected IDbConnector NoUowDbConnector;
 
         public AsyncLocalCurrentDbConnectorProvider(ICurrentUnitOfWorkProvider currentUnitOfWorkProvider, IDbConnectorCreator dbConnectorCreator)
         {
@@ -33,7 +30,7 @@ namespace EasyNet.Data
                 }
                 else
                 {
-                    return AsyncLocalDbConnector.Value;
+                    return NoUowDbConnector;
                 }
             }
         }
@@ -47,7 +44,7 @@ namespace EasyNet.Data
             if (CurrentUnitOfWorkProvider.Current == null)
             {
                 var dbConnector = DbConnectorCreator.Create();
-                AsyncLocalDbConnector.Value = dbConnector;
+                NoUowDbConnector = dbConnector;
 
                 return dbConnector;
             }
@@ -56,13 +53,21 @@ namespace EasyNet.Data
                 if (CurrentUnitOfWorkProvider.Current is UnitOfWorkBase uow)
                 {
                     uow.SetDbConnector(DbConnectorCreator.Create(
-                        uow.Options.IsTransactional ?? false, 
+                        uow.Options.IsTransactional ?? false,
                         uow.Options.GetSystemDataIsolationLevel()));
 
                     return uow.DbConnector;
                 }
 
                 throw new EasyNetException($"The interface {typeof(IDbConnector).AssemblyQualifiedName} is not implemented with class {typeof(UnitOfWorkBase)}.");
+            }
+        }
+
+        public void Dispose()
+        {
+            if (CurrentUnitOfWorkProvider.Current == null)
+            {
+                Current?.Dispose();
             }
         }
     }
