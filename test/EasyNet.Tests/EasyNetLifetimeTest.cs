@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using EasyNet.Data;
 using EasyNet.Uow;
 using Microsoft.AspNetCore.Builder;
@@ -92,6 +94,128 @@ namespace EasyNet.Tests
         }
 
         [Fact]
+        public async Task TestUnitOfWorkManager()
+        {
+            var uowMockList = new List<Mock<IUnitOfWork>>();
+
+            using var host = await new HostBuilder()
+               .ConfigureWebHost(webBuilder =>
+               {
+                   webBuilder
+                       .UseTestServer()
+                       .ConfigureServices(services =>
+                       {
+                           services.AddEasyNet();
+
+                           services.AddTransient(provider =>
+                           {
+                               var uowMock = new Mock<IUnitOfWork>();
+                               uowMockList.Add(uowMock);
+
+                               return uowMock.Object;
+                           });
+                       })
+                       .Configure(app =>
+                       {
+                           app.Run(async context =>
+                           {
+                               var serviceProvider = context.RequestServices;
+                               var uowManager = serviceProvider.GetService<IUnitOfWorkManager>();
+                               var currentUowProvider = serviceProvider.GetService<ICurrentUnitOfWorkProvider>();
+
+                               using var uow = uowManager.Begin(serviceProvider);
+
+                               Assert.Equal(uow, currentUowProvider.Current);
+
+                               using (var uow1 = uowManager.Begin(serviceProvider))
+                               {
+                                   Assert.True(uow1 is InnerUnitOfWorkCompleteHandle);
+
+                                   await uow1.CompleteAsync();
+                               }
+
+                               using (var uow2 = uowManager.Begin(serviceProvider, TransactionScopeOption.RequiresNew))
+                               {
+                                   Assert.Equal(uow2, currentUowProvider.Current);
+
+                                   await uow.CompleteAsync();
+                               }
+                           });
+                       });
+               })
+               .StartAsync();
+
+            async Task RequestAsync(IHost paramHost)
+            {
+                await paramHost.GetTestClient().GetAsync("/");
+            };
+
+            await Task.WhenAll(new List<Task>
+            {
+                RequestAsync(host),
+                RequestAsync(host),
+                RequestAsync(host)
+            });
+
+            foreach (var uowMock in uowMockList)
+            {
+                uowMock.Verify(p => p.Dispose(), Times.Exactly(2));
+            }
+        }
+
+        [Fact]
+        public async Task TestUnitOfWorkManagerThrowException()
+        {
+            var uowMockList = new List<Mock<IUnitOfWork>>();
+
+            using var host = await new HostBuilder()
+               .ConfigureWebHost(webBuilder =>
+               {
+                   webBuilder
+                       .UseTestServer()
+                       .ConfigureServices(services =>
+                       {
+                           services.AddEasyNet();
+
+                           services.AddTransient(provider =>
+                           {
+                               var uowMock = new Mock<IUnitOfWork>();
+                               uowMockList.Add(uowMock);
+
+                               return uowMock.Object;
+                           });
+                       })
+                       .Configure(app =>
+                       {
+                           app.Run(async context =>
+                           {
+                               var serviceProvider = context.RequestServices;
+                               var uowManager = serviceProvider.GetService<IUnitOfWorkManager>();
+                               var currentUowProvider = serviceProvider.GetService<ICurrentUnitOfWorkProvider>();
+
+                               using var uow = uowManager.Begin(serviceProvider);
+
+                               Assert.Equal(uow, currentUowProvider.Current);
+
+                               using var uow1 = uowManager.Begin(serviceProvider, TransactionScopeOption.RequiresNew);
+
+                               Assert.Equal(uow1, currentUowProvider.Current);
+
+                               throw new Exception();
+                           });
+                       });
+               })
+               .StartAsync();
+
+            await Assert.ThrowsAsync<Exception>(async () => await host.GetTestClient().GetAsync("/"));
+
+            foreach (var uowMock in uowMockList)
+            {
+                uowMock.Verify(p => p.Dispose(), Times.Once);
+            }
+        }
+
+        [Fact]
         public async Task TestDbConnectorProviderWithoutUow()
         {
             var dbConnectorMockList = new List<Mock<DbConnector>>();
@@ -150,6 +274,64 @@ namespace EasyNet.Tests
                 RequestAsync(host),
                 RequestAsync(host)
             });
+
+            foreach (var dbConnectorMock in dbConnectorMockList)
+            {
+                dbConnectorMock.Verify(p => p.Dispose(), Times.Once);
+            }
+        }
+
+        [Fact]
+        public async Task TestDbConnectorProviderWithoutUowThrowException()
+        {
+            var dbConnectorMockList = new List<Mock<DbConnector>>();
+
+            using var host = await new HostBuilder()
+              .ConfigureWebHost(webBuilder =>
+              {
+                  webBuilder
+                      .UseTestServer()
+                      .ConfigureServices(services =>
+                      {
+                          services.AddEasyNet();
+
+                          services.AddScoped(provider =>
+                          {
+                              var dbConnectorCreatorMock = new Mock<IDbConnectorCreator>();
+                              var dbConnectorMock = new Mock<DbConnector>();
+
+                              dbConnectorCreatorMock
+                                  .Setup(p => p.Create(false, null))
+                                  .Returns(dbConnectorMock.Object);
+
+                              dbConnectorMockList.Add(dbConnectorMock);
+
+                              return dbConnectorCreatorMock.Object;
+                          });
+                      })
+                      .Configure(app =>
+                      {
+                          app.Run(async context =>
+                          {
+                              var currentDbConnectorProvider =
+                                  context.RequestServices.GetService<ICurrentDbConnectorProvider>();
+
+                              var dbConnector = currentDbConnectorProvider.GetOrCreate();
+                              Assert.Equal(dbConnector, currentDbConnectorProvider.Current);
+
+                              var dbConnector1 = currentDbConnectorProvider.GetOrCreate();
+                              Assert.Equal(dbConnector, dbConnector1);
+                              Assert.Equal(dbConnector1, currentDbConnectorProvider.Current);
+
+                              await Task.CompletedTask;
+
+                              throw new Exception();
+                          });
+                      });
+              })
+              .StartAsync();
+
+            await Assert.ThrowsAsync<Exception>(async () => await host.GetTestClient().GetAsync("/"));
 
             foreach (var dbConnectorMock in dbConnectorMockList)
             {
