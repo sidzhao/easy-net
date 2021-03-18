@@ -78,7 +78,7 @@ namespace EasyNet.Tests.Uow
         }
 
         [Fact]
-        public async Task TestNestedUnitOfWork()
+        public async Task TestUnitOfWorkUsingTransactionScope()
         {
             // Arrange
             var currentUnitOfWorkProvider = _serviceProvider.GetService<ICurrentUnitOfWorkProvider>();
