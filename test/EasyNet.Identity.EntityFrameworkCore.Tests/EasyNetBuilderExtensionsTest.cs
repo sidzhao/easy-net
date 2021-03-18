@@ -35,7 +35,7 @@ namespace EasyNet.Identity.EntityFrameworkCore.Tests
                 .AddIdentityCore<User, IdentityContext>();
 
             // Assert
-            AssertSpecifiedServiceTypeAndImplementationType<IdentityContext, IdentityContext>(services, ServiceLifetime.Scoped);
+            AssertSpecifiedServiceTypeAndImplementationType<IdentityContext, IdentityContext>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<IRepository<User>, EfCoreRepositoryBase<IdentityContext, User>>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<IRepository<Role>, EfCoreRepositoryBase<IdentityContext, Role>>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<IRepository<EasyNetUserClaim<int>>, EfCoreRepositoryBase<IdentityContext, EasyNetUserClaim<int>>>(services, ServiceLifetime.Transient);

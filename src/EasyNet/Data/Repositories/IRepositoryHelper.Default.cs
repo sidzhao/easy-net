@@ -261,11 +261,6 @@ namespace EasyNet.Data.Repositories
                 return false;
             }
 
-            if (string.IsNullOrEmpty(GetCurrentTenantId(currentUnitOfWorkProvider, session)))
-            {
-                throw new EasyNetException("Can not set TenantId to empty for IMustHaveTenant entities!");
-            }
-
             // Don't set if it's already set
             var tenantIdProperty = erp.TenantIdProperty;
 
@@ -302,6 +297,11 @@ namespace EasyNet.Data.Repositories
 
             if (!alreadySetTenantId)
             {
+                if (string.IsNullOrEmpty(GetCurrentTenantId(currentUnitOfWorkProvider, session)))
+                {
+                    throw new EasyNetException("Can not set TenantId to empty for IMustHaveTenant entities!");
+                }
+
                 erp.TenantIdProperty.SetValueAndChangeType(entity, GetCurrentTenantId(currentUnitOfWorkProvider, session), erp.TenantIdType);
             }
 

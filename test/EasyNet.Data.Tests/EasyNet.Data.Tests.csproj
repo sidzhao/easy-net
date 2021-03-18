@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -24,6 +26,7 @@
     <ProjectReference Include="..\..\src\EasyNet.Dapper\EasyNet.Dapper.csproj" />
     <ProjectReference Include="..\..\src\EasyNet.EntityFrameworkCore\EasyNet.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\EasyNet.Sqlite\EasyNet.Sqlite.csproj" />
+    <ProjectReference Include="..\..\src\EasyNet.SqlServer\EasyNet.SqlServer.csproj" />
     <ProjectReference Include="..\EasyNet.CommonTests\EasyNet.CommonTests.csproj" />
   </ItemGroup>
 

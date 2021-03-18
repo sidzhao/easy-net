@@ -32,7 +32,7 @@ namespace EasyNet.Extensions.DependencyInjection
             options.AddRegisterServicesAction(services =>
             {
                 // DbContext
-                services.AddDbContext<TDbContext>(setupAction);
+                services.AddDbContext<TDbContext>(setupAction, ServiceLifetime.Transient);
 
                 // Data
                 services.TryAddScoped<IDbConnectorCreator, EfCoreDbConnectorCreator<TDbContext>>();

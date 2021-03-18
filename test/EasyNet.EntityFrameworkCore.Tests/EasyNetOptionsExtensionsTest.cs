@@ -38,7 +38,7 @@ namespace EasyNet.EntityFrameworkCore.Tests
             var sqlServerOptions = dbContextOptions.Extensions.SingleOrDefault(p => p.GetType() == typeof(SqliteOptionsExtension));
 
             // Assert
-            AssertSpecifiedServiceTypeAndImplementationType<EfCoreContext, EfCoreContext>(services, ServiceLifetime.Scoped);
+            AssertSpecifiedServiceTypeAndImplementationType<EfCoreContext, EfCoreContext>(services, ServiceLifetime.Transient);
             AssertSpecifiedServiceTypeAndImplementationType<IDbConnectorCreator, EfCoreDbConnectorCreator<EfCoreContext>>(services, ServiceLifetime.Scoped);
             AssertSpecifiedServiceTypeAndImplementationType<IUnitOfWork, EfCoreUnitOfWork>(services, ServiceLifetime.Transient);
 
