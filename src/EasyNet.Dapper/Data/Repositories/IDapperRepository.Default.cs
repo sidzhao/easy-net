@@ -40,8 +40,8 @@ namespace EasyNet.Dapper.Data.Repositories
         where TEntity : class, IEntity<TPrimaryKey>
     {
         protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
+        protected readonly ICurrentDbConnectorProvider CurrentDbConnectorProvider;
         protected readonly IEasyNetSession CurrentSession;
-        protected readonly IDbConnector DbConnector;
         protected readonly IRepositoryHelper RepositoryHelper;
         protected readonly EasyNetOptions Options;
         protected readonly ILogger<DapperRepositoryBase<TEntity, TPrimaryKey>> Logger;
@@ -57,16 +57,18 @@ namespace EasyNet.Dapper.Data.Repositories
         {
             CurrentSession = session;
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
-            DbConnector = currentDbConnectorProvider.GetOrCreate();
+            CurrentDbConnectorProvider = currentDbConnectorProvider;
             RepositoryHelper = repositoryHelper;
             Options = options.Value;
             Logger = logger;
         }
 
+        // Get DbConnector realtime, since maybe current uow was changed.
+        protected IDbConnector DbConnector => CurrentDbConnectorProvider.GetOrCreate();
+
         protected IDbConnection Connection => DbConnector.Connection;
 
         protected IDbTransaction Transaction => DbConnector.Transaction;
-
 
         #region Select/Get/Query
 

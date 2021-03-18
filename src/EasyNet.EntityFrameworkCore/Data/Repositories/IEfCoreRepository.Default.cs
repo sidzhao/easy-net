@@ -34,9 +34,10 @@ namespace EasyNet.EntityFrameworkCore.Data.Repositories
         where TEntity : class, IEntity<TPrimaryKey>
         where TDbContext : EasyNetDbContext
     {
-        protected readonly TDbContext DbContext;
+      
         protected readonly IRepositoryHelper RepositoryHelper;
         protected readonly ICurrentUnitOfWorkProvider CurrentUnitOfWorkProvider;
+        protected readonly ICurrentDbConnectorProvider CurrentDbConnectorProvider;
         protected readonly IEasyNetSession CurrentSession;
         protected readonly EasyNetOptions Options;
 
@@ -47,12 +48,16 @@ namespace EasyNet.EntityFrameworkCore.Data.Repositories
             IRepositoryHelper repositoryHelper,
             IOptions<EasyNetOptions> options)
         {
-            DbContext = (TDbContext)currentDbConnectorProvider.GetOrCreate().GetDbContext();
+            CurrentDbConnectorProvider = currentDbConnectorProvider;
             RepositoryHelper = repositoryHelper;
             CurrentUnitOfWorkProvider = currentUnitOfWorkProvider;
             CurrentSession = session;
             Options = options.Value;
         }
+
+        // Get DbContext realtime, since maybe current uow was changed.
+        protected TDbContext DbContext => (TDbContext)CurrentDbConnectorProvider.GetOrCreate().GetDbContext();
+
         protected virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
 
         public DbContext GetDbContext()
