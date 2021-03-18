@@ -313,8 +313,11 @@ namespace EasyNet.Tests
                       {
                           app.Run(async context =>
                           {
+                              // Cannot use context.RequestServices directly.
+                              using var scope = context.RequestServices.CreateScope();
+
                               var currentDbConnectorProvider =
-                                  context.RequestServices.GetService<ICurrentDbConnectorProvider>();
+                                  scope.ServiceProvider.GetService<ICurrentDbConnectorProvider>();
 
                               var dbConnector = currentDbConnectorProvider.GetOrCreate();
                               Assert.Equal(dbConnector, currentDbConnectorProvider.Current);
