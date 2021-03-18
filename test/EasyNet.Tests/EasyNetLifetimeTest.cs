@@ -314,10 +314,10 @@ namespace EasyNet.Tests
                           app.Run(async context =>
                           {
                               // Cannot use context.RequestServices directly.
-                              using var scope = context.RequestServices.CreateScope();
+                              //using var scope = context.RequestServices.CreateScope();
 
                               var currentDbConnectorProvider =
-                                  scope.ServiceProvider.GetService<ICurrentDbConnectorProvider>();
+                                  context.RequestServices.GetService<ICurrentDbConnectorProvider>();
 
                               var dbConnector = currentDbConnectorProvider.GetOrCreate();
                               Assert.Equal(dbConnector, currentDbConnectorProvider.Current);
@@ -333,7 +333,7 @@ namespace EasyNet.Tests
                       });
               })
               .StartAsync();
-
+            
             await Assert.ThrowsAsync<Exception>(async () => await host.GetTestClient().GetAsync("/"));
 
             foreach (var dbConnectorMock in dbConnectorMockList)
